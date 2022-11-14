@@ -1,19 +1,23 @@
 DATASET PROCESSING
 ================
 
-- [Downsize MORL and USAM fastq files.](#Downsize-MORL-and-USAM-fastq-files.)
-- [Processing USAM and MORL fastq.](#processing-usam-morl-fastq)
-- [Fastq statistics.](#Fastq-stats)
+- [DATASET PROCESSING](#dataset-processing)
+- [Downsize MORL and USAM fastq files.](#downsize-morl-and-usam-fastq-files)
+    - [samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.](#samplerate02-randomly-output-only-this-fraction-of-reads-1-means-sampling-is-disabled)
+  - [Processing USAM MORL fastq](#processing-usam-morl-fastq)
+  - [Fastq stats](#fastq-stats)
 
 
-## Downsize MORL and USAM fastq files.
+# Downsize MORL and USAM fastq files.
     module load tools ngs  
     module load jdk/19 openjdk/19 java/1.8.0-openjdk jre/1.8.0-openjdk 
     module load bbmap/38.90
 
-# samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.
+### samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.
     DIRFQ=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
-# FOR USAM population
+
+ <details>
+<summary> FOR USAM population </summary>
     for POP in USA
     do
         for IND in `echo -n 1 2 3 4 5 6 7 8 9` 
@@ -45,7 +49,10 @@ DATASET PROCESSING
             done
         done
     done
-# FOR MORL population
+</details>
+
+<details>
+<summary> FOR MORL population </summary>    
     for POP in MLX
     do
         for IND in `echo -n 1 2 4 6 7 8 9` 
@@ -77,6 +84,7 @@ DATASET PROCESSING
             done
         done
     done
+</details>
 
 
 ## Processing USAM MORL fastq
