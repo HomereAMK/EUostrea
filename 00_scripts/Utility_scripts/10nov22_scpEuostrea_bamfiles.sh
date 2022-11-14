@@ -171,6 +171,15 @@ DIRBAM=/home/projects/dp_00007/people/hmon/Shucking/06_realigned
         scp $DIRBAM/${POP}_${IND}* /home/projects/dp_00007/people/hmon/Bamfile_EUostrea
         done
     done
+##LANG
+    for POP in LANG
+    do
+        for IND in `seq -w 01 40`
+        do
+        scp $DIRBAM/${POP}_${IND}* /home/projects/dp_00007/people/hmon/Bamfile_EUostrea
+        done
+    done
+
 
 
 ##MOLU

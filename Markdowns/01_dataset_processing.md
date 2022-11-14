@@ -2,18 +2,18 @@ DATASET PROCESSING
 ================
 
 - [DATASET PROCESSING](#dataset-processing)
-- [Downsize MORL and USAM fastq files.](#downsize-morl-and-usam-fastq-files)
-    - [samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.](#samplerate02-randomly-output-only-this-fraction-of-reads-1-means-sampling-is-disabled)
+  - [Downsize MORL and USAM fastq files.](#downsize-morl-and-usam-fastq-files)
+    - [With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.](#with-bbmap-samplerate02-randomly-output-only-this-fraction-of-reads-1-means-sampling-is-disabled)
   - [Processing USAM MORL fastq](#processing-usam-morl-fastq)
-  - [Fastq stats](#fastq-stats)
+  - [Fastq + Bam stats](#fastq--bam-stats)
 
 
-# Downsize MORL and USAM fastq files.
+## Downsize MORL and USAM fastq files.
     module load tools ngs  
     module load jdk/19 openjdk/19 java/1.8.0-openjdk jre/1.8.0-openjdk 
     module load bbmap/38.90
 
-### samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.
+### With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.
     DIRFQ=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
 
  <details>
@@ -232,4 +232,51 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
 
 </details>
 
-## Fastq stats
+## Fastq + Bam stats
+<details>
+<summary> Counts for USAM and MORL downsized </summary>    
+    #Module 
+    module load tools
+    module load ngs
+    module load samtools/1.14
+
+    #Global variables
+    base=__BASE__
+    DIR=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
+    #raw reads
+    a=`zcat $DIR/"$base"_1.fq.gz  | wc -l | awk '{print $1/4}'` #raw read forward
+    b=`zcat $DIR/"$base"_2.fq.gz | wc -l | awk '{print $1/4}'` #raw read reverse
+    echo $(( $a + $b )) > downS_depth/"$base".count_fastq_1.tmp
+    #raw bases
+    c=`zcat $DIR/"$base"_1.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
+    d=`zcat $DIR/"$base"_2.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m`
+    echo $(( $c + $d )) > $DIR/downS_depth/"$base".count_fastq_2.tmp
+
+    trim bases
+    e=`zcat $DIR/"$base"_1.paired.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
+    f=`zcat $DIR/"$base"_2.paired.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
+    echo $(( $e + $f )) > $DIR/downS_depth/"$base".count_fastq_3.tmp 
+
+    #mapped bases
+    samtools stats $DIR/"$base".sort.minq20.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2 > $DIR/downS_depth/"$base".count_bam_1.tmp
+    
+    #deduplicate mapped bases
+    samtools stats $DIR/"$base".nocig.dedup_clipoverlap.minq20.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2  > $DIR/downS_depth/"$base".count_bam_2.tmp
+
+    #realigned around indels mapped bases
+    samtools stats $DIR/"$base".nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2  > $DIR/downS_depth/"$base".count_bam_3.tmp
+    #population tag
+    
+    echo Novaseq_MLX_USA/"$base"_1.fq.gz |awk '{split($0,a,"_"); print a[2]}' | awk '{split($0,a,"/"); print a[2]}' > $DIR/downS_depth/"$base".count_pop_1.tmp
+
+    RAWREADS=`cat $DIR/downS_depth/"$base".count_fastq_1.tmp`
+    RAWBASES=`cat $DIR/downS_depth/"$base".count_fastq_2.tmp`
+    ADPTERCLIPBASES=`cat $DIR/downS_depth/"$base".count_fastq_3.tmp`
+    MAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_1.tmp`
+    DEDUPMAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_2.tmp`
+    REALIGNEDMAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_3.tmp`
+    POP=`cat $DIR/downS_depth/"$base".count_pop_1.tmp`
+
+    printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" $base $POP $RAWREADS $RAWBASES $ADPTERCLIPBASES $MAPPEDBASES $DEDUPMAPPEDBASES $REALIGNEDMAPPEDBASES >> $DIR/downS_depth/Summary_DS_USAMMORL_lcWGS_14nov22.txt
+
+</details>
