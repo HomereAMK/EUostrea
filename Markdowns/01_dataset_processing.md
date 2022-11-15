@@ -287,9 +287,28 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
     module load tools
     module load ngs
     module load samtools/1.14
-
+    
     DIR=/home/projects/dp_00007/people/hmon/EUostrea
-    for file in $(cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt |sed -e 's/.nocig.dedup_clipoverlap.minq20.bam//g'|sort -u)
+    
+    cd /home/projects/dp_00007/people/hmon
+    
+    for file in $(ls Bamfile_EUostrea/*.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)
         do
-        samtools depth -aa $file | cut -f 3 | gzip > $DIR/02_data/Depth/$file_depth.gz
+        samtools depth -aa $file.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam| cut -f 3 | gzip > $DIR/02_data/Depth/$file_depth.gz
     done
+
+!/bin/bash
+WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
+# Clean session
+cd $WORDIR
+rm 00_scripts/Utility_scripts/DEPTH*sh
+
+# launch scripts for Colosse
+cd /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/
+for file in $(ls *.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
+do
+
+base=$(basename "$file")
+
+	toEval="cat 00_scripts/06_aDepth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > 00_scripts/DEPTH_$base.sh
+done
