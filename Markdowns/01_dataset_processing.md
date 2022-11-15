@@ -6,6 +6,7 @@ DATASET PROCESSING
     - [With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.](#with-bbmap-samplerate02-randomly-output-only-this-fraction-of-reads-1-means-sampling-is-disabled)
   - [Processing USAM MORL fastq](#processing-usam-morl-fastq)
   - [Fastq + Bam stats](#fastq--bam-stats)
+  - [Fastq + Bam stats](#fastq--bam-stats-1)
 
 
 ## Downsize MORL and USAM fastq files.
@@ -279,4 +280,16 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
 
     printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" $base $POP $RAWREADS $RAWBASES $ADPTERCLIPBASES $MAPPEDBASES $DEDUPMAPPEDBASES $REALIGNEDMAPPEDBASES >> $DIR/downS_depth/Summary_DS_USAMMORL_lcWGS_14nov22.txt
 
-</details>
+## Fastq + Bam stats
+<details>
+<summary> Depth stats</summary>        
+    #Module 
+    module load tools
+    module load ngs
+    module load samtools/1.14
+
+    DIR=/home/projects/dp_00007/people/hmon/EUostrea
+    for file in $(cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt |sed -e 's/.nocig.dedup_clipoverlap.minq20.bam//g'|sort -u)
+        do
+        samtools depth -aa $file | cut -f 3 | gzip > $DIR/02_data/Depth/$file_depth.gz
+    done
