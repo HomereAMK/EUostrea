@@ -6,7 +6,7 @@ DATASET PROCESSING
     - [With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.](#with-bbmap-samplerate02-randomly-output-only-this-fraction-of-reads-1-means-sampling-is-disabled)
   - [Processing USAM MORL fastq](#processing-usam-morl-fastq)
   - [Fastq + Bam stats](#fastq--bam-stats)
-  - [Fastq + Bam stats](#fastq--bam-stats-1)
+  - [Depth plots](#depth-plots)
 
 
 ## Downsize MORL and USAM fastq files.
@@ -279,36 +279,123 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
     POP=`cat $DIR/downS_depth/"$base".count_pop_1.tmp`
 
     printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" $base $POP $RAWREADS $RAWBASES $ADPTERCLIPBASES $MAPPEDBASES $DEDUPMAPPEDBASES $REALIGNEDMAPPEDBASES >> $DIR/downS_depth/Summary_DS_USAMMORL_lcWGS_14nov22.txt
+</details>
 
-## Fastq + Bam stats
 <details>
 <summary> Depth stats</summary>        
-    #Module 
-    module load tools
-    module load ngs
-    module load samtools/1.14
-    
-    DIR=/home/projects/dp_00007/people/hmon/EUostrea
-    
-    cd /home/projects/dp_00007/people/hmon
-    
-    for file in $(ls Bamfile_EUostrea/*.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)
-        do
-        samtools depth -aa $file.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam| cut -f 3 | gzip > $DIR/02_data/Depth/$file_depth.gz
+    #!/bin/bash
+    WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
+    BAMDIR=/home/projects/dp_00007/people/hmon/Bamfile_EUostrea
+    # Clean session
+    cd $WORKDIR
+    rm 00_scripts/Utility_scripts/DEPTH*sh
+
+    # launch scripts for c2 screen
+    cd $BAMDIR
+    for file in $(ls *.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
+    do
+        cd $WORKDIR
+        base=$(basename "$file")
+        toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
     done
 
-!/bin/bash
-WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
-# Clean session
-cd $WORDIR
-rm 00_scripts/Utility_scripts/DEPTH*sh
+    # launch scripts for c2 screen
+    cd /home/projects/dp_00007/people/hmon/Novaseq_MLX_USA/
+    for file in $(ls *nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
+    do
+        cd $WORKDIR
+        base=$(basename "$file")
+        toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
+    done
 
-# launch scripts for Colosse
-cd /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/
-for file in $(ls *.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
-do
+    #Submit jobs
+    for i in $(ls $WORKDIR/00_scripts/Utility_scripts/DEPTH*sh); do qsub $i; done
+</details>
 
-base=$(basename "$file")
+## Depth plots
+<details>
+<summary> Make list of depth files to run the Rscript by pop</summary>   
+    WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
+     
+    for POP in AGAB BARR BUNN CLEW COLN CORS CRES DOLV GREV HAFR HALS HAUG HYPP INNE KALV LANG LOGS MOLU MORL NISS ORIS OSTR PONT RIAE RYAN THIS TOLL TRAL USAM VAGS VENO WADD ZECE
+    do
+        BAMSDEPTH="$WORKDIR"/02_data/Depth/${POP}*_depth.gz
+        ls $BAMSDEPTH > "$WORKDIR"/01_infofiles/list.${POP}.depth
+    done
+</details>
 
-	toEval="cat 00_scripts/06_aDepth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > 00_scripts/DEPTH_$base.sh
-done
+<details>
+<summary> Calculate % genome covered + Depth per pop </summary>   
+    # Load module 
+    module load tools
+    module load ngs
+
+    ## Load modules FOR R 
+    module load gsl/2.6
+    module load perl/5.20.1
+    module load samtools/1.11
+    module load imagemagick/7.0.10-13
+    module load gdal/2.2.3
+    module load geos/3.8.0
+    module load jags/4.2.0
+    module load hdf5
+    module load netcdf
+    module load boost/1.74.0
+    module load openssl/1.0.0
+    module load lapack
+    module load udunits/2.2.26
+    module load proj/7.0.0
+    module load gcc/10.2.0
+    module load intel/perflibs/64/2020_update2
+    module load R/4.0.0
+
+    R
+    #Clean space
+    rm(list=ls())
+
+d
+    #
+    library(Rserve)
+    library(tidyverse)
+
+    #var
+    #for AGAB
+    #Loop "BARR", "BUNN", "CLEW", "COLN", "CORS", "CRES", "DOLV", "GREV", "HAFR", "HALS", "HAUG", "HYPP", "INNE", "KALV", "LANG", "LOGS", 
+    "MOLU", "MORL", "NISS", "ORIS", "OSTR", "PONT", "RIAE", "RYAN", "THIS", "TOLL", "TRAL", "USAM", "VAGS", "VENO", "WADD", "ZECE"))
+
+
+    basedir <- "/home/projects/dp_00007/people/hmon/EUostrea" # Make sure to edit this to match your $BASEDIR
+    bam_list <- read_lines(paste0(basedir, "/01_infofiles/list.CRES.depth"))
+
+        for (i in 1:length(bam_list)){
+
+        bamfile = bam_list[i]
+        #Compute depth stats
+        depth <- read_tsv(paste0(bamfile), col_names = F)$X1
+        mean_depth <- mean(depth)
+        sd_depth <- sd(depth)
+        mean_depth_nonzero <- mean(depth[depth > 0])
+        mean_depth_within2sd <- mean(depth[depth < mean_depth + 2 * sd_depth])
+        median <- median(depth)
+        presence <- as.logical(depth)
+        proportion_of_reference_covered <- mean(presence)
+
+        #Bind stats into dataframe and store sample-specific per base depth and presence data
+        if (i==1){
+            output <- data.frame(bamfile, mean_depth, sd_depth, mean_depth_nonzero, mean_depth_within2sd, median, proportion_of_reference_covered)
+            total_depth <- depth
+            total_presence <- presence
+        } else {
+            output <- rbind(output, cbind(bamfile, mean_depth, sd_depth, mean_depth_nonzero, mean_depth_within2sd, median, proportion_of_reference_covered))
+            total_depth <- total_depth + depth
+            total_presence <- total_presence + presence
+        }
+        }
+        print(output)
+        write_csv(output, path="/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/output.CRES.csv")  #change path
+        output2 <- output %>%
+        mutate(across(where(is.numeric), round, 3))%>% 
+        write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.CRES.csv")
+    
+    #Clean space
+    rm(list=ls())
