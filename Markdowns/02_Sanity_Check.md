@@ -22,5 +22,5 @@
     -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 3 \
     -doIBS 1 -doCov 1 -makeMatrix 1 \
     -nThreads 40 \
-    -rf scaffold1
+    -r scaffold1
                                                                                                                                                                                                                                                                                        
