@@ -19,7 +19,7 @@ DATASET PROCESSING
 
  <details>
 <summary> FOR USAM population </summary>
-    for POP in USA
+```  for POP in USA
     do
         for IND in `echo -n 1 2 3 4 5 6 7 8 9` 
         do
@@ -34,7 +34,7 @@ DATASET PROCESSING
             done
         done
     done
-
+```
     for POP in USA
     do
         for IND in `echo -n 10 11 12 13 14 15 16 17 18 19` 
@@ -299,17 +299,17 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
         toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
     done
 
-    # launch scripts for c2 screen
+    # launch scripts for c2 screen USAM and MORL 
     cd /home/projects/dp_00007/people/hmon/Novaseq_MLX_USA/
+    rm DEPTH*sh
     for file in $(ls *nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
     do
-        cd $WORKDIR
         base=$(basename "$file")
-        toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
+        toEval="cat Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > DEPTH_$base.sh
     done
 
     #Submit jobs
-    for i in $(ls $WORKDIR/00_scripts/Utility_scripts/DEPTH*sh); do qsub $i; done
+    for i in $(ls DEPTH*sh); do qsub $i; done
 </details>
 
 ## Depth plots
@@ -365,7 +365,7 @@ d
 
 
     basedir <- "/home/projects/dp_00007/people/hmon/EUostrea" # Make sure to edit this to match your $BASEDIR
-    bam_list <- read_lines(paste0(basedir, "/01_infofiles/list.CRES.depth"))
+    bam_list <- read_lines(paste0(basedir, "/01_infofiles/list.MORL.depth"))
 
         for (i in 1:length(bam_list)){
 
@@ -392,10 +392,12 @@ d
         }
         }
         print(output)
-        write_csv(output, path="/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/output.CRES.csv")  #change path
+        write_csv(output, path="/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/output.MORL.csv")  #change path
         output2 <- output %>%
         mutate(across(where(is.numeric), round, 3))%>% 
-        write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.CRES.csv")
+        write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.MORL.csv")
     
     #Clean space
     rm(list=ls())
+
+

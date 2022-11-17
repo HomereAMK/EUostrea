@@ -14,12 +14,13 @@
     N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea_replicates.txt | wc -l`
 
     angsd \
-     -b $BAMLIST -ref $REF -out $OUTPUTDIR/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22 \
+    -b $BAMLIST -ref $REF -out $OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22 \
     -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 \
     -minMapQ 20 -minQ 20 -minInd $((N_IND*1/4)) -setMinDepthInd 1 -setMinDepth 7 -setMaxDepth 20000 \
     -doCounts 1 -dumpCounts 2 \
     -GL 1 -doGlf 2 \
-    -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 3 -postCutoff 0.95 \
-    -doCov 1 -makeMatrix 1 \
-    -nThreads 40
+    -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 3 \
+    -doIBS 1 -doCov 1 -makeMatrix 1 \
+    -nThreads 40 \
+    -rf scaffold1
                                                                                                                                                                                                                                                                                        
