@@ -352,8 +352,6 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
     R
     #Clean space
     rm(list=ls())
-
-d
     #
     library(Rserve)
     library(tidyverse)
@@ -365,7 +363,7 @@ d
 
 
     basedir <- "/home/projects/dp_00007/people/hmon/EUostrea" # Make sure to edit this to match your $BASEDIR
-    bam_list <- read_lines(paste0(basedir, "/01_infofiles/list.LANG.depth"))
+    bam_list <- read_lines(paste0(basedir, "/01_infofiles/list.PONT.depth"))
 
         for (i in 1:length(bam_list)){
 
@@ -392,10 +390,10 @@ d
         }
         }
         print(output)
-        write_csv(output, path="/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/output.LANG.csv")  #change path
+        write_csv(output, path="/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/output.PONT.csv")  #change path
         output2 <- output %>%
         mutate(across(where(is.numeric), round, 3))%>% 
-        write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.LANG.csv")
+        write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.PONT.csv")
     
     #Clean space
     rm(list=ls())
