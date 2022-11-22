@@ -13,11 +13,13 @@ DATASET PROCESSING
     module load bbmap/38.90
 
 ### With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.
-    DIRFQ=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
 
 <details>
 <summary> FOR USAM population </summary>
 ```bash
+
+DIRFQ=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
+
 for POP in USA
     do
         for IND in `echo -n 1 2 3 4 5 6 7 8 9` 
@@ -33,6 +35,7 @@ for POP in USA
             done
         done
     done
+
 for POP in USA
     do
         for IND in `echo -n 10 11 12 13 14 15 16 17 18 19` 
@@ -47,30 +50,30 @@ for POP in USA
             samplerate=0.2
             done
         done
-    done
-```
+    done```
+
 </details>
 
 <details>
 <summary> FOR MORL population </summary>   
 ```bash
+
 for POP in MLX
-do
-    for IND in `echo -n 1 2 4 6 7 8 9`
     do
-        for NUM in `echo -n 101 113 126 127 128 129 140 149 161 162 163 165 174 175 176 188 189`
+        for IND in `echo -n 1 2 4 6 7 8 9`
         do
-        reformat.sh \
-        in1=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R1.fastq.gz \
-        in2=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R2.fastq.gz \
-        out1=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_1.fq.gz \
-        out2=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_2.fq.gz \
-        samplerate=0.2
+            for NUM in `echo -n 101 113 126 127 128 129 140 149 161 162 163 165 174 175 176 188 189`
+            do
+            reformat.sh \
+            in1=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R1.fastq.gz \
+            in2=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R2.fastq.gz \
+            out1=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_1.fq.gz \
+            out2=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_2.fq.gz \
+            samplerate=0.2
+            done
         done
     done
-done
-```
-```
+
 for POP in MLX
     do
         for IND in `echo -n 10 11 12 13 14 15 16 17 18 19` 
@@ -91,7 +94,6 @@ for POP in MLX
 
 ## Processing USAM MORL fastq
 <details>
-
 <summary> click for preprocess code </summary>
 
 ```bash 
@@ -287,44 +289,47 @@ printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" $base $POP $RAWREADS $RAWBASES $AD
 <details>
 <summary> Depth stats</summary> 
 ```bash 
-#!/bin/bash
 WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
 BAMDIR=/home/projects/dp_00007/people/hmon/Bamfile_EUostrea
+
 #Clean session
 cd $WORKDIR
 rm 00_scripts/Utility_scripts/DEPTH*sh
 #launch scripts for c2 screen
 cd $BAMDIR
 for file in $(ls *.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
-    do
-    cd $WORKDIR
-    base=$(basename "$file")
-    toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
-    done
+do
+cd $WORKDIR
+base=$(basename "$file")
+toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
+done
 
 #launch scripts for c2 screen USAM and MORL 
 cd /home/projects/dp_00007/people/hmon/Novaseq_MLX_USA/
-    rm DEPTH*sh
-    for file in $(ls *nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
-    do
-        base=$(basename "$file")
-        toEval="cat Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > DEPTH_$base.sh
-    done
+rm DEPTH*sh
+for file in $(ls *nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
+do
+    base=$(basename "$file")
+    toEval="cat Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > DEPTH_$base.sh
+done
 
-    #Submit jobs
-    for i in $(ls DEPTH*sh); do qsub $i; done```
+#Submit jobs
+for i in $(ls DEPTH*sh); do qsub $i; done```
+
 </details>
 
 ## Depth plots
 <details>
-<summary> Make list of depth files to run the Rscript by pop</summary>   
-    WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
+<summary> Make list of depth files to run the Rscript by pop</summary>
+```bash
+WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
      
-    for POP in AGAB BARR BUNN CLEW COLN CORS CRES DOLV GREV HAFR HALS HAUG HYPP INNE KALV LANG LOGS MOLU MORL NISS ORIS OSTR PONT RIAE RYAN THIS TOLL TRAL USAM VAGS VENO WADD ZECE
+for POP in AGAB BARR BUNN CLEW COLN CORS CRES DOLV GREV HAFR HALS HAUG HYPP INNE KALV LANG LOGS MOLU MORL NISS ORIS OSTR PONT RIAE RYAN THIS TOLL TRAL USAM VAGS VENO WADD ZECE
     do
         BAMSDEPTH="$WORKDIR"/02_data/Depth/${POP}*_depth.gz
         ls $BAMSDEPTH > "$WORKDIR"/01_infofiles/list.${POP}.depth
-    done
+done```
+
 </details>
 
 <details>
@@ -399,6 +404,7 @@ cd /home/projects/dp_00007/people/hmon/Novaseq_MLX_USA/
         mutate(across(where(is.numeric), round, 3))%>% 
         write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.WADD.csv")
 ```
+</details>
 
 
 
