@@ -50,6 +50,31 @@ SNPs |  Number of sites with at least one individual with missing data | Number 
 
     zcat $OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.beagle.gz | tail -n +2 | perl /home/projects/dp_00007/apps/Scripts/call_geno.pl --skip 3 | cut -f 4- | awk '{ for(i=1;i<=NF; i++){ if($i==-1)x[i]++} } END{ for(i=1;i<=NF; i++) print i"\t"x[i] }' | paste $BASEDIR/01_infofiles/bamlist_EUostrea_replicates.labels - | awk -v N_SITESawk="$N_SITES" '{print $1"\t"$3"\t"$3*100/N_SITESawk}' > /$OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.GL-MissingData.txt
 
-![plot](https://github.com/HomereAMK/EUostrea/blob/main/Figures/SanityCheck/MissingPCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.png)
+![PCA](https://github.com/HomereAMK/EUostrea/blob/main/Figures/SanityCheck/MissingPCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf)
+
+
+## Observation on the Sanity Check
+### Oysters that need to be removed for multiple renaming 
+
+    [1] MOLU_03_EKDL200012859-1a-AK11160-AK9453_HNLVYDSXY_L1
+    [2] NISS_49_a_EKDL200012859-1a-AK11615-AK16297_HNLVYDSXY_L1
+
+### Oysters that need to be removed for low depth
+    
+    #Here we arbitrarly decided to removed every oysters with a proportion of the genome covered lower than 30%
+    [1] "BUNN_13_EKDL210007863-1a-AK19072-AK23726_HLNT5DSX2_L2"
+    [2] "CLEW_07_EKDL210007862-1a-AK16191-AK16192_HLNT5DSX2_L2"
+    [3] "CLEW_08_EKDL210007862-1a-AK16207-AK16208_HLNT5DSX2_L2"
+    [4] "CRES_12_EKDL210009123-1a-AK19017-AK23748_HTVH3DSX2_L3"
+    [5] "CRES_15_EKDL210004788-1a-AK11674-AK2690_HHJYYDSX2_L1" 
+    [6] "DOLV_18_EKDL210009122-1a-AK31173-AK31174_HTVH3DSX2_L3"
+    [7] "GREV_05_EKDL200012859-1a-AK11476-AK16258_HNLVYDSXY_L1"
+    [8] "HAUG_19_EKDL210009123-1a-AK18989-AK33821_HTVH3DSX2_L3"
+    [9] "INNE_25_EKDL200012859-1a-AK11495-AK16238_HNLVYDSXY_L1"
+    [10] "NISS_38_EKDL200012859-1a-AK11528-AK14283_HNLVYDSXY_L1"
+    [11] "ORIS_02_EKDL210009122-1a-AK31117-AK31118_HTVH3DSX2_L3"
+    [12] "ORIS_03_EKDL210009122-1a-AK18657-AK31242_HTVH3DSX2_L3"
+    [13] "TRAL_08_EKDL210007862-1a-AK16177-AK16178_HLNT5DSX2_L2"
+    [14] "TRAL_10_EKDL210007862-1a-AK16209-AK16210_HLNT5DSX2_L2"
 
 
