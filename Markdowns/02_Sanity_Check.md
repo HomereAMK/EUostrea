@@ -1,4 +1,6 @@
->SanityCheck with replicates and all the bams, require a new angsd job that will run only on the 1st chromosome with the replicates
+## SanityCheck with replicates and all the bams, require a new angsd job that will run only on the 1st chromosome with the replicates 
+
+
     #angsd
     module load tools computerome_utils/2.0
     module load htslib/1.16
@@ -35,9 +37,18 @@ SNPs |  Number of sites with at least one individual with missing data | Number 
 --- | --- | --- |
 1159625 | 1159625 | 10654 |
 
-> Missing Data on the Variant Calling Sanity Check chr 1
 
-#Get the label list from the bam list
-awk '{split($0,a,"/"); print a[9]}' $BAMLIST | awk '{split($0,b,"_"); print b[1]"_"b[2]}' > /home/projects/dp_00007/people/hmon/Flat_oysters/01_infofiles/Bam_list_13dec21.labels
+## Missing Data on the Variant Calling Sanity Check chr 1
+    #Get the annotation file 
+    cat $BASEDIR/01_infofiles/bamlist_EUostrea_replicates.labels  | awk '{split($0,a,"_"); print $1"\t"a[1]}' > $BASEDIR/01_infofiles/bamlist_EUostrea_replicates.annot
 
-    zcat SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.counts.gz | tail -n +2 | gawk ' {for (i=1;i<=NF;i++){a[i]+=$i;++count[i]}} END{ for(i=1;i<=NF;i++){print a[i]/count[i]}}' | paste /home/projects/dp_00007/people/hmon/Flat_oysters/01_infofiles/Bam_list_13dec21.labels - > /home/projects/dp_00007/people/hmon/Flat_oysters/02_ngsLDOutput/Dataset_I/Leona20dec21_SNPs_11jan22.GL-RealCoverage.txt
+    #Gets Real Coverage (Genotype Likelihoods):
+    zcat $OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.counts.gz | tail -n +2 | gawk ' {for (i=1;i<=NF;i++){a[i]+=$i;++count[i]}} END{ for(i=1;i<=NF;i++){print a[i]/count[i]}}' | paste $BASEDIR/01_infofiles/bamlist_EUostrea_replicates.labels - > $OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.GL-RealCoverage.txt
+
+    #Gets Missing Data (Genotype Likelihoods):
+    N_SITES=`zcat /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/SanityCheck/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.beagle.gz | tail -n +2 | wc -l`
+
+    zcat $OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.beagle.gz | tail -n +2 | perl /home/projects/dp_00007/apps/Scripts/call_geno.pl --skip 3 | cut -f 4- | awk '{ for(i=1;i<=NF; i++){ if($i==-1)x[i]++} } END{ for(i=1;i<=NF; i++) print i"\t"x[i] }' | paste $BASEDIR/01_infofiles/bamlist_EUostrea_replicates.labels - | awk -v N_SITESawk="$N_SITES" '{print $1"\t"$3"\t"$3*100/N_SITESawk}' > /$OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.GL-MissingData.txt
+
+![](https://github.com/HomereAMK/EUostrea/blob/main/Figures/SanityCheck/DendroIbsMat_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf)<!-- -->
+

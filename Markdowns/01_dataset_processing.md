@@ -356,8 +356,7 @@ done```
     module load gcc/10.2.0
     module load intel/perflibs/64/2020_update2
     module load R/4.0.0
-</details>
-
+    
 ``` r
     #Clean space
     rm(list=ls())
