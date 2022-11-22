@@ -1,10 +1,9 @@
 DATASET PROCESSING
 ================
 
-- [DATASET PROCESSING](#dataset-processing)
-  - [Downsize MORL and USAM fastq files.](#downsize-morl-and-usam-fastq-files)
+- [Downsize MORL and USAM fastq files.](#downsize-morl-and-usam-fastq-files)
     - [With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.](#with-bbmap-samplerate02-randomly-output-only-this-fraction-of-reads-1-means-sampling-is-disabled)
-  - [Fastq + Bam stats](#fastq--bam-stats)
+- [Fastq + Bam stats](#fastq--bam-stats)
 
 
 ## Downsize MORL and USAM fastq files.
