@@ -50,7 +50,8 @@ SNPs |  Number of sites with at least one individual with missing data | Number 
 
     zcat $OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.beagle.gz | tail -n +2 | perl /home/projects/dp_00007/apps/Scripts/call_geno.pl --skip 3 | cut -f 4- | awk '{ for(i=1;i<=NF; i++){ if($i==-1)x[i]++} } END{ for(i=1;i<=NF; i++) print i"\t"x[i] }' | paste $BASEDIR/01_infofiles/bamlist_EUostrea_replicates.labels - | awk -v N_SITESawk="$N_SITES" '{print $1"\t"$3"\t"$3*100/N_SITESawk}' > /$OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.GL-MissingData.txt
 
-![PCA](https://github.com/HomereAMK/EUostrea/blob/main/Figures/SanityCheck/MissingPCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf)
+![PCA](https://github.com/HomereAMK/EUostrea/blob/main/Figures/SanityCheck/MissingPCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf)<!-- -->
+
 
 
 ## Observation on the Sanity Check
@@ -76,5 +77,7 @@ SNPs |  Number of sites with at least one individual with missing data | Number 
     [12] "ORIS_03_EKDL210009122-1a-AK18657-AK31242_HTVH3DSX2_L3"
     [13] "TRAL_08_EKDL210007862-1a-AK16177-AK16178_HLNT5DSX2_L2"
     [14] "TRAL_10_EKDL210007862-1a-AK16209-AK16210_HLNT5DSX2_L2"
+
+![Prop_Genome_covered](https://github.com/HomereAMK/EUostrea/blob/main/Figures/Depth/tmp_Gcov_nov22.pdf)<!-- -->
 
 
