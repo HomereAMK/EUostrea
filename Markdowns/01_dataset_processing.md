@@ -4,9 +4,7 @@ DATASET PROCESSING
 - [DATASET PROCESSING](#dataset-processing)
   - [Downsize MORL and USAM fastq files.](#downsize-morl-and-usam-fastq-files)
     - [With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.](#with-bbmap-samplerate02-randomly-output-only-this-fraction-of-reads-1-means-sampling-is-disabled)
-  - [Processing USAM MORL fastq](#processing-usam-morl-fastq)
   - [Fastq + Bam stats](#fastq--bam-stats)
-  - [Depth plots](#depth-plots)
 
 
 ## Downsize MORL and USAM fastq files.
@@ -17,9 +15,10 @@ DATASET PROCESSING
 ### With BBMAP: samplerate=0.2 Randomly output only this fraction of reads; 1 means sampling is disabled.
     DIRFQ=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
 
- <details>
+<details>
 <summary> FOR USAM population </summary>
-```  for POP in USA
+```bash
+for POP in USA
     do
         for IND in `echo -n 1 2 3 4 5 6 7 8 9` 
         do
@@ -34,8 +33,7 @@ DATASET PROCESSING
             done
         done
     done
-```
-    for POP in USA
+for POP in USA
     do
         for IND in `echo -n 10 11 12 13 14 15 16 17 18 19` 
         do
@@ -50,27 +48,30 @@ DATASET PROCESSING
             done
         done
     done
+```
 </details>
 
 <details>
-<summary> FOR MORL population </summary>    
-    for POP in MLX
+<summary> FOR MORL population </summary>   
+```bash
+for POP in MLX
+do
+    for IND in `echo -n 1 2 4 6 7 8 9`
     do
-        for IND in `echo -n 1 2 4 6 7 8 9` 
+        for NUM in `echo -n 101 113 126 127 128 129 140 149 161 162 163 165 174 175 176 188 189`
         do
-            for NUM in `echo -n 101 113 126 127 128 129 140 149 161 162 163 165 174 175 176 188 189`
-            do
-            reformat.sh \
-            in1=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R1.fastq.gz \
-            in2=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R2.fastq.gz \
-            out1=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_1.fq.gz \
-            out2=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_2.fq.gz \
-            samplerate=0.2
-            done
+        reformat.sh \
+        in1=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R1.fastq.gz \
+        in2=$DIRFQ/NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}.${POP}${IND}_R2.fastq.gz \
+        out1=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_1.fq.gz \
+        out2=$DIRFQ/MORL_0${IND}_NS.1445.002.IDT_i7_${NUM}---IDT_i5_${NUM}_DS0.2_2.fq.gz \
+        samplerate=0.2
         done
     done
-
-    for POP in MLX
+done
+```
+```
+for POP in MLX
     do
         for IND in `echo -n 10 11 12 13 14 15 16 17 18 19` 
         do
@@ -84,7 +85,7 @@ DATASET PROCESSING
             samplerate=0.2
             done
         done
-    done
+    done```
 </details>
 
 
@@ -93,7 +94,8 @@ DATASET PROCESSING
 
 <summary> click for preprocess code </summary>
 
-```#!/bin/bash
+```bash 
+!/bin/bash
 #PBS -d /home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
 #PBS -W group_list=dp_00007
 #PBS -A dp_00007
@@ -235,72 +237,73 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
 
 ## Fastq + Bam stats
 <details>
-<summary> Counts for USAM and MORL downsized </summary>    
-    #Module 
-    module load tools
-    module load ngs
-    module load samtools/1.14
+<summary> Counts for USAM and MORL downsized </summary>
+```bash 
+#Module 
+module load tools
+module load ngs
+module load samtools/1.14
 
-    #Global variables
-    base=__BASE__
-    DIR=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
-    #raw reads
-    a=`zcat $DIR/"$base"_1.fq.gz  | wc -l | awk '{print $1/4}'` #raw read forward
-    b=`zcat $DIR/"$base"_2.fq.gz | wc -l | awk '{print $1/4}'` #raw read reverse
-    echo $(( $a + $b )) > downS_depth/"$base".count_fastq_1.tmp
-    #raw bases
-    c=`zcat $DIR/"$base"_1.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
-    d=`zcat $DIR/"$base"_2.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m`
-    echo $(( $c + $d )) > $DIR/downS_depth/"$base".count_fastq_2.tmp
+#Global variables
+base=__BASE__
+DIR=/home/projects/dp_00007/people/hmon/Novaseq_MLX_USA
+#raw reads
+a=`zcat $DIR/"$base"_1.fq.gz  | wc -l | awk '{print $1/4}'` #raw read forward
+b=`zcat $DIR/"$base"_2.fq.gz | wc -l | awk '{print $1/4}'` #raw read reverse
+echo $(( $a + $b )) > downS_depth/"$base".count_fastq_1.tmp
+#raw bases
+c=`zcat $DIR/"$base"_1.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
+d=`zcat $DIR/"$base"_2.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m`
+echo $(( $c + $d )) > $DIR/downS_depth/"$base".count_fastq_2.tmp
 
-    trim bases
-    e=`zcat $DIR/"$base"_1.paired.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
-    f=`zcat $DIR/"$base"_2.paired.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
-    echo $(( $e + $f )) > $DIR/downS_depth/"$base".count_fastq_3.tmp 
+trim bases
+e=`zcat $DIR/"$base"_1.paired.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
+f=`zcat $DIR/"$base"_2.paired.fq.gz | awk 'NR%4==2' | tr -d "\n" | wc -m` 
+echo $(( $e + $f )) > $DIR/downS_depth/"$base".count_fastq_3.tmp 
 
-    #mapped bases
-    samtools stats $DIR/"$base".sort.minq20.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2 > $DIR/downS_depth/"$base".count_bam_1.tmp
+#mapped bases
+samtools stats $DIR/"$base".sort.minq20.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2 > $DIR/downS_depth/"$base".count_bam_1.tmp
     
-    #deduplicate mapped bases
-    samtools stats $DIR/"$base".nocig.dedup_clipoverlap.minq20.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2  > $DIR/downS_depth/"$base".count_bam_2.tmp
+#deduplicate mapped bases
+samtools stats $DIR/"$base".nocig.dedup_clipoverlap.minq20.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2  > $DIR/downS_depth/"$base".count_bam_2.tmp
 
-    #realigned around indels mapped bases
-    samtools stats $DIR/"$base".nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2  > $DIR/downS_depth/"$base".count_bam_3.tmp
-    #population tag
-    
-    echo Novaseq_MLX_USA/"$base"_1.fq.gz |awk '{split($0,a,"_"); print a[2]}' | awk '{split($0,a,"/"); print a[2]}' > $DIR/downS_depth/"$base".count_pop_1.tmp
+#realigned around indels mapped bases
+samtools stats $DIR/"$base".nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam -@ 12 | grep ^SN | cut -f 2- | grep "^bases mapped (cigar)" | cut -f 2  > $DIR/downS_depth/"$base".count_bam_3.tmp
+#population tag    
+echo Novaseq_MLX_USA/"$base"_1.fq.gz |awk '{split($0,a,"_"); print a[2]}' | awk '{split($0,a,"/"); print a[2]}' > $DIR/downS_depth/"$base".count_pop_1.tmp
 
-    RAWREADS=`cat $DIR/downS_depth/"$base".count_fastq_1.tmp`
-    RAWBASES=`cat $DIR/downS_depth/"$base".count_fastq_2.tmp`
-    ADPTERCLIPBASES=`cat $DIR/downS_depth/"$base".count_fastq_3.tmp`
-    MAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_1.tmp`
-    DEDUPMAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_2.tmp`
-    REALIGNEDMAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_3.tmp`
-    POP=`cat $DIR/downS_depth/"$base".count_pop_1.tmp`
+RAWREADS=`cat $DIR/downS_depth/"$base".count_fastq_1.tmp`
+RAWBASES=`cat $DIR/downS_depth/"$base".count_fastq_2.tmp`
+ADPTERCLIPBASES=`cat $DIR/downS_depth/"$base".count_fastq_3.tmp`
+MAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_1.tmp`
+DEDUPMAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_2.tmp`
+REALIGNEDMAPPEDBASES=`cat $DIR/downS_depth/"$base".count_bam_3.tmp`
+POP=`cat $DIR/downS_depth/"$base".count_pop_1.tmp`
 
-    printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" $base $POP $RAWREADS $RAWBASES $ADPTERCLIPBASES $MAPPEDBASES $DEDUPMAPPEDBASES $REALIGNEDMAPPEDBASES >> $DIR/downS_depth/Summary_DS_USAMMORL_lcWGS_14nov22.txt
+printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" $base $POP $RAWREADS $RAWBASES $ADPTERCLIPBASES $MAPPEDBASES $DEDUPMAPPEDBASES $REALIGNEDMAPPEDBASES >> $DIR/downS_depth/Summary_DS_USAMMORL_lcWGS_14nov22.txt``` 
+
 </details>
 
 <details>
-<summary> Depth stats</summary>        
-    #!/bin/bash
-    WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
-    BAMDIR=/home/projects/dp_00007/people/hmon/Bamfile_EUostrea
-    # Clean session
-    cd $WORKDIR
-    rm 00_scripts/Utility_scripts/DEPTH*sh
-
-    # launch scripts for c2 screen
-    cd $BAMDIR
-    for file in $(ls *.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
+<summary> Depth stats</summary> 
+```bash 
+#!/bin/bash
+WORKDIR=/home/projects/dp_00007/people/hmon/EUostrea
+BAMDIR=/home/projects/dp_00007/people/hmon/Bamfile_EUostrea
+#Clean session
+cd $WORKDIR
+rm 00_scripts/Utility_scripts/DEPTH*sh
+#launch scripts for c2 screen
+cd $BAMDIR
+for file in $(ls *.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
     do
-        cd $WORKDIR
-        base=$(basename "$file")
-        toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
+    cd $WORKDIR
+    base=$(basename "$file")
+    toEval="cat 00_scripts/Utility_scripts/Samtools_depth.sh | sed 's/__BASE__/$base/g'"; eval $toEval > $WORKDIR/00_scripts/Utility_scripts/DEPTH_$base.sh
     done
 
-    # launch scripts for c2 screen USAM and MORL 
-    cd /home/projects/dp_00007/people/hmon/Novaseq_MLX_USA/
+#launch scripts for c2 screen USAM and MORL 
+cd /home/projects/dp_00007/people/hmon/Novaseq_MLX_USA/
     rm DEPTH*sh
     for file in $(ls *nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam |sed -e 's/.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam//g'|sort -u)  #only the nocig retry
     do
@@ -309,7 +312,7 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
     done
 
     #Submit jobs
-    for i in $(ls DEPTH*sh); do qsub $i; done
+    for i in $(ls DEPTH*sh); do qsub $i; done```
 </details>
 
 ## Depth plots
@@ -348,8 +351,9 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
     module load gcc/10.2.0
     module load intel/perflibs/64/2020_update2
     module load R/4.0.0
+</details>
 
-    R
+``` r
     #Clean space
     rm(list=ls())
     #
@@ -363,7 +367,7 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
 
 
     basedir <- "/home/projects/dp_00007/people/hmon/EUostrea" # Make sure to edit this to match your $BASEDIR
-    bam_list <- read_lines(paste0(basedir, "/01_infofiles/list.PONT.depth"))
+    bam_list <- read_lines(paste0(basedir, "/01_infofiles/list.WADD.depth"))
 
         for (i in 1:length(bam_list)){
 
@@ -390,12 +394,11 @@ java -jar /services/tools/gatk/3.8-0/GenomeAnalysisTK.jar \
         }
         }
         print(output)
-        write_csv(output, path="/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/output.PONT.csv")  #change path
+        write_csv(output, path="/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/output.WADD.csv")  #change path
         output2 <- output %>%
         mutate(across(where(is.numeric), round, 3))%>% 
-        write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.PONT.csv")
-    
-    #Clean space
-    rm(list=ls())
+        write_csv(output2, file = "/home/projects/dp_00007/people/hmon/EUostrea/02_data/Depth/samplespe_per_base_depth_presenceData.WADD.csv")
+```
+
 
 
