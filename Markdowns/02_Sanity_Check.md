@@ -57,15 +57,15 @@ SNPs |  Number of sites with at least one individual with missing data | Number 
 ## Observation on the Sanity Check
 ### Oysters that need to be removed for multiple renaming 
 
-    [1] MOLU_03_EKDL200012859-1a-AK11160-AK9453_HNLVYDSXY_L1
-    [2] NISS_49_a_EKDL200012859-1a-AK11615-AK16297_HNLVYDSXY_L1
-
+    [1] MOLU_03_EKDL200012859-1a-AK11160-AK9453_HNLVYDSXY_L1 
+    [2] NISS_49_a_EKDL200012859-1a-AK11615-AK16297_HNLVYDSXY_L1 
+:handshake:
 ### Oysters that need to be removed for low depth
     
     #Here we arbitrarly decided to removed every oysters with a proportion of the genome covered lower than 30%
     [1] "BUNN_13_EKDL210007863-1a-AK19072-AK23726_HLNT5DSX2_L2"
-    [2] "CLEW_07_EKDL210007862-1a-AK16191-AK16192_HLNT5DSX2_L2"
-    [3] "CLEW_08_EKDL210007862-1a-AK16207-AK16208_HLNT5DSX2_L2"
+    [2] "CLEW_07_EKDL210007862-1a-AK16191-AK16192_HLNT5DSX2_L2" 
+    [3] "CLEW_08_EKDL210007862-1a-AK16207-AK16208_HLNT5DSX2_L2" -> not removed because small sample size for this pop
     [4] "CRES_12_EKDL210009123-1a-AK19017-AK23748_HTVH3DSX2_L3"
     [5] "CRES_15_EKDL210004788-1a-AK11674-AK2690_HHJYYDSX2_L1" 
     [6] "DOLV_18_EKDL210009122-1a-AK31173-AK31174_HTVH3DSX2_L3"
@@ -77,7 +77,8 @@ SNPs |  Number of sites with at least one individual with missing data | Number 
     [12] "ORIS_03_EKDL210009122-1a-AK18657-AK31242_HTVH3DSX2_L3"
     [13] "TRAL_08_EKDL210007862-1a-AK16177-AK16178_HLNT5DSX2_L2"
     [14] "TRAL_10_EKDL210007862-1a-AK16209-AK16210_HLNT5DSX2_L2"
+:handshake:
 
 ![Prop_Genome_covered](https://github.com/HomereAMK/EUostrea/blob/main/Figures/Depth/tmp_Gcov_nov22.pdf)<!-- -->
 
-
+The final Bamlist is bamlistEUostrea.txt with 581 oysters
