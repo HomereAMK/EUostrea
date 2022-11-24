@@ -58,3 +58,8 @@ tmp_Gcov <-ggplot(df, aes(x=pop, y=proportion_of_reference_covered , color=pop))
 last_plot()
 # Saves the final plot ~
 ggsave(tmp_Gcov, file = "~/Desktop/Scripts/EUostrea/Figures/Depth/tmp_Gcov_nov22.pdf", device = cairo_pdf, width = 16, height = 8, dpi = 300)
+
+
+#cut off
+lowdepth <- df %>% filter(proportion_of_reference_covered < 0.3)
+lowdepth$bamfile

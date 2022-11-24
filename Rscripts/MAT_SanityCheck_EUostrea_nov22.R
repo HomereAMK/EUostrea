@@ -137,6 +137,7 @@ SC_chr1__MissData <-ggplot(fulldf, aes_string(x = "PCA_1", y = "PCA_2", fill = "
   guides(fill = guide_legend(title = "Population", title.theme = element_text(size = 15, face = "bold"),
                              label.theme = element_text(size = 14)))
 ggsave(SC_chr1__MissData, file = "~/Desktop/Scripts/EUostrea/Figures/SanityCheck/MissingPCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+ggsave(SC_chr1__MissData, file = "~/Desktop/Scripts/EUostrea/Figures/SanityCheck/MissingPCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.png",  dpi = 300)
 dev.off()
 
 
