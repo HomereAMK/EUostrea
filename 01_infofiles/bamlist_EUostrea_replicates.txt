@@ -627,4 +627,4 @@
 /home/projects/dp_00007/people/hmon/Shucking/06_realigned/HAVS_05_EKDL210009123-1a-AK19121-AK23778_HTVH3DSX2_L3.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
 /home/projects/dp_00007/people/hmon/Shucking/06_realigned/HAUG_15_a_EKDL200012859-1a-AK11615-AK16297_HNLVYDSXY_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
 /home/projects/dp_00007/people/hmon/Shucking/06_realigned/HAVS_05_a_EKDL200012859-1a-AK11160-AK9453_HNLVYDSXY_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
-/home/projects/dp_00007/people/hmon/Shucking/06_realigned/06_realigned/MOLU_03_EKDL200012859-1a-AK11200-AK15590_HNLVYDSXY_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
+/home/projects/dp_00007/people/hmon/Shucking/06_realigned/MOLU_03_EKDL200012859-1a-AK11200-AK15590_HNLVYDSXY_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
