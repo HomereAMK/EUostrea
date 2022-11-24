@@ -289,6 +289,7 @@
 /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/LOGS_19_EKDL210007862-1a-AK19222-AK19679_HLNT5DSX2_L2.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
 /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/MOLU_01_EKDL210004788-1a-AK717-5UDI1548_HHJYYDSX2_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
 /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/MOLU_02_EKDL210004788-1a-AK12626-AK16295_HHJYYDSX2_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
+/home/projects/dp_00007/people/hmon/Shucking/06_realigned/06_realigned/MOLU_03_EKDL200012859-1a-AK11200-AK15590_HNLVYDSXY_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
 /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/MOLU_04_EKDL210004788-1a-AK11714-AK16250_HHJYYDSX2_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
 /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/MOLU_05_EKDL210005548-1a-AK11528-AK14283_HHJKNDSX2_L4.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam
 /home/projects/dp_00007/people/hmon/Bamfile_EUostrea/MOLU_06_EKDL200012859-1a-AK11449-AK16245_HNLVYDSXY_L1.nocig.dedup_clipoverlap.minq20_minq20.nocig.realigned.bam

@@ -1,7 +1,7 @@
 Best Practices to Set up the Ansgd filters for Variant calling and more
-(This markdown has been written by Nicolas Lou with minor modifications from me)
+(This markdown has been written by R. Nicolas Lou with minor modifications from me)
 ================
-
+-   [Genome statistics](#genome-statistics)
 -   [Establish SNP calling filters](#establish-snp-calling-filters)
 -   [Reference bias filtering](#reference-bias-filtering)
 -   [SNP calling](#snp-calling)
@@ -21,6 +21,30 @@ library(knitr)
 library(ade4)
 ```
 
+## Genome statistics 
+Loads modules:
+```
+module load samtools/1.14
+module load gcc/11.1.0
+module load intel/perflibs/2020_update4E
+module load R/4.2.0
+module load ngsadmix/32
+```
+Counts the number of base pairs in a genome:
+```
+REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
+samtools faidx $REF
+```
+Gets a CHRs-Scaffolds list:
+```
+cat $REF.fai | awk '{sum+=($2)} END {print "Total: " sum}'
+grep "scaffold" $REF.fai | awk '{sum+=($2)} END {print "CHRs: " sum}'
+grep -v "scaffold" $REF.fai | awk '{sum+=($2)} END {print "Scaffolds: " sum}'
+```
+| --- | # of Scaffolds | # of bases  | % of genome |
+| :---: | :---: | :---: | :---: |
+| CHRs | 10 | 858073199 | 100% |
+
 ## Establish SNP calling filters
 
 #### Count read depth per position
@@ -30,7 +54,7 @@ We use `ANGSD -doDepth 1`. More filters can be used with this method, including 
 ``` bash
 #angsd
 module load tools computerome_utils/2.0
-module load htslib/1.16
+module load htslib/1.13
 module load bedtools/2.30.0
 module load pigz/2.3.4
 module load parallel/20210722
@@ -46,7 +70,7 @@ angsd \
 -ref $REF \
 -out $OUTPUTFOLDER/Nlou_filtered_minq20_minmapq20 \
 -GL 1 -doMajorMinor 1 -doMaf 1 \
--doDepth 1 -doCounts 1 -maxDepth 2000 -dumpCounts 1 \
+-doDepth 1 -doCounts 1 -maxDepth 6000 -dumpCounts 1 \
 -minMapQ 20 -minQ 20 \
 -remove_bads 1 -only_proper_pairs 1 \
 -nThreads 40
@@ -59,11 +83,18 @@ depth_hist_angsd <- read_lines("../../Nlou_filtered_minq20_minmapq20.depthGlobal
   .[[1]] %>%
   .[1:2001] %>%
   as.integer() %>%
-  tibble(depth=0:2000, count=., method="angsd")
+  tibble(depth=0:6000, count=., method="angsd")
 
-histo_distrib_<- depth_hist_angsd %>%
-  filter(depth>0, depth<1000) %>%
+histo_distrib_1<- depth_hist_angsd %>%
+  filter(depth>0, depth<6000) %>%
   ggplot(aes(x=depth, y=count, color=method)) +
   geom_freqpoly(stat = "identity") +
   theme_cowplot()
+
+histo_distrib_2<- depth_hist_angsd %>%
+  filter(depth>0, depth<2000) %>%
+  ggplot(aes(x=depth, y=count, color=method)) +
+  geom_freqpoly(stat = "identity") +
+  theme_cowplot()
+
 ```

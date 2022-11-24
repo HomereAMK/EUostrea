@@ -149,7 +149,6 @@ module load samtools/1.12
 #Global variables
 GENOME="/home/projects/dp_00007/people/hmon/Shucking/01_infofiles/fileOegenome10scaffoldC3G.fasta"
 NCPU=8
-base=__BASE__
 
 #Align reads
     echo "Aligning $base"
