@@ -23,7 +23,7 @@ Parameter | Meaning |
 -setMaxDepth 20.000 | maximum total site depth is 20.000|
 
     angsd \
-    -b $BAMLIST -ref $REF -out $OUTPUTFOLDER/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22 \
+    -b $BAMLIST -ref $REF -out $OUTPUTFOLDER/Corr_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22 \
     -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 \
     -minMapQ 20 -minQ 20 -minInd $((N_IND*1/4)) -setMinDepthInd 1 -setMinDepth 7 -setMaxDepth 20000 \
     -doCounts 1 -dumpCounts 2 \

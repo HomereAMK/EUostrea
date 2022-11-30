@@ -1,14 +1,11 @@
 Best Practices to Set up the Ansgd filters for Variant calling and more
 (This markdown has been written by R. Nicolas Lou with minor modifications from me)
 ================
--   [Genome statistics](#genome-statistics)
--   [Establish SNP calling filters](#establish-snp-calling-filters)
--   [Reference bias filtering](#reference-bias-filtering)
--   [SNP calling](#snp-calling)
--   [Generate a bamlist for each population](#generate-a-bamlist-for-each-population)
--   [Get minor allele frequencies per population](#get-minor-allele-frequencies-per-population)
--   [Estimate Fst in each pair of populations](#estimate-fst-in-each-pair-of-populations)
--   [Get “effective sample size” per sample per site](#get-effective-sample-size-per-sample-per-site)
+- [(This markdown has been written by R. Nicolas Lou with minor modifications from me)](#this-markdown-has-been-written-by-r-nicolas-lou-with-minor-modifications-from-me)
+  - [Genome statistics](#genome-statistics)
+  - [Establish SNP calling filters](#establish-snp-calling-filters)
+      - [Count read depth per position](#count-read-depth-per-position)
+  - [SNP variant calling](#snp-variant-calling)
 
 
 ``` r
@@ -54,11 +51,11 @@ We use `ANGSD -doDepth 1`. More filters can be used with this method, including 
 ``` bash
 #angsd
 module load tools computerome_utils/2.0
-module load htslib/1.13
+#module load htslib/1.9
 module load bedtools/2.30.0
 module load pigz/2.3.4
 module load parallel/20210722
-module load angsd/0.937
+#module load angsd/0.929
 #variables
 REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
 BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
@@ -68,7 +65,7 @@ OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/SetAngsdFi
 angsd \
 -bam $BAMLIST \
 -ref $REF \
--out $OUTPUTFOLDER/Nlou_filtered_minq20_minmapq20 \
+-out $OUTPUTFOLDER/Nlou_filtered_minq20_minmapq20_angsd0.929_htslib1.9 \
 -GL 1 -doMajorMinor 1 -doMaf 1 \
 -doDepth 1 -doCounts 1 -maxDepth 6000 -dumpCounts 1 \
 -minMapQ 20 -minQ 20 \
@@ -77,24 +74,35 @@ angsd \
 ```
 
 
-``` r
-depth_hist_angsd <- read_lines("../../Nlou_filtered_minq20_minmapq20.depthGlobal") %>%
-  str_split(pattern = "\t") %>%
-  .[[1]] %>%
-  .[1:2001] %>%
-  as.integer() %>%
-  tibble(depth=0:6000, count=., method="angsd")
+## SNP variant calling
+```
+#angsd
+module load tools computerome_utils/2.0
+module load htslib/1.16
+module load bedtools/2.30.0
+module load pigz/2.3.4
+module load parallel/20210722
+#module load angsd/0.937
 
-histo_distrib_1<- depth_hist_angsd %>%
-  filter(depth>0, depth<6000) %>%
-  ggplot(aes(x=depth, y=count, color=method)) +
-  geom_freqpoly(stat = "identity") +
-  theme_cowplot()
-
-histo_distrib_2<- depth_hist_angsd %>%
-  filter(depth>0, depth<2000) %>%
-  ggplot(aes(x=depth, y=count, color=method)) +
-  geom_freqpoly(stat = "identity") +
-  theme_cowplot()
+#variables
+REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
+BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
+BASEDIR=/home/projects/dp_00007/people/hmon/EUostrea
+OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/VariantCalling
+N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt | wc -l`
 
 ```
+
+
+angsd \
+-bam $BAMLIST \
+-ref $REF \
+-out $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20minInd_setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
+-uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+-minMapQ 20 -minQ 20 -minInd $((N_IND*1/4)) -setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
+-doCounts 1 -dumpCounts 2 \
+-GL 1 -doGlf 2 \
+-doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+-doIBS 1 -doCov 1 -makeMatrix 1 \
+-nThreads 40 \
+
