@@ -6,6 +6,10 @@ Best Practices to Set up the Ansgd filters for Variant calling and more
   - [Establish SNP calling filters](#establish-snp-calling-filters)
       - [Count read depth per position](#count-read-depth-per-position)
   - [SNP variant calling](#snp-variant-calling)
+- [Trial dataset](#trial-dataset)
+- [Shuffle the IDs in the file](#shuffle-the-ids-in-the-file)
+- [Select the first 30 shuffled IDs](#select-the-first-30-shuffled-ids)
+- [Run Angsd with the trial](#run-angsd-with-the-trial)
 
 
 ``` r
@@ -82,7 +86,7 @@ module load htslib/1.16
 module load bedtools/2.30.0
 module load pigz/2.3.4
 module load parallel/20210722
-#module load angsd/0.937
+module load angsd/0.940
 
 #variables
 REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
@@ -93,16 +97,50 @@ N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUo
 
 ```
 
-
+```
 angsd \
 -bam $BAMLIST \
 -ref $REF \
--out $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20minInd_setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
+-out $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200 \
 -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
 -minMapQ 20 -minQ 20 -minInd $((N_IND*1/4)) -setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
 -doCounts 1 -dumpCounts 2 \
 -GL 1 -doGlf 2 \
 -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
 -doIBS 1 -doCov 1 -makeMatrix 1 \
--nThreads 40 \
+-nThreads 40
+````
+        -> Total number of sites analyzed: 840354420
+        -> Number of sites retained after filtering: 32477
+        [ALL done] cpu-time used =  698796.44 sec
+        [ALL done] walltime used =  568548.00 sec
 
+```
+```
+#Get the annotation file 
+cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.2.labels | awk '{split($0,a,"_"); print $1"\t"a[1]}' > /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.annot
+```
+
+# Trial dataset
+# Shuffle the IDs in the file
+  sort -R 01_infofiles/bamlist_EUostrea.txt > 01_infofiles/bamlist_EUostreashuffled_ids.txt
+# Select the first 30 shuffled IDs
+  head -n 30 01_infofiles/bamlist_EUostreashuffled_ids.txt > 01_infofiles/Trialselected_ids_EUostrea.txt
+# Run Angsd with the trial
+#variables
+  REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
+  BAMLIST2=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Trialselected_ids_EUostrea.txt
+  OUTPUTFOLDER2=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Trial
+  N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt | wc -l`
+
+  angsd \
+  -bam $BAMLIST2 \
+  -ref $REF \
+  -out $OUTPUTFOLDER2/Trial0.940_minMapQ20minQ20_minInd25perc_setMinDepthInd5_setMinDepth600setMaxDepth1200 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -minInd $((N_IND*1/4)) -setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40

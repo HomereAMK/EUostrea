@@ -46,7 +46,7 @@ CHRs=("scaffold1" "scaffold2" "scaffold3" "scaffold4" "scaffold5" "scaffold6" "s
 ```
 for query in ${CHRs[*]}
     do
-    zcat $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.gz | grep "${query}" | pigz -p 40 > $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.${query}.gz
+    zcat $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.gz | grep "${query}" | pigz -p 40 > $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD."${query}".gz
 done
 ```
 
