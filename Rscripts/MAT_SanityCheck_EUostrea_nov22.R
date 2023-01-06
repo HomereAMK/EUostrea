@@ -66,22 +66,8 @@ cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/PCA/SanityCheck_chr1_EUo
 #MissingData <- read.table("Data/PCA/SanityCheck_chr1_EUostrea/SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.GL-MissingData.txt", sep = "\t", header = FALSE)
 colnames(MissingData) <- c("Sample_ID", "NumberMissing", "PercentageMissing")
 source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam.R")
-# # Reorders Population ~
-# annot$V2 <- factor(annot$V2, ordered = T,
-#                    levels = c("MOLU", "ZECE", "CRES",
-#                               "ORIS","CORS", "PONT",  "RIAE",
-#                               "MORL",
-#                               "USAM",
-#                               "TOLL", "COLN", "BARR", 
-#                               "TRAL", "CLEW",
-#                               "RYAN",
-#                               "GREV", "WADD", 
-#                               "NISS","LOGS","VENO", "HALS", "THIS",
-#                                "KALV", "HYPP", "HAVS",
-#                               "LANG", "BUNN", "DOLV", "HAUG", "HAFR",  
-#                               "INNE","VAGS", "AGAB", "OSTR"))
 # Reorders Population ~
-pops <- factor(pops, ordered = T,
+annot$V2 <- factor(annot$V2, ordered = T,
                    levels = c("MOLU", "ZECE", "CRES",
                               "ORIS","CORS", "PONT",  "RIAE",
                               "MORL",
@@ -94,9 +80,8 @@ pops <- factor(pops, ordered = T,
                                "KALV", "HYPP", "HAVS",
                               "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
                               "INNE","VAGS", "AGAB", "OSTR"))
-
 #Plot genome-wide PCA with the covMat matrix
-SC_chr1_pca <- PCA(cov_mat, indivi, pops, 1, 2, show.ellipse = F)
+PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
 ggsave(SC_chr1_pca, file = "~/Desktop/Scripts/EUostrea/Figures/SanityCheck/Corr_PCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 dev.off()
 
@@ -188,3 +173,54 @@ ev.off()
 
 
 
+#### Plotting 32.000 snps ####
+cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/PCA/EUostrea/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.covMat")) 
+annot <- read.table("../Scripts/EUostrea/01_infofiles/bamlist_EUostrea.annot", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
+source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam.R")
+# Reorders Population ~
+annot$V2 <- factor(annot$V2, ordered = T,
+                   levels = c("MOLU", "ZECE", "CRES",
+                              "ORIS","CORS", "PONT",  "RIAE",
+                              "MORL",
+                              "USAM",
+                              "TOLL", "COLN", "BARR",
+                              "TRAL", "CLEW",
+                              "RYAN",
+                              "GREV", "WADD",
+                              "NISS","LOGS","VENO", "HALS", "THIS",
+                               "KALV", "HYPP", "HAVS",
+                              "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                              "INNE","VAGS", "AGAB", "OSTR"))
+#Plot genome-wide PCA with the covMat matrix
+PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F, show.label = F)
+ggsave(SC_chr1_pca, file = "~/Desktop/Scripts/EUostrea/Figures/SanityCheck/Corr_PCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+dev.off()
+
+#### Plotting 10M snps ####
+cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/PCA/EUostrea/A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400/A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400.covMat")) 
+annot <- read.table("../Scripts/EUostrea/01_infofiles/bamlist_EUostrea.annot", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
+source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_dec22.R")
+# Reorders Population ~
+annot$V2 <- factor(annot$V2, ordered = T,
+                   levels = c("MOLU", "ZECE", "CRES",
+                              "ORIS","CORS", "PONT",  "RIAE",
+                              "MORL",
+                              "USAM",
+                              "TOLL", "COLN", "BARR",
+                              "TRAL", "CLEW",
+                              "RYAN",
+                              "GREV", "WADD",
+                              "NISS","LOGS","VENO", "HALS", "THIS",
+                              "KALV", "HYPP", "HAVS",
+                              "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                              "INNE","VAGS", "AGAB", "OSTR"))
+#Plot genome-wide PCA with the covMat matrix
+PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F, show.label = F)
+ggsave(SC_chr1_pca, file = "~/Desktop/Scripts/EUostrea/Figures/SanityCheck/Corr_PCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+dev.off()
+
+#Plot genome-wide PCoA with the ibsMat matrix
+ibs_mat <- read_tsv("~/Desktop/Scripts/Data/PCA/EUostrea/A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400/A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400.ibsMat", col_names = F) %>% 
+  dplyr::select(1:nrow(.)) %>%
+  as.matrix()
+PCoA(ibs_mat, annot$V1, annot$V2, 153, 1, 2, show.ellipse = F)

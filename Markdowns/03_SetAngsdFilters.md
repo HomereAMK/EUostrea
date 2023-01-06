@@ -131,16 +131,139 @@ cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.2
   REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
   BAMLIST2=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Trialselected_ids_EUostrea.txt
   OUTPUTFOLDER2=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Trial
-  N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt | wc -l`
+  N_INDtrial=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Trialselected_ids_EUostrea.txt | wc -l`
 
+#with MinInd 25 %
   angsd \
   -bam $BAMLIST2 \
   -ref $REF \
   -out $OUTPUTFOLDER2/Trial0.940_minMapQ20minQ20_minInd25perc_setMinDepthInd5_setMinDepth600setMaxDepth1200 \
   -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
-  -minMapQ 20 -minQ 20 -minInd $((N_IND*1/4)) -setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
+  -minMapQ 20 -minQ 20 -minInd $((N_INDtrial*1/4)) -setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
   -doCounts 1 -dumpCounts 2 \
   -GL 1 -doGlf 2 \
   -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
   -doIBS 1 -doCov 1 -makeMatrix 1 \
   -nThreads 40
+
+ -> Total number of sites analyzed: 820094054
+        -> Number of sites retained after filtering: 1950
+        [ALL done] cpu-time used =  29714.07 sec
+        [ALL done] walltime used =  24434.00 sec
+
+
+#No MinInd 
+  angsd \
+  -bam $BAMLIST2 \
+  -ref $REF \
+  -out $OUTPUTFOLDER2/Trial0.940_minMapQ20minQ20_NOMININD_setMinDepthInd5_setMinDepth600setMaxDepth1200 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -setMinDepthInd 5 -setMinDepth 600 -setMaxDepth 1200 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40
+
+-> Total number of sites analyzed: 820094054
+        -> Number of sites retained after filtering: 1951
+        [ALL done] cpu-time used =  32565.07 sec
+        [ALL done] walltime used =  24339.00 sec
+
+
+
+#No MinInd -setMinDepthInd 1
+  angsd \
+  -bam $BAMLIST2 \
+  -ref $REF \
+  -out $OUTPUTFOLDER2/Trial0.940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth600setMaxDepth1200 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40
+
+  -> Total number of sites analyzed: 820094054
+          -> Number of sites retained after filtering: 2023
+          [ALL done] cpu-time used =  35697.57 sec
+          [ALL done] walltime used =  25491.00 sec
+
+
+#No MinInd -setMinDepthInd 1 -setMinDepth 100 -setMaxDepth 1400
+  angsd \
+  -bam $BAMLIST2 \
+  -ref $REF \
+  -out $OUTPUTFOLDER2/Trial0.940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 100 -setMaxDepth 1400 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40
+
+  -> Total number of sites analyzed: 820094054
+          -> Number of sites retained after filtering: 128911
+          [ALL done] cpu-time used =  35291.36 sec
+          [ALL done] walltime used =  25140.00 sec
+
+
+#No MinInd -setMinDepthInd 1 -setMinDepth 50 -setMaxDepth 1500
+  angsd \
+  -bam $BAMLIST2 \
+  -ref $REF \
+  -out $OUTPUTFOLDER2/Trial0.940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth50setMaxDepth1500 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 50 -setMaxDepth 1500 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40
+
+  -> Total number of sites analyzed: 820094054
+          -> Number of sites retained after filtering: 1.688.950
+          [ALL done] cpu-time used =  46799.90 sec
+          [ALL done] walltime used =  26101.00 sec
+
+
+> set of filter could be :No MinInd -setMinDepthInd 1 -setMinDepth 100 -setMaxDepth 1400
+  angsd \
+  -bam $BAMLIST \
+  -ref $REF \
+  -out $OUTPUTFOLDER/A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 100 -setMaxDepth 1400 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40
+-> Mon Dec 19 08:27:03 2022
+        -> Arguments and parameters for all analysis are located in .arg file
+        -> Total number of sites analyzed: 840354420
+        -> Number of sites retained after filtering: 10371363
+        [ALL done] cpu-time used =  2087031.12 sec
+        [ALL done] walltime used =  749696.00 sec
+
+> No MinInd -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200
+  angsd \
+  -bam $BAMLIST \
+  -ref $REF \
+  -out $OUTPUTFOLDER/Dec22_A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepthInd1_setMinDepth600setMaxDepth1200 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40 \
+  -P 40
+-> Thu Dec 29 11:55:23 2022
+        -> Arguments and parameters for all analysis are located in .arg file
+        -> Total number of sites analyzed: 840354420
+        -> Number of sites retained after filtering: 5.684.643
+        [ALL done] cpu-time used =  1819414.75 sec
+        [ALL done] walltime used =  773262.00 sec

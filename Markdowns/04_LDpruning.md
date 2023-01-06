@@ -1,4 +1,4 @@
-Linkage disequilibrium pruning per chromosome
+Linkage disequilibrium pruning per chromosome TRIAL
 ================
 
 
@@ -14,7 +14,7 @@ module load gcc/11.1.0
 module load intel/perflibs/64/2020_update2
 module load R/4.2.0
 module load parallel/20220422
-Rscript --vanilla --slave ./BSG_Combined--LD_Server.R
+#Rscript --vanilla --slave ./BSG_Combined--LD_Server.R
 ```
 
 ```
@@ -24,68 +24,80 @@ BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostr
 BASEDIR=/home/projects/dp_00007/people/hmon/EUostrea
 OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning
 N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt | wc -l`
+OUTPUTFOLDER2=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Trial
+TRIAL=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/VariantCalling/Dec22_A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepthInd1_setMinDepth600setMaxDepth1200
 ```
 
 
 ##### Gets .pos file:
 ```
-zcat $BASEDIR/VariantCalling/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.mafs.gz | tail -n +2 | cut -f 1,2 > $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.pos
+zcat $TRIAL.mafs.gz | tail -n +2 | cut -f 1,2 > $TRIAL.LD.pos
 ```
-
+🤝
 ##### Run ngsLD (needs to give the number of sites)
 ```
-/home/projects/dp_00007/apps/ngsLD/ngsLD --n_threads 40 --geno $BASEDIR/VariantCalling/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.beagle.gz --probs --n_ind 582 --n_sites xxx --pos  $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.pos --max_kb_dist 100 | pigz -p 40 >  $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.gz
+/home/projects/dp_00007/apps/ngsLD/ngsLD --n_threads 40 --geno $TRIAL.beagle.gz --probs --n_ind 581 --n_sites 5684643 --pos $TRIAL.LD.pos --max_kb_dist 100 | pigz -p 40 >  $TRIAL.max_kb_dist100.LD.gz
 ```
-
+🤝
 ##### Set variables-- the chromosomes
 ```
 CHRs=("scaffold1" "scaffold2" "scaffold3" "scaffold4" "scaffold5" "scaffold6" "scaffold7" "scaffold8" "scaffold9" "scaffold10")
 ```
-
+🤝
 ##### Splits ngsLD file per chromosome:
 ```
 for query in ${CHRs[*]}
     do
-    zcat $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.gz | grep "${query}" | pigz -p 40 > $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD."${query}".gz
+    zcat $TRIAL.max_kb_dist100.LD.gz | grep "${query}" | pigz -p 40 > $TRIAL.max_kb_dist100.LD."${query}".gz
 done
 ```
-
+🤝
 ##### Get the LD files list
 ```
-find $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.*.gz > $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.PerCHR.list
+find $TRIAL.max_kb_dist100.LD.*.gz > $TRIAL.max_kb_dist100.LD.PerCHR.list
 ```
-
+🤝
 ##### LD pruning:
 ```
-parallel --will-cite --dryrun python $BASEDIR/00_scripts/prune_ngsLD.py --input {} --max_dist 100000 --min_weight 0.2 --output  $OUTPUTFOLDER/{/.}.pruneIN --print_excl  $OUTPUTFOLDER/{/.}.pruneOUT :::: $OUTPUTFOLDER/angsd0.937_htslib1.16_minMapQ20minQ20_minInd145.25_setMinDepthInd5_setMinDepth600setMaxDepth1200.LD.PerCHR.list > $OUTPUTFOLDER/RunsLDpruning.txt
+parallel --will-cite --dryrun python $BASEDIR/00_scripts/prune_ngsLD.py --input {} --max_dist 100000 --min_weight 0.2 --output  $OUTPUTFOLDER/{/.}.pruneIN --print_excl  $OUTPUTFOLDER/{/.}.pruneOUT :::: $TRIAL.max_kb_dist100.LD.PerCHR.list > $TRIAL.max_kb_dist100.-min_weight0.2.RunsLDpruning.txt
 ```
-
-```
-for num in `seq 0 10`
-do
-num1=`expr $num + 1`
-# echo $num1
-head -n $num1 $OUTPUTFOLDER/RunsLDpruning.txt | tail -n1 > $OUTPUTFOLDER/SplitLD/RunsLDpruningUp_${num}.sh
-done
-```
-
+🤝
 ```
 for num in `seq 0 10`
 do
-chmod +x $OUTPUTFOLDER/SplitLD/RunsLDpruningUp_${num}.sh
+    num1=`expr $num + 1`
+    # echo $num1
+    head -n $num1 $TRIAL.max_kb_dist100.-min_weight0.2.RunsLDpruning.txt | tail -n1 > $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_${num}.sh
 done
 ```
-
+🤝
+```
+for num in `seq 0 10`
+do
+    chmod +x $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_${num}.sh
+done
+```
+🤝
+##### Run the $TRIAL.SplitLD_RunsLDpruningUp_${num}.sh jobs:
+```
+for job in $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_0.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_1.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_2.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_3.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_4.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_5.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_6.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_7.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_8.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_9.sh $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_10.sh;
+do
+    $job
+done
+```
+```
+$TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_0.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_1.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_2.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_3.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_4.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_5.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_6.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_7.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_8.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_9.sh && $TRIAL.max_kb_dist100.-min_weight0.2.SplitLD_RunsLDpruningUp_10.sh
+```
+🤝
 ##### Merges all pruneIN files:
 ```
-cat /home/projects/dp_00007/people/geopac/Analyses/Turbot/Turbot_LD/BSG_Turbot--AllSamples_Ind30_SNPs.LD.CP*.1.pruneIN > /home/projects/dp_00007/people/geopac/Analyses/Turbot/Turbot_LD/BSG_Turbot--AllSamples_Ind30_SNPs.LD.AllCHRs.pruneIN
+cat /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning/Trial*.pruneIN > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning/Trial.LD.AllCHRs.pruneIN
 ```
+From 128911 sites after LD calculation: 22567 sites
+scp .pruneIN file + mafs.gz file and run the Rscript Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/NIC_FormattingSnpListforAngsd_11jan22.R with it.
+##### Re-run angsd with the produced Pruned SNPs list with no linked SNPs:
 
 
-##### Filters .beagle file based on .pruneIN file:
-````
-zcat /home/projects/dp_00007/people/geopac/Analyses/Turbot/Turbot_ANGSD/BSG_Turbot--AllSamples_Ind30_SNPs.beagle.gz | awk 'NR==FNR{x[$1]++} NR!=FNR && (FNR == 1 || x[$1]){print}' /home/projects/dp_00007/people/geopac/Analyses/Turbot/Turbot_LD/BSG_Turbot--AllSamples_Ind30_SNPs.LD.AllCHRs.pruneIN - | pigz -p 40 > /home/projects/dp_00007/people/geopac/Analyses/Turbot/Turbot_LD/BSG_Turbot--AllSamples_Ind30_SNPs.Pruned.beagle.gz
-````
 
 ##### Gets .pos file:
 ##### Runs ngsLD:
