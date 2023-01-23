@@ -12,7 +12,14 @@ Thetas, Tajima, Neutrality tests estimations from angsd for each populations.
   - [Performs final calculations:](#performs-final-calculations)
   - [Gets thetas per sliding window:](#gets-thetas-per-sliding-window)
   - [Edits thetas per sliding window:](#edits-thetas-per-sliding-window)
-  - [Heterozygosity:](#Heterozygosity)
+  - [Heterozygosity](#heterozygosity)
+- [Runs \_ANGSD with depth filters to get the mafs file](#runs-_angsd-with-depth-filters-to-get-the-mafs-file)
+- [Generates a `.bed` file based on the `.mafs` file:](#generates-a-bed-file-based-on-the-mafs-file)
+- [Creates a position file based on this new `.bed`:](#creates-a-position-file-based-on-this-new-bed)
+- [Indexs the `.pos` file created above:](#indexs-the-pos-file-created-above)
+- [Runs _ANGSD_ under -doSaf::](#runs-angsd-under--dosaf)
+- [Calculates fractions:](#calculates-fractions)
+- [Calculates heterozygosity:](#calculates-heterozygosity)
 
 
 
@@ -25,7 +32,7 @@ module load htslib/1.16
 module load bedtools/2.30.0
 module load pigz/2.3.4
 module load parallel/20220422
-module load angsd/0.937
+module load angsd/0.940
 
 #R
 module load tools computerome_utils/2.0
@@ -56,14 +63,14 @@ done
 for query in ${POP[*]}
     do
         REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
-        /home/projects/dp_00007/apps/Scripts/wrapper_angsd.sh -debug 2 -nThreads 40 -ref $REF -anc $REF -bam /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/EUostrea_${query}-Fst.list -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 120 -GL 1 -doSaf 1 -out /home/projects/dp_00007/data/hmon/angsd_PopGen/Jan23--Unfolded_PopGen_${query}
+        angsd -nThreads 40 -ref $REF -anc $REF -bam /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/EUostrea_${query}-Fst.list -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200 -GL 1 -doSaf 1 -out /home/projects/dp_00007/data/hmon/angsd_PopGen/Jan23--Unfolded_PopGenNIC_${query}
     done
 done
 ```
 for query in ${POP[*]}
     do
         REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
-        /home/projects/dp_00007/apps/Scripts/wrapper_angsd.sh -debug 2 -nThreads 40 -ref $REF -anc $REF -bam /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/EUostrea_${query}-Fst.list -remove_bads 1 -uniqueOnly 1 -baq 1 -C 50 -minMapQ 20 -minQ 20 -minInd $((N_IND*2/3)) -GL 1 -doSaf 1  -out /home/projects/dp_00007/data/hmon/angsd_PopGen/Jan23--Unfolded_PopGenGEO_${query}
+        /home/projects/dp_00007/apps/Scripts/wrapper_angsd.sh -debug 2 -nThreads 40 -ref $REF -anc $REF -bam /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/EUostrea_${query}-Fst.list -remove_bads 1 -uniqueOnly 1 -baq 1 -C 50 -minMapQ 20 -minQ 20 -minInd $((N_IND*2/3)) -GL 1 -doSaf 1 -out /home/projects/dp_00007/data/hmon/angsd_PopGen/Jan23--Unfolded_PopGenGEO_${query}
          done
 done
 
@@ -129,16 +136,59 @@ done
 
 
 ## Heterozygosity
-# Runs _ANGSD
+# Runs _ANGSD with depth filters to get the mafs file
 ```
 N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt | wc -l`
 REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
 BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
 
+angsd -nThreads 40 -ref $REF -bam $BAMLIST -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+-doCounts 1 -dumpCounts 2 \
+-minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200 \
+-GL 1 -doMajorMinor 1 -doMaf 1 \
+-out /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_NICdepthfilters_het_angsd
 
 
-/home/projects/dp_00007/apps/Scripts/wrapper_angsd.sh \
--debug 2 -nThreads 40 -ref $REF -bam $BAMLIST \
-
-/home/projects/dp_00007/apps/Scripts/wrapper_angsd.sh -debug 2 -nThreads 40 -ref $REF -bam $BAMLIST -remove_bads 1 -uniqueOnly 1 -baq 1 -C 50 -minMapQ 20 -minQ 20 -minInd $((N_IND*1/4)) -setMaxDepth $((N_IND*10)) -doCounts 1 -doGlf 2 -GL 2 -doMajorMinor 4 -doMaf 1 -doPost 2 -doGeno 2 -dumpCounts 2 -postCutoff 0.95 -doHaploCall 1 -out /home/projects/dp_00007/people/hmon/Flat_oysters/02_angsdPopGen/heterozygosity/GEO_FlatOysters--AllSamples_0.25_SITES
+/home/projects/dp_00007/apps/Scripts/wrapper_angsd.sh -debug 2 -nThreads 40 -ref $REF -bam $BAMLIST -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+-doCounts 1 -dumpCounts 2 \
+-minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200 \
+-GL 1 -doMajorMinor 1 -doMaf 1 \
+-out /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd
 ```
+🤝
+# Generates a `.bed` file based on the `.mafs` file:
+```
+zcat /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd.mafs.gz | cut -f1,2 | tail -n +2 | awk '{print $1"\t"$2-1"\t"$2}' | bedtools merge -i - > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd.bed
+```
+🤝
+# Creates a position file based on this new `.bed`:
+```
+awk '{print $1"\t"($2+1)"\t"$3}'  /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd.bed > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd_bed.pos
+```
+🤝
+# Indexs the `.pos` file created above:
+```
+angsd sites index /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd_bed.pos
+```
+🤝
+# Runs _ANGSD_ under -doSaf::
+```
+parallel --plus angsd -i {} -ref $REF -anc $REF -sites /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd_bed.pos -GL 1 -doSaf 1 -remove_bads 1 -uniqueOnly 1 -baq 1 -C 50 -minMapQ 20 -minQ 20 -out /home/projects/dp_00007/data/hmon/angsd_Het/{/...} :::: /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
+```
+🤝
+# Calculates fractions:
+```
+parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ -j 1 --plus "realSFS -fold 1 -P 40 {} > /home/projects/dp_00007/data/hmon/angsd_Het/{/..}.het" ::: /home/projects/dp_00007/data/hmon/angsd_Het/*.saf.idx
+
+#alternative 
+
+# Run 40 instances of realSFS in parallel using specified tmpdir and plus options 
+parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ --plus "realSFS -fold 1 -P 40 {} > /home/projects/dp_00007/data/hmon/angsd_Het/{/..}.het" -j 1 --memfree 160000 ::: /home/projects/dp_00007/data/hmon/angsd_Het/*.saf.idx
+```
+
+# Calculates heterozygosity:
+```
+fgrep '.' *.het | tr ":" " " | awk '{print $1"\t"$3/($2+$3)*100}' | sed -r 's/.het//g' | awk '{split($0,a,"_"); print $1"\t"a[1]"\t"$2"\t"$3'} | awk '{split($2,a,"-"); print $1"\t"a[2]"\t"$3'} > /home/projects/dp_00007/people/hmon/Flat_oysters/02_angsdPopGen/heterozygosity/GEO_FlatOysters--AllSamples_0.25--HET.txt
+```
+
+

@@ -23,7 +23,7 @@ pacman::p_load(scales, extrafont, dplyr, grid, lubridate, cowplot, egg, tidyvers
 # Loads datasets ~
 #PopGen <- read.table("BSG_Turbot_Ind66.PopGenEstimates.txt", sep = "\t", header = FALSE)
 #PopGen <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/Dataset_I/ThetaSummaries_Feb22--Unfolded_PopGen_ALLpop.PopGenEstimates.txt", sep = "\t", header = FALSE)
-PopGen <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/Dataset_I/ThetaSummaries_Sept22--Unfolded_PopGen_Troubleshoot.txt", sep = "\t", header = FALSE)
+PopGen <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/EUostrea/Dec22--Ind581.PopGenEstimates.txt", sep = "\t", header = FALSE)
 
 #Hets <- read.table("FPG--Heterozygosity.txt", sep = "\t", header = FALSE); head(Hets)
 
@@ -126,21 +126,20 @@ PopGenEstimates_Plot <-
   geom_point(data = PopGenUp,
              aes(x = Population, y = Value, fill = Population), colour = "#000000", shape = 21, size = 3.5, alpha = .9) +
   facet_rep_grid(Estimate ~. , scales = "free", labeller = labeller(Estimate = ylabel)) +
-  #scale_y_continuous(breaks = breaks_fun) +
-  scale_fill_manual(values = c( "#A02353", "#A02353", "#A02353",
-                                "#AD5B35",
-                                "#ad7358",
-                                "#CC480C",  "#CC480C",
-                                "#000000","#000000",
-                                "#969696", "#969696",
-                                "#D38C89", "#D38C89", "#D38C89",
-                                "#C89AD1", "#C89AD1",
-                                "#7210A0", "#7210A0",
-                                "#91BD96", "#91BD96",
-                                "#02630C", "#02630C","#02630C","#02630C", "#02630C", "#02630C",
-                                "#45D1F7", "#45D1F7", "#45D1F7", "#45D1F7",  "#45D1F7",
-                                "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
-                                "#240377", "#240377", "#240377", "#240377" )) +
+  scale_fill_manual(values =c( "#A02353", "#A02353", "#A02353",
+                                 "#AD5B35",
+                                 "#ad7358",
+                                 "#CC480C",  "#CC480C",
+                                 "#969696",
+                                 "#000000",
+                                 "#D38C89", "#D38C89", "#D38C89",
+                                 "#C89AD1", "#C89AD1",
+                                 "#7210A0",
+                                 "#91BD96", "#91BD96",
+                                 "#02630C", "#02630C","#02630C","#02630C","#02630C",
+                                 "#45D1F7", "#45D1F7",
+                                 "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
+                                 "#240377", "#240377", "#240377", "#240377" ))+
   #scale_colour_manual(values = c("#4daf4a", "#377eb8", "#e41a1c")) +
   theme(panel.background = element_rect(fill = "#ffffff"),
         panel.grid.major.x = element_line(colour = "#ededed", linetype = "dashed", size = .00005),
@@ -167,10 +166,9 @@ PopGenEstimates_Plot <-
 
 
 # Saves plot ~
-#ggsave(PopGenEstimates_Plot, file = "~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/PopGenEstimates/Genome-wide_PopGenEstimates_Feb22.pdf",
-#       device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
-ggsave(PopGenEstimates_Plot, file = "~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/PopGenEstimates/Genome-wide_PopGenEstimates_Troubleshoot_Sept22.pdf",
+ggsave(PopGenEstimates_Plot, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/pi_theta_Taj_PopGenEstimates_Jan23.pdf",
   device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
+
 ##### HET #####
 Het <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/Dataset_I/GEO_FlatOysters--AllSamples_0.25--HET.txt", sep = "\t", header = FALSE)
 Het <- select (Het,-c(V2))

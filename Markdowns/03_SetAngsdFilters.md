@@ -55,11 +55,11 @@ We use `ANGSD -doDepth 1`. More filters can be used with this method, including 
 ``` bash
 #angsd
 module load tools computerome_utils/2.0
-#module load htslib/1.9
+module load htslib/1.9
 module load bedtools/2.30.0
 module load pigz/2.3.4
 module load parallel/20210722
-#module load angsd/0.929
+module load angsd/0.929
 #variables
 REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
 BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
