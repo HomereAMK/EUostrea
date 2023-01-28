@@ -178,12 +178,12 @@ parallel --plus angsd -i {} -ref $REF -anc $REF -sites /home/projects/dp_00007/p
 🤝
 # Calculates fractions:
 ```
-parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ -j 1 --plus "realSFS -fold 1 -P 40 {} > /home/projects/dp_00007/data/hmon/angsd_Het/{/..}.het" ::: /home/projects/dp_00007/data/hmon/angsd_Het/*.saf.idx
+parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ -j 1 --plus "realSFS -fold 1 -P 10 {} > /home/projects/dp_00007/data/hmon/angsd_Het/{/..}.het" ::: /home/projects/dp_00007/data/hmon/angsd_Het/*.saf.idx
 
 #alternative 
 
 # Run 40 instances of realSFS in parallel using specified tmpdir and plus options 
-parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ --plus "realSFS -fold 1 -P 40 {} > /home/projects/dp_00007/data/hmon/angsd_Het/{/..}.het" -j 1 --memfree 160000 ::: /home/projects/dp_00007/data/hmon/angsd_Het/*.saf.idx
+parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ --plus "realSFS -fold 1 -P 10 {} > /home/projects/dp_00007/data/hmon/angsd_Het/{/..}.het" -j 1 --memfree 160000 ::: /home/projects/dp_00007/data/hmon/angsd_Het/*.saf.idx
 ```
 
 # Calculates heterozygosity:

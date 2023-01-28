@@ -43,7 +43,7 @@ zcat $TRIAL.mafs.gz | tail -n +2 | cut -f 1,2 > $TRIAL.LD.pos
 ```
 CHRs=("scaffold1" "scaffold2" "scaffold3" "scaffold4" "scaffold5" "scaffold6" "scaffold7" "scaffold8" "scaffold9" "scaffold10")
 ```
-🤝
+🤝w
 ##### Splits ngsLD file per chromosome:
 ```
 for query in ${CHRs[*]}
@@ -154,6 +154,7 @@ do
 done
 
 ```
+🤝
 ##### Merges all pruneIN files:
 ```
 cat /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning/Dec22*.pruneIN > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning/Dec22.LD.AllCHRs.min_weight0.5.pruneIN
@@ -173,12 +174,12 @@ cat /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning/Dec22*.pr
 | CHRs | 10 | xx | 100% | xx |
 
 
-From XX  sites after LD calculation: XX sites
+From 5684643  sites after LD calculation min weight 0.5: 1404180 sites
 
 scp .pruneIN file + mafs.gz file and run the Rscript Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/NIC_FormattingSnpListforAngsd_11jan22.R with it.
 
 
-
+🤝
 
 
 ```R
@@ -205,10 +206,9 @@ pruned_snp_list <- read_tsv(paste0(basedir, "/03_datasets/SetAngsdFilters/Jan23_
 
 write_tsv(pruned_snp_list, paste0(basedir, "/03_datasets/LDpruning/LDprunedlist_rightmafs_AllCHRs.min_weight0.5_23jan23"), col_names = F)
 ```
+From 5684643 sites after LD calculation min weight 0.5: 1404180 sites
 
 ##### Re-run angsd with the produced Pruned SNPs list with no linked SNPs:
 
 
 
-##### Gets .pos file:
-##### Runs ngsLD:

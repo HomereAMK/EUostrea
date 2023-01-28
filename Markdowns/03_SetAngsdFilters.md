@@ -1,7 +1,8 @@
 Best Practices to Set up the Ansgd filters for Variant calling and more
 (This markdown has been written by R. Nicolas Lou with minor modifications from me)
 ================
-- [(This markdown has been written by R. Nicolas Lou with minor modifications from me)](#this-markdown-has-been-written-by-r-nicolas-lou-with-minor-modifications-from-me)
+This markdown has been written by R. Nicolas Lou with minor modifications from me
+this-markdown-has-been-written-by-r-nicolas-lou-with-minor-modifications-from-me
   - [Genome statistics](#genome-statistics)
   - [Establish SNP calling filters](#establish-snp-calling-filters)
       - [Count read depth per position](#count-read-depth-per-position)
@@ -267,3 +268,19 @@ cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.2
         -> Number of sites retained after filtering: 5.684.643
         [ALL done] cpu-time used =  1819414.75 sec
         [ALL done] walltime used =  773262.00 sec
+
+
+> overwrited the maf files like a dumbass, need another run 
+> No MinInd -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200
+  angsd \
+  -bam $BAMLIST \
+  -ref $REF \
+  -out $OUTPUTFOLDER/Jan23_A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepthInd1_setMinDepth600setMaxDepth1200 \
+  -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+  -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200 \
+  -doCounts 1 -dumpCounts 2 \
+  -GL 1 -doGlf 2 \
+  -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+  -doIBS 1 -doCov 1 -makeMatrix 1 \
+  -nThreads 40 \
+  -P 40
