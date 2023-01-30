@@ -256,3 +256,37 @@ ibs_mat <- read_tsv("~/Desktop/Scripts/Data/PCA/EUostrea/A940_minMapQ20minQ20_NO
   as.matrix()
 PCoA(ibs_mat, annot$V1, annot$V2, 153, 1, 2, show.ellipse = F)
 
+
+#### Plotting snps ####
+cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/SetAngsdFilters/FinalVariantCalling_28jan23/Jan23_A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepthInd1_setMinDepth600setMaxDepth1200.covMat")) 
+annot <- read.table("../Scripts/EUostrea/01_infofiles/bamlist_EUostrea.annot", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
+source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_dec22.R")
+# Reorders Population ~
+annot$V2 <- factor(annot$V2, ordered = T,
+                   levels = c("MOLU", "ZECE", "CRES",
+                              "ORIS","CORS", "PONT",  "RIAE",
+                              "MORL",
+                              "USAM",
+                              "TOLL", "COLN", "BARR",
+                              "TRAL", "CLEW",
+                              "RYAN",
+                              "GREV", "WADD",
+                              "NISS","LOGS","VENO", "HALS", "THIS",
+                              "KALV", "HYPP", "HAVS",
+                              "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                              "INNE","VAGS", "AGAB", "OSTR"))
+#Plot genome-wide PCA with the covMat matrix
+PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = FALSE, show.label = FALSE)
+PCA(cov_mat, annot$V1, annot$V2, 2, 3, show.ellipse = FALSE, show.label = FALSE)
+
+ggsave(SC_chr1_pca, file = "~/Desktop/Scripts/EUostrea/Figures/SanityCheck/Corr_PCA_SC_chr1_Tyler_minMapQ20_minInd0.25_setMinDepthInd1_setMinDepth7_rmTriallelic0.05minMaf0.05__setMaxDepth20000_SNPpval1e-6_minMaf0.05_nov22.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+dev.off()
+
+#Plot genome-wide PCoA with the ibsMat matrix
+ibs_mat <- read_tsv("~/Desktop/Scripts/Data/PCA/EUostrea/A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400/A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepth100setMaxDepth1400.ibsMat", col_names = F) %>% 
+  dplyr::select(1:nrow(.)) %>%
+  as.matrix()
+PCoA(ibs_mat, annot$V1, annot$V2, 153, 1, 2, show.ellipse = F)
+
+
+
