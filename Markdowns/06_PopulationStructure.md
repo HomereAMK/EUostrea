@@ -20,26 +20,28 @@ module load angsd/0.940
 #pcangsd
 module load tools computerome_utils/2.0
 module load pcangsd/20220330 
-```
-#list of chromosomes/LGs/scaffolds for downstream analysis
-```
-cut -f1 $SNP_LIST | sort | uniq > $BASEDIR/01_infofiles/List_scaffold_28jan23.txt
-SNP_LIST=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning/LDprunedlist_rightmafs_AllCHRs.min_weight0.5_23jan23
-LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_28jan23.txt
-```
-## Re-run angsd LD Pruned SNPs list minweight0.5
-```
+
+#variables
 REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
 BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
 BASEDIR=/home/projects/dp_00007/people/hmon/EUostrea
 N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt | wc -l`
 OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure
-THREADS=8
+THREADS=10
 EXTRA_ARG='-remove_bads 1 -only_proper_pairs 1 -C 50'
 SNP_LIST=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LDpruning/LDprunedlist_rightmafs_AllCHRs.min_weight0.5_23jan23
+LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_28jan23.txt
+
+
 ```
+#list of chromosomes/LGs/scaffolds for downstream analysis
 ```
-sites index $SNPLIST
+#cut -f1 $SNP_LIST | sort | uniq > $BASEDIR/01_infofiles/List_scaffold_28jan23.txt
+LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_28jan23.txt
+```
+## Re-run angsd LD Pruned SNPs list minweight0.5
+```
+angsd sites index $SNPLIST
 ```
 ```
 angsd -b $BAMLIST -ref $REF -out $OUTPUTFOLDER/28jan23_prunedLDminweight0.5_PopStruct \
@@ -48,7 +50,19 @@ angsd -b $BAMLIST -ref $REF -out $OUTPUTFOLDER/28jan23_prunedLDminweight0.5_PopS
 -P $THREADS \
 $EXTRA_ARG \
 -sites $SNP_LIST \
--rf $LG_LIST \
+-rf $LG_LIST
+```
+🤝
+```
+#Get the beagle file
+angsd -b $BAMLIST -ref $REF -out $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct \
+-doMajorMinor 3 -doCounts 1 -doIBS 1 -makematrix 1 -doCov 1 \
+-minQ 20 -minMapQ 20 \
+-GL 1 -doGlf 2 \
+-P $THREADS \
+$EXTRA_ARG \
+-sites $SNP_LIST \
+-rf $LG_LIST
 ```
 ## Run PCangsd LD Pruned SNPs list minweight0.5 and minMaf 0.05
 ```

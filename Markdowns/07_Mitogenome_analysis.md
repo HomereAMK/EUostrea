@@ -90,4 +90,3 @@ raxml-ng --threads 24 --search --model GTR+G --site-repeats on --msa 03_results/
 
 
 
-🤝
