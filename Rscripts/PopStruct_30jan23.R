@@ -14,7 +14,7 @@ pacman::p_load(vegan, tidyverse, RcppCNPy, pheatmap, extrafont, ggforce, ggrepel
 
 
 ## Plotting CovMat and IbsMat from ANGSD
-cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/covMat")) 
+cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/PopStruct_EUostrea/28jan23_prunedLDminweight0.5_PopStruct.covMat")) 
 annot <- read.table("../Scripts/EUostrea/01_infofiles/bamlist_EUostrea.annot", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
 source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_dec22.R")
 # Reorders Population ~
@@ -32,21 +32,20 @@ annot$V2 <- factor(annot$V2, ordered = T,
                               "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
                               "INNE","VAGS", "AGAB", "OSTR"))
 #Plot genome-wide PCA with the covMat matrix
-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = FALSE, show.label = FALSE)
-PCA(cov_mat, annot$V1, annot$V2, 2, 3, show.ellipse = FALSE, show.label = FALSE)
-DAPC(n = 50, x_axis=1, y_axis = 2)
+Pca_axis1_2<-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = FALSE, show.label = FALSE)
+Pca_axis2_3<-PCA(cov_mat, annot$V1, annot$V2, 2, 3, show.ellipse = FALSE, show.label = FALSE)
 
 #ggsave(, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 #dev.off()
 
 #Plot genome-wide PCoA with the ibsMat matrix
-ibs_mat <- read_tsv("~/.ibsMat", col_names = F) %>% 
+ibs_mat <- read_tsv("~/Desktop/Scripts/Data/PopStruct_EUostrea/28jan23_prunedLDminweight0.5_PopStruct.ibsMat", col_names = F) %>% 
   dplyr::select(1:nrow(.)) %>%
   as.matrix()
 PCoA(ibs_mat, annot$V1, annot$V2, 153, 1, 2, show.ellipse = F)
 
 
-## Plotting CovMat and IbsMat from PCangsd
+## Plotting CovMat and IbsMat from Pcangsd
 #LD pruned SNP list
 genome_cov <- read_delim(".cov", delim = " ", col_names = FALSE) %>%
   as.matrix()
@@ -55,11 +54,11 @@ PCA(genome_cov, annot$V1, annot$V2, 1, 2, show.ellipse = F)
 pca_table_ld_pruned <- pca_table
 pca_table_joined <- pca_table_ld_pruned %>%
   dplyr::select(1:10) %>%
-  left_join(sample_table, by=c("individual"="sample_id", "population"="population"))
+  left_join(annot, by=c("individual"="V1", "population"="V2"))
 pca_table_joined %>%
   ggplot(aes(x=PC1, y=PC2)) +
   geom_point(data=dplyr::select(pca_table_joined, -population), size = 0.1, color="grey") +
-  geom_point(size=1, mapping = aes(color=island_shore)) +
+  geom_point(size=1, mapping = aes(color=population)) +
   facet_wrap(~population) +
   theme_cowplot() +
   theme(axis.text = element_blank())
