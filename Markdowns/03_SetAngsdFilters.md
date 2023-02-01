@@ -1,8 +1,8 @@
 Best Practices to Set up the Ansgd filters for Variant calling and more
-(This markdown has been written by R. Nicolas Lou with minor modifications from me)
 ================
-This markdown has been written by R. Nicolas Lou with minor modifications from me
-this-markdown-has-been-written-by-r-nicolas-lou-with-minor-modifications-from-me
+(This markdown has been written by R. Nicolas Lou with  modifications from me)
+
+- [Best Practices to Set up the Ansgd filters for Variant calling and more](#best-practices-to-set-up-the-ansgd-filters-for-variant-calling-and-more)
   - [Genome statistics](#genome-statistics)
   - [Establish SNP calling filters](#establish-snp-calling-filters)
       - [Count read depth per position](#count-read-depth-per-position)
