@@ -8,9 +8,9 @@ rm(list=ls())
 
 # Sets working directory ~
 setwd("~/Desktop/Scripts/")
-
+#install.packages("RcppCNPy")
 # Loads required packages ~
-pacman::p_load(vegan, tidyverse, RcppCNPy, pheatmap, extrafont, ggforce, ggrepel, ggstar, RcppCNPy)
+pacman::p_load(vegan, tidyverse, RcppCNPy, pheatmap, extrafont, ggforce, ggrepel, ggstar, np, reticulate)
 
 
 ## Plotting CovMat and IbsMat from ANGSD
@@ -66,8 +66,15 @@ pca_table_joined %>%
 
 ## Plot selection scan result with PCAngsd (e not specified)
 # .npy and .sites files from PCangsd
-genome_selection <- npyLoad(".selection.npy")
-genome_selection_sites <- read_tsv("_mindp368_maxdp928_minind167_minq20_downsampled_unlinked.txt", col_names = c("lg", "pos", "major", "minor")) %>%
+library(readr)
+library(np)
+library(reticulate)
+library(RcppCNPy)
+
+matgenome_selection <- np$load("~/Desktop/Scripts/Data/PopStruct_EUostrea/30jan23_prunedLDminweight0.5_PopStruct_pcangsd.selection.npy")
+genome_selection <- readNPY("~/Desktop/Scripts/Data/PopStruct_EUostrea/30jan23_prunedLDminweight0.5_PopStruct_pcangsd.selection.npy")
+genome_selection <- npyLoad("~/Desktop/Scripts/Data/PopStruct_EUostrea/30jan23_prunedLDminweight0.5_PopStruct_pcangsd.selection.npy")
+genome_selection_sites <- read_tsv("Data/PopStruct_EUostrea/30jan23_prunedLDminweight0.5_PopStruct_pcangsd.sites", col_names = c("lg", "pos", "major", "minor")) %>%
   bind_cols(read_table(".sites", col_names = "keep")) %>%
   filter(keep==1) %>%
   mutate(chi_squared=genome_selection[,1]) %>%

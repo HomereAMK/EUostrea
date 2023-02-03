@@ -41,7 +41,7 @@ module load samtools/1.16
 #Consensus Fasta seq for a all pop or 
 POP_BAMLIST=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt
 N_IND=`cat /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt | wc -l`
-OUTPUTFOLDER=03_results/scandinavia
+OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/MitOyster/03_results/scandinavia
 OUTNAME=30jan23_UltraMT
 GENOME="01_infofiles/MT663266.fasta"
 
@@ -52,41 +52,17 @@ angsd -bam $POP_BAMLIST -ref $GENOME -out $OUTPUTFOLDER/$OUTNAME \
 ```
 
 >phylogeny
-```
+```bash
 awk '{split($0,a,"/"); print a[10]}' $POP_BAMLIST | awk '{split($0,b,"_"); print b[1]"_"b[2]}' > /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.labels
-
-#header so n_sites -1
-ngsDist --n_threads 10 --geno $OUTPUTFOLDER/$OUTNAME.beagle.gz --pairwise_del --seed 33 --probs --n_ind 323 --n_sites 15106 --labels 01_infofiles/List_phylogenyMT_7jun22.labels --out $OUTPUTFOLDER/$OUTNAME.dist
 ```
 
-
->Twicks a bit the matrix of distances created above:
+>31jan23 quick phylogeny 
+```bash
+zcat $OUTPUTFOLDER/$OUTNAME.haplo.gz | cut -f 4- | tail -n +2 | perl /home/projects/dp_00007/people/hmon/MitOyster/00_scripts/tsv_merge.pl --transp --ofs '' - | awk 'NR==FNR{id=$1; sub(".*\\/","",id); sub("\\..*","",id); x[FNR]=id} NR!=FNR{ print ">"x[FNR]"\n"$1}' /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.labels - > $OUTPUTFOLDER/$OUTNAME.fasta
 ```
-perl -p -e 's/\t/ /g' $OUTPUTFOLDER/UltraMT.dist > $OUTPUTFOLDER/$OUTNAME_Changed.dist
-```
-
->Generates the NJ phylogeny:
-```
-fastme -T 15 -i $OUTPUTFOLDER/UltraMT_Changed.dist -s -o $OUTPUTFOLDER/$OUTNAME_Changed.nwk
-```
-🤝
-
->NgsTutorial building the tree
-```
-#split the input dataset tree from the bootstraped ones:
-head -n 1 $OUTPUTFOLDER/$OUTNAME_Changed.nwk > $OUTPUTFOLDER/$OUTNAME_Changed.main.nwk
-tail -n +2 $OUTPUTFOLDER/$OUTNAME_Changed.nwk | awk 'NF' > $OUTPUTFOLDER/$OUTNAME_Changed.boot.nwk
-#and, to place supports on the main tree, use RAxML (but i didnt boostrap in ngsDist beforehand)
-raxmlHPC -f b -t $OUTPUTFOLDER/$OUTNAME_Changed.main.nwk -z $OUTPUTFOLDER/$OUTNAME_Changed.boot.nwk -m GTRCAT -n tmp.ultra
+>Raxml job
+```bash
+raxml-ng --threads 10 --search --model GTR+F --site-repeats on --msa $OUTPUTFOLDER/$OUTNAME.fasta --prefix $OUTPUTFOLDER/$OUTNAME.Possible.raxmlng_31jan23
 ```
 
->Converts the .haplo file into a .fasta file:
-```
-zcat $OUTPUTFOLDER/$OUTNAME.haplo.gz | cut -f 4- | tail -n +2 | perl 00_scripts/tsv_merge.pl --transp --ofs '' - | awk 'NR==FNR{id=$1; sub(".*\\/","",id); sub("\\..*","",id); x[FNR]=id} NR!=FNR{ print ">"x[FNR]"\n"$1}' /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.labels - > $OUTPUTFOLDER/$OUTNAME.fasta
-```
->Generates an ML phylogeny based on the .fasta file created above having the NJ phylogeny as a backbone:
-```
-raxml-ng --threads 24 --search --model GTR+G --site-repeats on --msa 03_results/scandinavia/$OUTNAME.fasta --tree 03_results/scandinavia/$OUTNAME_Changed.nwk --prefix 03_results/scandinavia/$OUTNAME_Changed_GTR
-
-
-
+First Tree done on https://itol.embl.de/tree/192389368159681675247682 

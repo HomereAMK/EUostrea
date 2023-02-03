@@ -5,6 +5,7 @@
 
 # Cleans the environment ~ 
 rm(list=ls())
+rm(list=ls(all.names=TRUE))
 
 
 # Sets working directory ~
@@ -89,15 +90,15 @@ ylabel <- c("Nucleotide_Diversity" = "Nucelotide Diversity",
 PopGenUp$Population <- factor(PopGenUp$Population, ordered = T,
                               levels = c("MOLU", "ZECE", "CRES",
                                          "ORIS","CORS", "PONT",  "RIAE",
-                                         "USAM","USAM1.5x",
-                                         "MORL", "MORL1.5x",
-                                         "TOLL", "COLN", "BARR", 
+                                         "MORL",
+                                         "USAM",
+                                         "TOLL", "COLN", "BARR",
                                          "TRAL", "CLEW",
-                                         "RYAN", "NELL",
-                                         "GREV", "WADD", 
-                                         "FURI", "NISS","LOGS","VENO", "HALS", "THIS",
-                                         "HVAD", "KALV",  "HFJO", "RAMS", "ORNE", "HYPP",
-                                         "LANG", "BUNN", "DOLV", "HAUG", "HAFR",  
+                                         "RYAN",
+                                         "GREV", "WADD",
+                                         "NISS","LOGS","VENO", "HALS", "THIS",
+                                         "KALV", "HYPP",
+                                         "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
                                          "INNE","VAGS", "AGAB", "OSTR"))
 
 
@@ -170,8 +171,8 @@ ggsave(PopGenEstimates_Plot, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEs
   device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
 
 ##### HET #####
-Het <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/Dataset_I/GEO_FlatOysters--AllSamples_0.25--HET.txt", sep = "\t", header = FALSE)
-Het <- select (Het,-c(V2))
+Het <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/EUostrea/GEO_EUostrea--AllSamples_setMinDepth600_setMaxDepth1200--HET.23jan23.txt", sep = "\t", header = FALSE)
+Het <- Het[,-2]
 colnames(Het) <- c("Sample_ID", "Heterozygosity")
 # Drop the columns of the dataframe
 
@@ -190,25 +191,23 @@ unique(pop)
 #order pop
 Het_pop$pop <- factor(Het_pop$pop, ordered = T,
                       levels = c("MOLU", "ZECE", "CRES",
-                                 "ORIS",
-                                 "CORS", 
-                                 "PONT",  "RIAE",
+                                 "ORIS","CORS", "PONT",  "RIAE",
                                  "MORL",
                                  "USAM",
-                                 "TOLL", "COLN", "BARR", 
+                                 "TOLL", "COLN", "BARR",
                                  "TRAL", "CLEW",
-                                 "RYAN", "NELL",
-                                 "GREV", "WADD", 
-                                 "FURI", "NISS","LOGS","VENO", "HALS", "THIS",
-                                 "HVAD", "KALV",  "HFJO", "RAMS", "ORNE", "HYPP",
-                                 "LANG", "BUNN", "DOLV", "HAUG", "HAFR",  
+                                 "RYAN",
+                                 "GREV", "WADD",
+                                 "NISS","LOGS","VENO", "HALS", "THIS",
+                                 "KALV", "HYPP",
+                                 "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
                                  "INNE","VAGS", "AGAB", "OSTR"))
 
 #Plot
 Het_plot <- 
   ggplot() +
   geom_point(data = Het_pop,
-             aes(x = pop, y = Heterozygosity, fill = pop), colour = "#000000", shape = 21, size = 3.5, alpha = .9) +
+             aes(x = pop, y = Heterozygosity, fill = pop), colour = "#000000", shape = 21, size = 3.5, alpha = 0.6) +
   scale_fill_manual(values =c( "#A02353", "#A02353", "#A02353",
                                  "#AD5B35",
                                  "#ad7358",
@@ -217,12 +216,12 @@ Het_plot <-
                                  "#000000",
                                  "#D38C89", "#D38C89", "#D38C89",
                                  "#C89AD1", "#C89AD1",
-                                 "#7210A0", "#7210A0",
+                                 "#7210A0",
                                  "#91BD96", "#91BD96",
-                                 "#02630C", "#02630C","#02630C","#02630C", "#02630C", "#02630C",
-                                 "#45D1F7", "#45D1F7", "#45D1F7", "#45D1F7",  "#45D1F7",
+                                 "#02630C","#02630C","#02630C", "#02630C", "#02630C",
+                                 "#45D1F7", "#45D1F7",
                                  "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
-                                 "#240377", "#240377", "#240377", "#240377"  ))+
+                                 "#240377", "#240377", "#240377", "#240377" ))+
   theme(panel.background = element_rect(fill = "#ffffff"),
         panel.grid.major.x = element_line(colour = "#ededed", linetype = "dashed", size = .00005),
         panel.grid.major.y = element_blank(),
@@ -246,7 +245,7 @@ Het_plot <-
                              label.theme = element_text(size = 14),
                              override.aes = list(size = 5, alpha = .9)), colour = "none")
 
-ggsave(Het_plot, file = "~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/PopGenEstimates/Genome-wide_Heterozygosity_Mar22.pdf",
+ggsave(Het_plot, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/Genome-wide_Heterozygosity_dotplot_Feb23.pdf",
        device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
 
 
@@ -256,7 +255,7 @@ ggsave(Het_plot, file = "~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/Po
 Het_plot_violin <- 
   ggplot() +
   geom_violin(data = Het_pop,
-             aes(x = pop, y = Heterozygosity, fill = pop), colour = "#000000", size = 0.3, alpha = .5) +
+             aes(x = pop, y = Heterozygosity, fill = pop), colour = "#000000", size = 0.3, alpha = .8) +
   scale_fill_manual(values =c( "#A02353", "#A02353", "#A02353",
                                "#AD5B35",
                                "#ad7358",
@@ -265,12 +264,12 @@ Het_plot_violin <-
                                "#000000",
                                "#D38C89", "#D38C89", "#D38C89",
                                "#C89AD1", "#C89AD1",
-                               "#7210A0", "#7210A0",
+                               "#7210A0",
                                "#91BD96", "#91BD96",
-                               "#02630C", "#02630C","#02630C","#02630C", "#02630C", "#02630C",
-                               "#45D1F7", "#45D1F7", "#45D1F7", "#45D1F7",  "#45D1F7",
+                               "#02630C","#02630C","#02630C", "#02630C", "#02630C",
+                               "#45D1F7", "#45D1F7",
                                "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
-                               "#240377", "#240377", "#240377", "#240377"  ))+
+                               "#240377", "#240377", "#240377", "#240377" ))+
   theme(panel.background = element_rect(fill = "#ffffff"),
         panel.grid.major.x = element_line(colour = "#ededed", linetype = "dashed", size = .00005),
         panel.grid.major.y = element_blank(),
@@ -294,7 +293,7 @@ Het_plot_violin <-
                              label.theme = element_text(size = 14),
                              override.aes = list(size = 0.3, alpha = .9)), colour = "none")
 
-ggsave(Het_plot_violin, file = "~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/PopGenEstimates/Genome-wide_Heterozygosity_violin_Apr22.pdf",
+ggsave(Het_plot_violin, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/Genome-wide_Heterozygosity_violin_Feb23.pdf", 
        device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
 
 #
