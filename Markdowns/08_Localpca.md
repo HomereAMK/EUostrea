@@ -34,10 +34,9 @@ module load R/4.0.0
 ```
 ```bash
 #variables
-BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz
+BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/Jan23_A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepthInd1_setMinDepth600setMaxDepth1200.beagle.gz
 LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_28jan23.txt
-N_CORE_MAX=40 # Maximum number of threads to use simulatenously
-OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca
+N_CORE_MAX=30 # Maximum number of threads to use simulatenously
 PREFIX=`echo $BEAGLE | sed 's/\..*//' | sed -e 's#.*/\(\)#\1#'`
 BEAGLEDIR=`echo $BEAGLE | sed 's:/[^/]*$::' | awk '$1=$1"/"'`
 ```
@@ -45,40 +44,34 @@ BEAGLEDIR=`echo $BEAGLE | sed 's:/[^/]*$::' | awk '$1=$1"/"'`
 ## Subset the beagle file: subset_beagle_by_lg.sh
 # This script is used to subset a genome-wide beagle file into smaller files by linkage groups or chromosomes. 
 ```bash
-BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz
-LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_28jan23.txt
-N_CORE_MAX=40 # Maximum number of threads to use simulatenously
-OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca
-PREFIX=`echo $BEAGLE | sed 's/\..*//' | sed -e 's#.*/\(\)#\1#'`
-BEAGLEDIR=`echo $BEAGLE | sed 's:/[^/]*$::' | awk '$1=$1"/"'`
-
+cd /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/
 COUNT=0
 for LG in `cat $LGLIST`; do
-	if [ ! -s $OUTPUTFOLDER/$PREFIX"_"$LG".beagle.gz" ]; then
+	if [ ! -s $BEAGLEDIR$PREFIX"_"$LG".beagle.gz" ]; then
 		echo "Subsetting "$LG
-		zcat $BEAGLE | head -n 1 > $OUTPUTFOLDER/$PREFIX"_"$LG".beagle"
-		zcat $BEAGLE | grep $LG"_" >> $OUTPUTFOLDER/$PREFIX"_"$LG".beagle" &
+		zcat $BEAGLE | head -n 1 > $BEAGLEDIR$PREFIX"_"$LG".beagle"
+		zcat $BEAGLE | grep $LG"_" >> $BEAGLEDIR$PREFIX"_"$LG".beagle" &
 		COUNT=$(( COUNT + 1 ))
 		if [ $COUNT == $N_CORE_MAX ]; then
-		wait
-		COUNT=0
+		  wait
+		  COUNT=0
 		fi
 	else
 		echo $LG" was already subsetted"
 	fi
 done
 
-wait
+wait 
 
 COUNT=0
 for LG in `cat $LGLIST`; do
-	if [ ! -s $OUTPUTFOLDER/$PREFIX"_"$LG".beagle.gz" ]; then
+	if [ ! -s $BEAGLEDIR$PREFIX"_"$LG".beagle.gz" ]; then
 		echo "Gzipping "$LG
-		gzip $OUTPUTFOLDER/$PREFIX"_"$LG".beagle" &
+		gzip $BEAGLEDIR$PREFIX"_"$LG".beagle" &
 		COUNT=$(( COUNT + 1 ))
 		if [ $COUNT == $N_CORE_MAX ]; then
-		wait
-		COUNT=0
+		  wait
+		  COUNT=0
 		fi
 	fi
 done
