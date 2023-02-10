@@ -16,7 +16,7 @@ pacman::p_load(vegan, tidyverse, RcppCNPy, pheatmap, extrafont, ggforce, ggrepel
 ## Plotting CovMat and IbsMat from ANGSD
 cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/PopStruct_EUostrea/28jan23_prunedLDminweight0.5_PopStruct.covMat")) 
 annot <- read.table("../Scripts/EUostrea/01_infofiles/bamlist_EUostrea.annot", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
-source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_dec22.R")
+source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_feb23.R")
 # Reorders Population ~
 annot$V2 <- factor(annot$V2, ordered = T,
                    levels = c("MOLU", "ZECE", "CRES",
@@ -32,7 +32,7 @@ annot$V2 <- factor(annot$V2, ordered = T,
                               "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
                               "INNE","VAGS", "AGAB", "OSTR"))
 #Plot genome-wide PCA with the covMat matrix
-Pca_axis1_2<-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = FALSE, show.label = FALSE)
+Pca_axis1_2<-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = TRUE, show.label = FALSE)
 Pca_axis2_3<-PCA(cov_mat, annot$V1, annot$V2, 2, 3, show.ellipse = FALSE, show.label = FALSE)
 
 #ggsave(, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)

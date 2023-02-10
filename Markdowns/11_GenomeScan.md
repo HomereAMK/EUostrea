@@ -6,9 +6,11 @@ Genome scan
   - [Run PCangsd with the global Variant calling SNP list](#run-pcangsd-with-the-global-variant-calling-snp-list)
   - [PCA in inversion-like regions](#pca-in-inversion-like-regions)
     - [Inversions-like regions identification](#inversions-like-regions-identification)
-- [Snps per inversion-like regions](#snps-per-inversion-like-regions)
+    - [Snps per inversion-like regions](#snps-per-inversion-like-regions)
     - [Get the beagle file](#get-the-beagle-file)
-    - [](#)
+  - [Outliers on PC9 scaffold2 and 10](#outliers-on-pc9-scaffold2-and-10)
+- [Extract the region of interest from the global variant calling snp list with awk](#extract-the-region-of-interest-from-the-global-variant-calling-snp-list-with-awk)
+
 
 ## Modules
 ```bash
@@ -158,7 +160,7 @@ end_pos=$lenght_sca8
 cat $LIST_VC | awk -v start=$start_pos -v end=$end_pos '$1 == "scaffold8" && $2 >= start && $2 <= end {print $1,$2,$3,$4}' > $OUTPUTFOLDER/scaffold8/scaffold8_InvReg_awk.txt
 ```
 🤝
-# Snps per inversion-like regions
+### Snps per inversion-like regions
 | "scaffold4 inv"  | "scaffold5 inv" |"scaffold8 inv" |
 | ------------- | ------------- |------------- |
 | SNPs  | SNPs  | SNPs  |
@@ -198,7 +200,6 @@ done
 ```
 🤝
 
-### 
 
 ```bash
 for query in scaffold8 scaffold4 scaffold5
@@ -217,25 +218,6 @@ done
 ```
 
 #on c2
-```R
-rm(list=ls(all.names = TRUE))
-
-pacman::p_load(vegan, tidyverse, RcppCNPy, pheatmap, extrafont, ggforce, ggrepel, ggstar, np, reticulate, cowplot)
-
-InvReg=("scaffold4", "scaffold8", "scaffold5")
-for query in ${InvReg[*]} do
-  basedir="/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/InversionsLike/${query}"  
-
-  genome_selection <- npyLoad(paste0(basedir, "/7feb23_${query}_InvReg_pcangsd.selection.npy"))  
-
-  genome_selection_df <- as.data.frame(genome_selection)
-
-  basedir="/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/InversionsLike/${query}"  
-
-  write_tsv(genome_selection_df, paste0(basedir, "/1feb23_GlobalVariants_InvRegmodule${query}_pcangsd_e10.selection.tsv"), col_names = F)
-done
-```
-
 ```R
 # Clear the environment
 rm(list = ls(all.names = TRUE))
@@ -261,3 +243,17 @@ for (query in InvReg) {
               col.names = FALSE, row.names = FALSE, sep = "\t")
 }
 ```
+
+
+## Outliers on PC9 scaffold2 and 10
+```bash
+#Variables
+#GLOBAL_VC_BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/SetAngsdFilters/Jan23_A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepthInd1_setMinDepth600setMaxDepth1200.beagle.gz
+LIST_VC=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/global_snp_list_setMinDepth600setMaxDepth1200_jan23.txt
+OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/GenomeScan/Outliers
+#outliers PC9 scaffold2
+start_pos=93220504
+end_pos=93743877
+# Extract the region of interest from the global variant calling snp list with awk
+cat $LIST_VC | awk -v start=$start_pos -v end=$end_pos '$1 == "scaffold2" && $2 >= start && $2 <= end {print $1,$2,$3,$4}' > $OUTPUTFOLDER/Outliers_PC2_sca2_10_10feb23.txt
+

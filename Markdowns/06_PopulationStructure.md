@@ -196,3 +196,4 @@ genome_selection_df <- as.data.frame(genome_selection)
 
 write_tsv(genome_selection_df, paste0(basedir, "/1feb23_GlobalVariants_selectionscan_pcangsd_e10.selection.tsv"), col_names = F)
 ```
+🤝
