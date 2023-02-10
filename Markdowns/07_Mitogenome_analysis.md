@@ -9,23 +9,27 @@ mtDNA has a much higher mutation rate and shorter coalescence times than most nu
 MtGenome reference: Hayer et al., 2021 MT663266 (Limfjorden) 16,356bp
 -> no need to go prepare a new assembly 
 
-I. Processing reads
-
+[I. Processing reads](#i-mapping-with-bwa)
+[II. Analyses](#ii-analyses)
+[III. Haplotype network](#iii-haplotype-network)
 ## I. Mapping with BWA
 
 [II Analyses](II-Analyses)
 
-## II Analyses
+## II. Analyses
 Regional structure and phylogenetics
 >Angsd to get a beagle file 
 ```
-# Load module angsd
+#angsd
+module load tools computerome_utils/2.0
+module load htslib/1.16
+module load bedtools/2.30.0
+module load pigz/2.3.4
+module load parallel/20210722
+module load angsd/0.940
+
 # Load module phylogeny
 # Load module perl
-module load tools
-module load ngs
-module load htslib/1.16
-module load angsd/0.940
 module load gcc/8.2.0
 module load openmpi/gcc/64
 module load raxml-ng/1.1.0
@@ -66,3 +70,36 @@ raxml-ng --threads 10 --search --model GTR+F --site-repeats on --msa $OUTPUTFOLD
 ```
 
 First Tree done on https://itol.embl.de/tree/192389368159681675247682 
+
+
+
+## III. Haplotype network
+```bash
+## Create the POP_BAMLIST
+grep -E "OSTR|AGAB|HAFR|HYPP|WADD|NISS|RYAN|BARR|TRAL|RIAE|MORL|ORIS|CRES|Lurida|USAM" /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt >/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt
+
+## Variables
+POP_BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_14pops_bamlist.txt
+MTGENOME="01_infofiles/MT663266.fasta"
+MTOUTPUTF=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome
+
+## Get allele count 
+angsd \
+-bam $POP_BAMLIST \
+-anc $MTGENOME \
+-ref $MTGENOME \
+-doCounts 1 -dumpCounts 4 \
+-minQ 20 -minMapQ 20 \
+-remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
+-out $MTOUTPUTF/Mt_HapNetwork_10feb23.allele_counts
+
+## Get depth count
+angsd \
+-bam $POP_BAMLIST \
+-anc $MTGENOME \
+-ref $MTGENOME \
+-doCounts 1 -dumpCounts 2 \
+-minQ 20 -minMapQ 20 \
+-remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
+-out $MTOUTPUTF/Mt_HapNetwork_10feb23.depth_counts
+```
