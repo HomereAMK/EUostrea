@@ -45,7 +45,7 @@ LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_
 ## Get minor allele frequencies per population with minIND= 25% and Global SNP list
 > Generate a list of individuals per pops
 ```bash
-POP=("MOLU" "ZECE" "CRES" "ORIS","CORS" "PONT"  "RIAE","MORL","USAM" "TOLL" "COLN" "BARR","TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS","LOGS","VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE","VAGS" "AGAB" "OSTR")
+POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
 
 #POP=("INNE" "VAGS")
 for query in ${POP[*]}
@@ -62,6 +62,7 @@ angsd sites index $OUTPUTFOLDER/global_snp_list_setMinDepth600setMaxDepth1200_ja
 
 >This script is used to get minor allele frequency estimation from angsd for each population / group
 ```bash
+
 for i1 in `seq 0 $((${#POP[@]}-2))`
 do
     N_IND=`cat /$BASEDIR/01_infofiles/Jan23--EUostrea_${POP[i1]}-Fst.list | wc -l`
@@ -77,7 +78,7 @@ do
     $EXTRA_ARG
 done
 ```
-🤝
+🤝 
 ## Estimate Fst in each pair of populations
 
 > Get the sfs step
@@ -102,7 +103,7 @@ do
             realSFS fst stats /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -P 40
             fi
         done
-done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/6feb23--mindInd0.25_globalList_Unfolded_Fst.tsv
+done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/10feb23--mindInd0.25_globalList_Unfolded_Fst.tsv
 ```
 ```bash
 POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
@@ -150,7 +151,7 @@ do
      do
         pop1="${POP[i1]}"
         pop2="${POP[i2]}"
-        realSFS fst stats2 /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -win 15000 -step 15000 | cut -f 2- | tail -n +2 | awk '{print $1"\t"$1":"$2"\t"$2-15000"\t"$2"\t"$3"\t"$4}' > /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}_15KB_15KB--Fst.tsv 
+        realSFS fst stats2 /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -win 15000 -step 15000 | cut -f 2- | tail -n +2 | awk '{print $1"\t"$1":"$2"\t"$2-15000"\t"$2"\t"$3"\t"$4}' > /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/10feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}_15KB_15KB--Fst.tsv 
     done
 done
 ```

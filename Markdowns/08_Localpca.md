@@ -46,9 +46,7 @@ BEAGLEDIR=`echo $BEAGLE | sed 's:/[^/]*$::' | awk '$1=$1"/"'`
 ```bash
 cd /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/
 COUNT=0
-for LG in `cat $LGLIST`; do
-	if [ ! -s $BEAGLEDIR$PREFIX"_"$LG".beagle.gz" ]; then
-		echo "Subsetting "$LG
+for LG in ; do
 		zcat $BEAGLE | head -n 1 > $BEAGLEDIR$PREFIX"_"$LG".beagle"
 		zcat $BEAGLE | grep $LG"_" >> $BEAGLEDIR$PREFIX"_"$LG".beagle" &
 		COUNT=$(( COUNT + 1 ))
@@ -59,6 +57,14 @@ for LG in `cat $LGLIST`; do
 	else
 		echo $LG" was already subsetted"
 	fi
+done
+
+SCA=("scaffold1" "scaffold2" "scaffold3" "scaffold4" "scaffold5" "scaffold6" "scaffold7" "scaffold8" "scaffold9" "scaffold10")
+for query in ${SCA[*]}
+do
+		zcat $BEAGLE | head -n 1 > $BEAGLEDIR$PREFIX"_"${query}".beagle" 
+		zcat $BEAGLE | grep "${query}" >> $BEAGLEDIR$PREFIX"_"${query}".beagle" &
+		gzip $BEAGLEDIR$PREFIX"_"${query}".beagle"
 done
 
 wait 

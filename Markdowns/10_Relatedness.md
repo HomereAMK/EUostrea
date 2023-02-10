@@ -33,8 +33,6 @@ REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome
 ```bash
 POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
 
-POP=("HAFR")
-
 for query in ${POP[*]}
 do
     N_IND=`cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list | wc -l`

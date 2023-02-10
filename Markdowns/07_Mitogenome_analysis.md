@@ -76,11 +76,12 @@ First Tree done on https://itol.embl.de/tree/192389368159681675247682
 ## III. Haplotype network
 ```bash
 ## Create the POP_BAMLIST
-grep -E "OSTR|AGAB|HAFR|HYPP|WADD|NISS|RYAN|BARR|TRAL|RIAE|MORL|ORIS|CRES|Lurida|USAM" /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt >/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt
-
+#grep -E "OSTR|AGAB|HAFR|HYPP|WADD|NISS|RYAN|BARR|RIAE|MORL|ORIS|MOLU" /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt >/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt
+#ls /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL*bam >> /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt 
+#ls /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/USAM*.bam >> /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt 
 ## Variables
-POP_BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_14pops_bamlist.txt
-MTGENOME="01_infofiles/MT663266.fasta"
+POP_BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt
+MTGENOME=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/MT663266.fasta
 MTOUTPUTF=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome
 
 ## Get allele count 

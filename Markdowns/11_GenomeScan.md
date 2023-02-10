@@ -9,7 +9,7 @@ Genome scan
     - [Snps per inversion-like regions](#snps-per-inversion-like-regions)
     - [Get the beagle file](#get-the-beagle-file)
   - [Outliers on PC9 scaffold2 and 10](#outliers-on-pc9-scaffold2-and-10)
-- [Extract the region of interest from the global variant calling snp list with awk](#extract-the-region-of-interest-from-the-global-variant-calling-snp-list-with-awk)
+    - [Get the beagle file](#get-the-beagle-file-1)
 
 
 ## Modules
@@ -256,4 +256,28 @@ start_pos=93220504
 end_pos=93743877
 # Extract the region of interest from the global variant calling snp list with awk
 cat $LIST_VC | awk -v start=$start_pos -v end=$end_pos '$1 == "scaffold2" && $2 >= start && $2 <= end {print $1,$2,$3,$4}' > $OUTPUTFOLDER/Outliers_PC2_sca2_10_10feb23.txt
+#outliers PC9 scaffold10
+start_pos=11747526
+end_pos=11856952
+# Append the region of interest from the global variant calling snp list with awk
+cat $LIST_VC | awk -v start=$start_pos -v end=$end_pos '$1 == "scaffold10" && $2 >= start && $2 <= end {print $1,$2,$3,$4}' >> $OUTPUTFOLDER/Outliers_PC2_sca2_10_10feb23.txt
+```
+### Get the beagle file
+```bash
+#Variables
+LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/GenomeScan/Outliers/lg_list_sca2_sca10
+REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
+BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
+THREADS=12
+OUTLIERS_LIST=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/GenomeScan/Outliers/Outliers_PC2_sca2_10_10feb23.txt
+OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/GenomeScan/Outliers
 
+angsd sites index $OUTLIERS_LIST
+
+angsd -b "$BAMLIST" -ref "$REF" -out "$OUTPUTFOLDER/Outliers_PC2_sca2_10_10feb23" \
+-doMajorMinor 3 -doCounts 1 -doIBS 1 -makematrix 1 -doCov 1 \
+-minQ 20 -minMapQ 20 \
+-GL 1 -doGlf 2 \
+-P "$THREADS" \
+-sites "$OUTLIERS_LIST" \
+-rf $LG_LIST
