@@ -47,6 +47,7 @@ LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_
 ```bash
 POP=("MOLU" "ZECE" "CRES" "ORIS","CORS" "PONT"  "RIAE","MORL","USAM" "TOLL" "COLN" "BARR","TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS","LOGS","VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE","VAGS" "AGAB" "OSTR")
 
+#POP=("INNE" "VAGS")
 for query in ${POP[*]}
 do 
     grep ${query} $BAMLIST > $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list
@@ -81,6 +82,9 @@ done
 
 > Get the sfs step
 ```bash
+#please re-enter the POP variables
+POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
+
 cd /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea
 for i1 in `seq 0 $((${#POP[@]}-2))`
 do
@@ -93,24 +97,60 @@ do
         if [[ $N_SITES == 0 ]]; then
             echo "NA"
         else
-            realSFS $pop1.saf.idx $pop2.saf.idx -fold 1 -P 40 > /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.sfs
-            realSFS fst index $pop1.saf.idx $pop2.saf.idx -sfs /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.sfs -fold 1 -P 40 -fstout /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}
-            realSFS fst stats /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -P 40
+            realSFS $pop1.saf.idx $pop2.saf.idx -fold 1 -P 40 > /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.sfs
+            realSFS fst index $pop1.saf.idx $pop2.saf.idx -sfs /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.sfs -fold 1 -P 40 -fstout /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}
+            realSFS fst stats /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -P 40
             fi
         done
-done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/31jan23--mindInd0.25_globalList_Unfolded_Fst.tsv
+done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/6feb23--mindInd0.25_globalList_Unfolded_Fst.tsv
 ```
+```bash
+POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
 
+cd /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea
+for i1 in `seq 0 $((${#POP[@]}-2))`
+do
+    for i2 in `seq $((i1+1)) $((${#POP[@]}-1))`
+    do
+        pop1="31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}"
+        pop2="31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i2]}"
+        N_SITES=`realSFS print $pop1.saf.idx $pop2.saf.idx | wc -l`
+        output_file="/home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.sfs"
+        output_file2="/home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx"
+        if [[ -f $output_file ]]; then
+            echo "$output_file already exists, skipping calculation."
+        else
+            echo -ne "${POP[i1]}\t${POP[i2]}\t$N_SITES\t"
+            if [[ $N_SITES == 0 ]]; then
+                echo "NA"
+            else
+                realSFS $pop1.saf.idx $pop2.saf.idx -fold 1 -P 40 > $output_file
+                
+                realSFS fst index $pop1.saf.idx $pop2.saf.idx -sfs $output_file -fold 1 -P 40 -fstout /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}
+                if [[ -f $output_file2 ]]; then
+                echo "$output_file2 already exists, skipping calculation."
+                else
+                    realSFS fst stats /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -P 40
+                    fi
+            fi
+        fi
+    done
+done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/9feb23--mindInd0.25_globalList_Unfolded_Fst.tsv
+```
 
 > Sliding window global list 15kb 15kb
 ```bash
+
+#please re-enter the POP variables
+POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
+
 for i1 in `seq 0 $((${#POP[@]}-2))`
 do
     for i2 in `seq $((i1+1)) $((${#POP[@]}-1))`
      do
         pop1="${POP[i1]}"
         pop2="${POP[i2]}"
-        realSFS fst stats2 /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -win 15000 -step 15000 | cut -f 2- | tail -n +2 | awk '{print $1"\t"$1":"$2"\t"$2-15000"\t"$2"\t"$3"\t"$4}' > /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/31Jan23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}_15KB_15KB--Fst.tsv 
+        realSFS fst stats2 /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}.fst.idx -win 15000 -step 15000 | cut -f 2- | tail -n +2 | awk '{print $1"\t"$1":"$2"\t"$2-15000"\t"$2"\t"$3"\t"$4}' > /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/6feb23--mindInd0.25_Unfolded_EUostrea_globalList_${POP[i1]}.${POP[i2]}_15KB_15KB--Fst.tsv 
     done
 done
 ```

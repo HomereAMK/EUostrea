@@ -31,10 +31,9 @@ REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome
 
 ## Allele frequencies (mafs.gz) and genotype likelihoods (glf.gz) files per pop.
 ```bash
-POP=("MOLU" "ZECE" "CRES" "ORIS","CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS","LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
+POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT"  "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
 
-POP=("CRES" "ORIS" "CORS"  "RIAE" "MORL"  "USAM"   "BARR" "TRAL"   "NISS" "LOGS" "VENO"  "INNE" "VAGS" "HAUG" "OSTR" "DOLV")
-
+POP=("HAFR")
 
 for query in ${POP[*]}
 do
@@ -49,14 +48,15 @@ do
     -out $OUTPUTFOLDER/3feb23_ngsrelate_minind0.75_LDprunedList_${query}
 done
 ```
+🤝
 ## Formatting mafs files for NGSrelate
 >Extract the frequency column from the allele frequency file and remove the header (to make it in the format NgsRelate needs)
 
 ```bash
 for query in ${POP[*]}
 do
-  zcat $OUTPUTFOLDER/3feb23_ngsrelate_minind0.75_LDprunedList_${query}.mafs.gz | cut -f5 | sed 1d > $OUTPUTFOLDER/3feb23_ngsrelate_minind0.75_LDprunedList_${query}.freq
-
+  zcat $OUTPUTFOLDER/3feb23_ngsrelate_minind0.75_LDprunedList_${query}.mafs.gz | cut -f6 | sed 1d > $OUTPUTFOLDER/3feb23_ngsrelate_minind0.75_LDprunedList_${query}.freq
+done
 ```
 ## run NgsRelate
 
@@ -69,3 +69,5 @@ do
   -f $OUTPUTFOLDER/3feb23_ngsrelate_minind0.75_LDprunedList_${query}.freq \
   -n $((N_IND*1)) -O 3feb23_ngsrelate_minind0.75_LDprunedList_${query}.res \
   -p 10
+done
+```

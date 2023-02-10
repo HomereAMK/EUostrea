@@ -47,7 +47,13 @@ genome_selection_sites <- read_tsv("Data/GenomeScan_EUostrea/1feb23_GlobalVarian
 #reorder chr
 genome_selection_sites$lg <- factor(genome_selection_sites$lg , ordered = T,
                                     levels = c("scaffold1", "scaffold2", "scaffold3", "scaffold4", "scaffold5",
-                                               "scaffold6", "scaffold7", "scaffold8", "scaffold9", "scaffold10"))
+                                             "scaffold6", "scaffold7", "scaffold8", "scaffold9", "scaffold10"))
+genome_selection_sites$pc <- factor(genome_selection_sites$pc , ordered = T,
+                                    levels = c("PC1", "PC2", "PC3", "PC4", "PC5",
+                                               "PC6", "PC7", "PC8", "PC9", "PC10"))
+
+## Extract sites exceeding  p-value cut off of 0.05 after Bonferroni correction and export them
+genome_selection_sites_outliers <- filter(genome_selection_sites, neg_log_p_value > -log(0.05/dim(genome_selection)[1]))
 
 
 ## Plot
@@ -66,10 +72,22 @@ genome_selection_plot <- genome_selection_sites %>%
         axis.title.x=element_text(),
         legend.position="none",
         text = element_text(size=10),
-        axis.text = element_text(size=6))
+        axis.text = element_text(size=6))+
+  theme(legend.key = element_blank()) +
+  theme(legend.title=element_blank()) +
+  theme(axis.title.x = element_text(size = 10, color="#000000", face="bold", margin = margin(t = 20, r = 0, b = 0, l = 0)),
+        axis.title.y = element_text(size = 10, color="#000000", face="bold", margin = margin(t = 0, r = 20, b = 0, l = 0))) +
+  theme(legend.text=element_text(size=11)) +
+  theme(panel.background = element_rect(fill = '#FAFAFA')) +
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank()) +
+  theme(axis.line = element_line(colour = "#000000", size = 0.3)) +
+  theme(panel.border = element_blank())
 
-ggsave(filename  = "EUostrea/Figures/Genome_scan/4feb23_PCAngsd_Global_VC_genomescan_10pcs.pdf", 
-       plot=genome_selection_plot, width = 30, height = 40, units = "cm", pointsize = 20, dpi = 250)
+
+#ggsave(filename  = "EUostrea/Figures/Genome_scan/4feb23_PCAngsd_Global_VC_genomescan_10pcs.pdf", 
+ #      plot=genome_selection_plot, width = 30, height = 40, units = "cm", pointsize = 20, dpi = 250)
+ggsave(filename  = "EUostrea/Figures/Genome_scan/4feb23_PCAngsd_Global_VC_genomescan_10pcs.png", 
+       plot=genome_selection_plot, width = 40, height = 50, units = "cm", pointsize = 20, dpi = 250)
 dev.off()
 
 

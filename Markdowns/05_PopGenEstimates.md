@@ -46,9 +46,10 @@ module load R/4.2.0
 ```
 
 ## Get lists of samples
-```
+```bash
 POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT" "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
 BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
+REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
 
 for query in ${POP[*]}
 do 
@@ -59,23 +60,23 @@ done
 🤝
 
 ## Runs ANGSD under -doSaf on all populations, estimate the site allele frequency likelihood for each pop.
-```
+```bash
 for query in ${POP[*]}
     do
-        REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
+
         angsd -nThreads 40 -ref $REF -anc $REF -bam /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/EUostrea_${query}-Fst.list -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 -minMapQ 20 -minQ 20 -setMinDepthInd 1 -setMinDepth 600 -setMaxDepth 1200 -GL 1 -doSaf 1 -out /home/projects/dp_00007/data/hmon/angsd_PopGen/Jan23--Unfolded_PopGenNIC_${query}
     done
 done
 ```
+```bash
 for query in ${POP[*]}
     do
-        REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
         /home/projects/dp_00007/apps/Scripts/wrapper_angsd.sh -debug 2 -nThreads 40 -ref $REF -anc $REF -bam /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/EUostrea_${query}-Fst.list -remove_bads 1 -uniqueOnly 1 -baq 1 -C 50 -minMapQ 20 -minQ 20 -minInd $((N_IND*2/3)) -GL 1 -doSaf 1 -out /home/projects/dp_00007/data/hmon/angsd_PopGen/Jan23--Unfolded_PopGenGEO_${query}
          done
 done
-
-## Runs realSFS
 ```
+## Runs realSFS
+```bash
 POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT" "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
 
 for query in ${POP[*]}
@@ -87,7 +88,7 @@ done
 ```
 
 ## Calculates the thetas for each site:
-```
+```bash
 for query in ${POP[*]}
 
 do
@@ -98,7 +99,7 @@ done
 
 
 ## Gets summary of thetas:
-```
+```bash
 for query in ${POP[*]}
 
 do
@@ -107,7 +108,7 @@ done
 ```
 
 ## Performs final calculations:
-```
+```bash
 for query in ${POP[*]}
 
 do
@@ -117,7 +118,7 @@ done > /home/projects/dp_00007/data/hmon/angsd_PopGen/Dec22--Ind581.PopGenEstima
 ```
 
 ## Gets thetas per sliding window:
-```
+```bash
 for query in ${POP[*]}
 
 do
@@ -126,7 +127,7 @@ done
 ```
 
 ## Edits thetas per sliding window:
-```
+```bash
 for query in ${POP[*]}
 
 do
@@ -137,7 +138,7 @@ done
 
 ## Heterozygosity
 # Runs _ANGSD with depth filters to get the mafs file
-```
+```bash
 N_IND=`cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt | wc -l`
 REF=/home/projects/dp_00007/people/hmon/AngsdPopStruct/01_infofiles/fileOegenome10scaffoldC3G.fasta
 BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
@@ -157,27 +158,27 @@ angsd -nThreads 40 -ref $REF -bam $BAMLIST -uniqueOnly 1 -remove_bads 1 -only_pr
 ```
 🤝
 # Generates a `.bed` file based on the `.mafs` file:
-```
+```bash
 zcat /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd.mafs.gz | cut -f1,2 | tail -n +2 | awk '{print $1"\t"$2-1"\t"$2}' | bedtools merge -i - > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd.bed
 ```
 🤝
 # Creates a position file based on this new `.bed`:
-```
+```bash
 awk '{print $1"\t"($2+1)"\t"$3}'  /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd.bed > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd_bed.pos
 ```
 🤝
 # Indexs the `.pos` file created above:
-```
+```bash
 angsd sites index /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd_bed.pos
 ```
 🤝
 # Runs _ANGSD_ under -doSaf::
-```
+```bash
 parallel --plus angsd -i {} -ref $REF -anc $REF -sites /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/Jan23_wrap_NICdepthfilters_het_angsd_bed.pos -GL 1 -doSaf 1 -remove_bads 1 -uniqueOnly 1 -baq 1 -C 50 -minMapQ 20 -minQ 20 -out /home/projects/dp_00007/data/hmon/angsd_Het/{/...} :::: /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.txt
 ```
 🤝
 # Calculates fractions:
-```
+```bash
 parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ -j 1 --plus "realSFS -fold 1 -P 10 {} > /home/projects/dp_00007/data/hmon/angsd_Het/{/..}.het" ::: /home/projects/dp_00007/data/hmon/angsd_Het/*.saf.idx
 
 #alternative 
@@ -187,7 +188,7 @@ parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ --plus "realSFS -
 ```
 🤝
 # Calculates heterozygosity:
-```
+```bash
 fgrep '.' *.23jan23.het | tr ":" " " | awk '{print $1"\t"$3/($2+$3)*100}' | sed -r 's/.het//g' | awk '{split($0,a,"_"); print $1"\t"a[1]"\t"$2"\t"$3'} | awk '{split($2,a,"-"); print $1"\t"a[2]"\t"$3'} > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/GEO_EUostrea--AllSamples_setMinDepth600_setMaxDepth1200--HET.23jan23.txt
 ```
 

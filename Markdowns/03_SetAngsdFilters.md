@@ -282,5 +282,5 @@ cat /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.2
   -GL 1 -doGlf 2 \
   -doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
   -doIBS 1 -doCov 1 -makeMatrix 1 \
-  -nThreads 40 \
-  -P 40
+  -nThreads 40 
+

@@ -4,10 +4,11 @@ Population Structure Analysis
 - [Population Structure Analysis](#population-structure-analysis)
   - [Modules](#modules)
   - [Re-run angsd LD Pruned SNPs list minweight0.5](#re-run-angsd-ld-pruned-snps-list-minweight05)
-  - [NGSadmix](#NGSadmix)
-  - [evalAdmix](#evalAdmix)
+  - [NGSadmix](#ngsadmix)
+    - [qsub job because it takes way too much time](#qsub-job-because-it-takes-way-too-much-time)
+  - [evalAdmix](#evaladmix)
   - [Run PCangsd LD Pruned SNPs list minweight0.5 and minMaf 0.05](#run-pcangsd-ld-pruned-snps-list-minweight05-and-minmaf-005)
-  - [Run PCangsd with the global Variant calling SNP list](#Run-PCangsd-with-the-global-Variant-calling-SNP-list)
+  - [Run PCangsd with the global Variant calling SNP list](#run-pcangsd-with-the-global-variant-calling-snp-list)
 
 
 ## Modules
@@ -99,6 +100,21 @@ $EXTRA_ARG \
 
 
 ## NGSadmix
+### qsub job because it takes way too much time
+```bash
+#!/bin/bash
+#PBS -d /home/projects/dp_00007/people/hmon/EUostrea
+#PBS -W group_list=dp_00007 -A dp_00007
+#PBS -N NGSAdmix_bignode_7feb23
+#PBS -e NGSAdmix_bignode_7feb23.err
+#PBS -o NGSAdmix_bignode_7feb23.out
+#PBS -l nodes=2:ppn=36:fatnode
+#PBS -l walltime=600:00:00
+#PBS -l mem=1300gb
+#PBS -m n
+#PBS -r n
+```
+
 ```bash
 
 BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz
@@ -106,6 +122,15 @@ BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStruct
 for k in $(seq 1 10); do
   /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 10000 -o $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_NGSadmix.$k
 done
+
+for k in $(seq 2 4); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 10000 -o $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_NGSadmix.$k
+done
+
+for k in $(seq 4 10); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 10000 -o $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_NGSadmix.$k
+done
+
 ```
 
 ## evalAdmix
@@ -113,7 +138,7 @@ done
 LDPRUNED=$OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct
 
 for k in $(seq 1 20); do
-evalAdmix -beagle $LDPRUNED.beagle.gz -fname $LDPRUNED.$k.fopt.gz -qname $LDPRUNED.$k.qopt -o evaladmixOut.$LDPRUNED.$k.corres -P 20
+evalAdmix -beagle $LDPRUNED.beagle.gz -fname $LDPRUNED.$k.fopt.gz -qname $LDPRUNED.$k.qopt -o evaladmixOut.$LDPRUNED.$k.corres -P 40
 ```
 ## Run PCangsd LD Pruned SNPs list minweight0.5 and minMaf 0.05
 ```bash
