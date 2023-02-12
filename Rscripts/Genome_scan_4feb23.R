@@ -54,7 +54,19 @@ genome_selection_sites$pc <- factor(genome_selection_sites$pc , ordered = T,
 
 ## Extract sites exceeding  p-value cut off of 0.05 after Bonferroni correction and export them
 genome_selection_sites_outliers <- filter(genome_selection_sites, neg_log_p_value > -log(0.05/dim(genome_selection)[1]))
+head(genome_selection_sites_outliers)
 
+## For PC9, scaffold2 Extract sites exceeding  p-value cut off of 0.05 after Bonferroni correction
+genome_selection_sites_outliers_PC9 <- filter(genome_selection_sites_outliers, 
+                                                   (lg == "scaffold2" | lg == "scaffold10") & pc == "PC9")
+# Group the data by "lg" and calculate the min and max positions
+genome_selection_sites_outliers_PC9_mm <- genome_selection_sites_outliers_PC9 %>%
+  group_by(lg) %>%
+  summarize(min_pos = min(pos), max_pos = max(pos))
+
+# Filter the result for "scaffold2" and "scaffold10"
+result_filtered <- genome_selection_sites_outliers_PC9_mm %>%
+  filter(lg %in% c("scaffold2", "scaffold10"))
 
 ## Plot
 genome_selection_plot <- genome_selection_sites %>%
