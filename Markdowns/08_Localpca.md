@@ -117,14 +117,15 @@ wait
 
 
 🤝
-## Run pcangsd and and prepare the local_pca input. The dependencies are /workdir/genomic-data-analysis/scripts/local_pca_1.sh and /workdir/genomic-data-analysis/scripts/local_pca_2.R
+## Run pcangsd and prepare the local_pca input. 
+cd $BEAGLEDIR
 COUNT=0
 for LG in `cat $LG_LIST`; do
-	if [ -f $BEAGLEDIR"snp_position_"$SNP"snp_"$LG".tsv" ]; then
-		rm $BEAGLEDIR"snp_position_"$SNP"snp_"$LG".tsv"
+	if [ -f $BEAGLEDIR"snp_position13feb23_"$SNP"snp_"$LG".tsv" ]; then
+		rm $BEAGLEDIR"snp_position13feb23_"$SNP"snp_"$LG".tsv"
 	fi
-	if [ -f $BEAGLEDIR"pca_summary_"$SNP"snp_"$LG".tsv" ]; then
-		rm $BEAGLEDIR"pca_summary_"$SNP"snp_"$LG".tsv"
+	if [ -f $BEAGLEDIR"pca_summary13feb23_"$SNP"snp_"$LG".tsv" ]; then
+		rm $BEAGLEDIR"pca_summary13feb23_"$SNP"snp_"$LG".tsv"
 	fi
 	bash $LOCAL_PCA_1 $BEAGLEDIR $PREFIX $LG $PC $SNP $PYTHON $PCANGSD $LOCAL_PCA_2 &
 	COUNT=$(( COUNT + 1 ))
@@ -134,7 +135,7 @@ for LG in `cat $LG_LIST`; do
 	fi
 done
 
-
+d🤝
 
 
 
