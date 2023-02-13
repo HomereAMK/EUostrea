@@ -52,10 +52,44 @@ PCANGSD=pcangsd
 ## Extract prefix and directory from the beagle path
 PREFIX=`echo $BEAGLE | sed 's/\..*//' | sed -e 's#.*/\(\)#\1#'`
 BEAGLEDIR=`echo $BEAGLE | sed 's:/[^/]*$::' | awk '$1=$1"/"'`
+🤝
 
+COUNT=0
+for LG in `cat $LG_LIST`; do
+	if [ ! -s /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/$PREFIX"_"$LG".beagle.gz" ]; then
+		echo "Subsetting "$LG
+		zcat $BEAGLE | head -n 1 > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/$PREFIX"_"$LG".beagle"
+		zcat $BEAGLE | grep $LG"_" >> /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/$PREFIX"_"$LG".beagle" &
+		COUNT=$(( COUNT + 1 ))
+		if [ $COUNT == $N_CORE_MAX ]; then
+		wait
+		COUNT=0
+		fi
+	else
+		echo $LG" was already subsetted"
+	fi
+done
+
+
+wait 
+
+COUNT=0
+for LG in `cat $LG_LIST`; do
+	if [ ! -s /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/$PREFIX"_"$LG".beagle.gz" ]; then
+		echo "Gzipping "$LG
+		gzip /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/$PREFIX"_"$LG".beagle" &
+		COUNT=$(( COUNT + 1 ))
+		if [ $COUNT == $N_CORE_MAX ]; then
+		wait
+		COUNT=0
+		fi
+	fi
+done
+
+🤝
 ## Split beagle files into smaller windows, each containing a header and the desired number of SNPs
 COUNT=0
-for LG in `cat $LGLIST`; do
+for LG in `cat $LG_LIST`; do
 	echo "Splitting "$LG
 	zcat $BEAGLEDIR$PREFIX"_"$LG".beagle.gz" | tail -n +2 | split -d --lines $SNP - --filter='bash -c "{ zcat ${FILE%.*} | head -n1; cat; } > $FILE"' $BEAGLEDIR$PREFIX"_"$LG".beagle.x" &
 	COUNT=$(( COUNT + 1 ))
@@ -69,7 +103,7 @@ wait
 
 ## Gzip these beagle files
 COUNT=0
-for LG in `cat $LGLIST`; do
+for LG in `cat $LG_LIST`; do
 	echo "Zipping "$LG
 	gzip $BEAGLEDIR$PREFIX"_"$LG".beagle.x"* &
 	COUNT=$(( COUNT + 1 ))
@@ -81,28 +115,16 @@ done
 
 wait
 
-## Move the beagle files to local_pca directory
-COUNT=0
-for LG in `cat $LGLIST`; do
-	echo "Moving "$LG
-	mv $BEAGLEDIR$PREFIX"_"$LG".beagle.x"* 	$BEAGLEDIR"local_pca/" &
-	COUNT=$(( COUNT + 1 ))
-  if [ $COUNT == $N_CORE_MAX ]; then
-	  wait
-	  COUNT=0
-	fi
-done
 
-wait
-
+🤝
 ## Run pcangsd and and prepare the local_pca input. The dependencies are /workdir/genomic-data-analysis/scripts/local_pca_1.sh and /workdir/genomic-data-analysis/scripts/local_pca_2.R
 COUNT=0
-for LG in `cat $LGLIST`; do
-	if [ -f $BEAGLEDIR"local_pca/snp_position_"$SNP"snp_"$LG".tsv" ]; then
-		rm $BEAGLEDIR"local_pca/snp_position_"$SNP"snp_"$LG".tsv"
+for LG in `cat $LG_LIST`; do
+	if [ -f $BEAGLEDIR"snp_position_"$SNP"snp_"$LG".tsv" ]; then
+		rm $BEAGLEDIR"snp_position_"$SNP"snp_"$LG".tsv"
 	fi
-	if [ -f $BEAGLEDIR"local_pca/pca_summary_"$SNP"snp_"$LG".tsv" ]; then
-		rm $BEAGLEDIR"local_pca/pca_summary_"$SNP"snp_"$LG".tsv"
+	if [ -f $BEAGLEDIR"pca_summary_"$SNP"snp_"$LG".tsv" ]; then
+		rm $BEAGLEDIR"pca_summary_"$SNP"snp_"$LG".tsv"
 	fi
 	bash $LOCAL_PCA_1 $BEAGLEDIR $PREFIX $LG $PC $SNP $PYTHON $PCANGSD $LOCAL_PCA_2 &
 	COUNT=$(( COUNT + 1 ))

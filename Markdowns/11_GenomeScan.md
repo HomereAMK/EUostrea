@@ -261,6 +261,12 @@ start_pos=11747526
 end_pos=11856952
 # Append the region of interest from the global variant calling snp list with awk
 cat $LIST_VC | awk -v start=$start_pos -v end=$end_pos '$1 == "scaffold10" && $2 >= start && $2 <= end {print $1,$2,$3,$4}' >> $OUTPUTFOLDER/Outliers_PC2_sca2_10_10feb23.txt
+
+#error on the output names
+for file in $OUTPUTFOLDER/Outliers_PC2_sca2_10_10feb23*; do
+    mv "$file" "${file/Outliers_PC2/Outliers_PC9}"
+done
+
 ```
 ### Get the beagle file
 ```bash
