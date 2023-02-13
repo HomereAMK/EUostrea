@@ -47,7 +47,7 @@ export OMP_NUM_THREADS=1
 ## Loop through each windowed beagle file in the same linkage group (or chromosome)
 for INPUT in `ls $BEAGLEDIR$PREFIX"_"$LG".beagle.x"*".gz"`; do
 	## Run pcangsd
-	pcangsd -beagle $INPUT -o $INPUT --threads 5
+	pcangsd -b $INPUT -o $INPUT --threads 5
 	## Process pcangsd output
 	Rscript --vanilla $LOCAL_PCA_2 $INPUT".cov" $PC $SNP $INPUT $LG $BEAGLEDIR
 done
