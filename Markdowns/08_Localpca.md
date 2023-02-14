@@ -42,7 +42,7 @@ module load R/4.0.0
 BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/Jan23_A940_minMapQ20minQ20_NOMININD_setMinDepthInd1_setMinDepthInd1_setMinDepth600setMaxDepth1200.beagle.gz
 LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_28jan23.txt
 SNP=1000 ## Number of SNPs to include in each window
-PC=4 ## Number of PCs to keep for each window
+PC=2 ## Number of PCs to keep for each window
 N_CORE_MAX=20 # Maximum number of threads to use simulatenously
 LOCAL_PCA_1=/home/projects/dp_00007/people/hmon/EUostrea/00_scripts/local_pca_1.sh
 LOCAL_PCA_2=/home/projects/dp_00007/people/hmon/EUostrea/00_scripts/local_pca_2.R
@@ -118,7 +118,7 @@ wait
 
 🤝
 ## Run pcangsd and prepare the local_pca input. 
-cd $BEAGLEDIR
+cd /home/projects/dp_00007/people/hmon/EUostrea
 COUNT=0
 for LG in `cat $LG_LIST`; do
 	if [ -f $BEAGLEDIR"snp_position13feb23_"$SNP"snp_"$LG".tsv" ]; then
@@ -135,96 +135,6 @@ for LG in `cat $LG_LIST`; do
 	fi
 done
 
-d🤝
+🤝
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Subset the beagle file: subset_beagle_by_lg.sh
-# This script is used to subset a genome-wide beagle file into smaller files by linkage groups or chromosomes. 
-```bash
-cd /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/LocalPca/
-COUNT=0
-for LG in ; do
-		zcat $BEAGLE | head -n 1 > $BEAGLEDIR$PREFIX"_"$LG".beagle"
-		zcat $BEAGLE | grep $LG"_" >> $BEAGLEDIR$PREFIX"_"$LG".beagle" &
-		COUNT=$(( COUNT + 1 ))
-		if [ $COUNT == $N_CORE_MAX ]; then
-		  wait
-		  COUNT=0
-		fi
-	else
-		echo $LG" was already subsetted"
-	fi
-done
-
-SCA=("scaffold1" "scaffold2" "scaffold3" "scaffold4" "scaffold5" "scaffold6" "scaffold7" "scaffold8" "scaffold9" "scaffold10")
-for query in ${SCA[*]}
-do
-		zcat $BEAGLE | head -n 1 > $BEAGLEDIR$PREFIX"_"${query}".beagle" 
-		zcat $BEAGLE | grep "${query}" >> $BEAGLEDIR$PREFIX"_"${query}".beagle" &
-		gzip $BEAGLEDIR$PREFIX"_"${query}".beagle"
-done
-
-wait 
-
-COUNT=0
-for LG in `cat $LGLIST`; do
-	if [ ! -s $BEAGLEDIR$PREFIX"_"$LG".beagle.gz" ]; then
-		echo "Gzipping "$LG
-		gzip $BEAGLEDIR$PREFIX"_"$LG".beagle" &
-		COUNT=$(( COUNT + 1 ))
-		if [ $COUNT == $N_CORE_MAX ]; then
-		  wait
-		  COUNT=0
-		fi
-	fi
-done
-```
-
-## window of 1000snps
-```bash
-#for 1000snpsWindow
-SNP=1000 ## Number of SNPs to include in each window
-PC=2 ## Number of PCs to keep for each window
-N_CORE_MAX=40 # Maximum number of threads to use simulatenously
-COUNT=0
-for LG in `cat $LGLIST`; do
-	echo "Splitting "$LG
-	zcat $PREFIX"_"$LG".beagle.gz" | tail -n +2 | split -d --lines $SNP - --filter='bash -c "{ zcat ${FILE%.*} | head -n1; cat; } > $FILE"' $PREFIX"_"$LG".beagle.x" &
-	COUNT=$(( COUNT + 1 ))
-if [ $COUNT == $N_CORE_MAX ]; then
-	wait
-	COUNT=0
-	fi
-done
-````
-
-## Gzip these beagle files
-COUNT=0
-for LG in `cat $LGLIST`; do
-	echo "Zipping "$LG
-	gzip $PREFIX"_"$LG".beagle.x"* &
-	COUNT=$(( COUNT + 1 ))
-  if [ $COUNT == $N_CORE_MAX ]; then
-	  wait
-	  COUNT=0
-	fi
-done
