@@ -13,8 +13,8 @@ setwd("~/Desktop/Scripts/")
 pacman::p_load(vegan, tidyverse, RcppCNPy, pheatmap, extrafont, ggforce, ggrepel, ggstar, np, reticulate, cowplot)
 
 
-## plot with 10 axis
-genome_selection <- read_tsv("~/Desktop/Scripts/Data/GenomeScan_EUostrea/1feb23_GlobalVariants_selectionscan_pcangsd_e10.selection.tsv", col_names = F)
+## plot with 10 axis 1feb23_GlobalVariants
+genome_selection <- read_tsv("~/Desktop/Scripts/Data/GenomeScan_EUostrea/", col_names = F)
 genome_selection_sites <- read_tsv("Data/GenomeScan_EUostrea/1feb23_GlobalVariants_selectionscan__minmaf0.05_List.txt", 
                                    col_names = c("lg", "pos", "major", "minor")) %>%
   bind_cols(read_table("Data/GenomeScan_EUostrea/1feb23_GlobalVariants_selectionscan__minmaf0.05_pcangsd_e10.sites", col_names = "keep")) %>%
