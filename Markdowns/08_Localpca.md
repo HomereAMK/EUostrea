@@ -121,11 +121,11 @@ wait
 cd /home/projects/dp_00007/people/hmon/EUostrea
 COUNT=0
 for LG in `cat $LG_LIST`; do
-	if [ -f $BEAGLEDIR"snp_position13feb23_"$SNP"snp_"$LG".tsv" ]; then
-		rm $BEAGLEDIR"snp_position13feb23_"$SNP"snp_"$LG".tsv"
+	if [ -f $BEAGLEDIR"snp_position14feb23_"$SNP"snp_"$LG".tsv" ]; then
+		rm $BEAGLEDIR"snp_position14feb23_"$SNP"snp_"$LG".tsv"
 	fi
-	if [ -f $BEAGLEDIR"pca_summary13feb23_"$SNP"snp_"$LG".tsv" ]; then
-		rm $BEAGLEDIR"pca_summary13feb23_"$SNP"snp_"$LG".tsv"
+	if [ -f $BEAGLEDIR"pca_summary14feb23_"$SNP"snp_"$LG".tsv" ]; then
+		rm $BEAGLEDIR"pca_summary14feb23_"$SNP"snp_"$LG".tsv"
 	fi
 	bash $LOCAL_PCA_1 $BEAGLEDIR $PREFIX $LG $PC $SNP $PYTHON $PCANGSD $LOCAL_PCA_2 &
 	COUNT=$(( COUNT + 1 ))
@@ -136,5 +136,26 @@ for LG in `cat $LG_LIST`; do
 done
 
 🤝
+```
+
+#on c2 generate dist
+```R
+#### Run pc_dist and assemble the output #### 
+install.packages("data.table")
+devtools::install_github("petrelharp/local_pca/lostruct")
+library(lostruct)
+library(tidyverse)
+# Read the input
+pca_summary <- read_tsv("~/Desktop/Scripts/Data/LocalPCA_EUostrea/pca_summary13feb23_1000snp_4pc.14feb23.tsv", col_names = F) 
+# Run pc_dist with pca_summary
+pca_summary <- as.matrix(pca_summary)
+attr(pca_summary, 'npc') <- 2
+dist <- pc_dist(pca_summary) #Is taking a long ass time.
+write_tsv(as.data.frame(dist), '"03_datasets/LocalPca/run_pc_dist_1000snp_2pc_c2.14feb23.tsv', col_names = F)
+
+attr(pca_summary, 'npc') <- 4
+dist2 <- pc_dist(pca_summary) #Is taking a long ass time.
+write_tsv(as.data.frame(dist2), '"03_datasets/LocalPca/run_pc_dist_1000snp_4pc_c2.14feb23.tsv', col_names = F)
 
 
+```

@@ -123,8 +123,8 @@ for k in $(seq 1 10); do
   /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 10000 -o $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_NGSadmix.$k
 done
 
-for k in $(seq 2 4); do
-  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 10000 -o $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_NGSadmix.$k
+for k in $(seq 6 7); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 2000 -o $OUTPUTFOLDER/17feb23_prunedLDminweight0.5_NGSadmix.$k
 done
 
 for k in $(seq 4 10); do
@@ -135,10 +135,11 @@ done
 
 ## evalAdmix
 ```bash
-LDPRUNED=$OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct
+PREFIXLDPRUNED=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_NGSadmix
+BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz
 
 for k in $(seq 1 20); do
-evalAdmix -beagle $LDPRUNED.beagle.gz -fname $LDPRUNED.$k.fopt.gz -qname $LDPRUNED.$k.qopt -o evaladmixOut.$LDPRUNED.$k.corres -P 40
+evalAdmix -beagle $BEAGLE -fname $PREFIXLDPRUNED.$k.fopt.gz -qname $PREFIXLDPRUNED.$k.qopt -minMaf 0 -o $PREFIXLDPRUNED.evaladmixOut.$k.corres -P 40
 ```
 ## Run PCangsd LD Pruned SNPs list minweight0.5 and minMaf 0.05
 ```bash
