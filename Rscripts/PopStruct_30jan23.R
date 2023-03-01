@@ -229,4 +229,8 @@ WADD_PC9 <- ggplot(PCA_Annot, aes(PCA_1, PCA_9, label = ifelse(population == "WA
 ggsave(filename  = "EUostrea/Figures/PopulationStructure/WADD_PCA/WADD_pc9_PCA_LDpruned_15feb23.pdf", 
        plot=WADD_PC9, width = 60, height = 40, units = "cm", pointsize = 20, dpi = 300)
 
-  
+
+#
+##
+### The END ~~~~~
+

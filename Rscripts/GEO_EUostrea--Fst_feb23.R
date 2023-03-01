@@ -76,7 +76,7 @@ Fst$Pop2 <- factor(Fst$Pop2, ordered = T,
 plotFstmat <- ggplot(data = Fst, aes(x = Pop1, y = Pop2, fill = Weighted)) +
   geom_tile(color = "#ffffff", lwd = 1.5, linetype = 1, width = 1, height = 1) +
   coord_fixed() +
-  geom_text(aes(label = round(Weighted,digits =2)), color = "#ffffff", size = 2) +
+  geom_text(aes(label = round(Weighted,digits =3)), color = "#ffffff", size = 2) +
   scale_fill_gradientn(colors = c("#fde0dd", "#fa9fb5", "#c51b8a"), 
                        name = "Weighted Fst", 
                        breaks = c(0,  0.05, 0.10,  0.15, 0.2, 0.25),
@@ -133,4 +133,5 @@ dev.off()
 
 #
 ##
+### The END ~~~~~
 ### The END ~~~~~

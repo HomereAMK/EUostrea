@@ -128,3 +128,9 @@ Outliers_PC9_sca2_10_pcangsd<-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellips
 ggsave(filename  = "EUostrea/Figures/Genome_scan/Outliers/PCA_SNPOutliers_PC9_sca2_10_10feb23.png", 
        plot=Outliers_PC9_sca2_10_pcangsd, width = 60, height = 40, units = "cm", pointsize = 20, dpi = 250)
 dev.off()
+
+#
+##
+### The END ~~~~~
+
+

@@ -48,9 +48,9 @@ pca_table %>%
 inversion_pca_table <- mutate(lg04_pca_table, lg="Reg04", PC1=PC1, min_cutoff=-0.03, max_cutoff=0.03) %>%
   bind_rows(mutate(lg05_pca_table, lg="Reg05", PC1=PC1,  min_cutoff=-0.03, max_cutoff=0.03)) %>%
   bind_rows(mutate(lg08_pca_table, lg="Reg08", PC1=PC1,  min_cutoff=0, max_cutoff=0.06)) %>%
-  mutate(genotype=ifelse(PC1<min_cutoff, "homo_minor", "het"),
-         genotype=ifelse(PC1>max_cutoff, "homo_major", genotype)) %>%
-  mutate(genotype=factor(genotype, levels = c("homo_minor", "het", "homo_major"))) %>%
+  mutate(genotype=ifelse(PC1<min_cutoff, "homo_1", "het"),
+         genotype=ifelse(PC1>max_cutoff, "homo_2", genotype)) %>%
+  mutate(genotype=factor(genotype, levels = c("homo_1", "het", "homo_2"))) %>%
   mutate(minor_allele_count = 3-as.numeric(genotype)) %>%
   dplyr::select(individual, population, lg, PC1, min_cutoff, max_cutoff, genotype,minor_allele_count)
 Gen_freq_histo <- inversion_pca_table %>%
@@ -101,6 +101,16 @@ inversion_pca_table %>%
   scale_fill_manual(values = c("#5a0c30","#973fc9","#91ccff")) +
   facet_wrap(~lg, scales = "free") +
   theme_cowplot()
+
+# Save dataframe for the Map pie chart 
+inversion_pca_table %>%
+  group_by(population, lg) %>%
+  summarise(prop_homo_1 = mean(genotype == "homo_1"),
+            prop_homo_2 = mean(genotype == "homo_2"),
+            prop_het = mean(genotype == "het"), .groups = 'drop') %>% 
+  write.table(., "~/Desktop/Scripts/Data/InvReg_EUostrea/PropHomo1_het_homo2_InvReg_27feb23.tsv", sep="\t", row.names=FALSE)
+
+#
 Genfreq1 <- inversion_pca_table %>%
   count(population, population, lg, genotype) %>%
   ggplot(aes(x=population, y=n)) +
@@ -135,7 +145,7 @@ Genfreq1 <- inversion_pca_table %>%
         legend.position = "top",
         legend.key = element_rect(fill = NA),
         legend.background =element_blank()) +
-  guides(fill = guide_legend(title = "Populations:", title.theme = element_text(size = 12, face = "bold"),
+  guides(fill = guide_legend(title = "Haplotypes for putative inversion regions", title.theme = element_text(size = 12, face = "bold"),
                              label = TRUE,
                              label.theme = element_text(size = 14),
                              override.aes = list(size = 5, alpha = .9)), colour = "none")
@@ -145,8 +155,8 @@ dev.off()
 inversion_allele_frequency <- inversion_pca_table %>%
   count(population, lg, genotype) %>%
   pivot_wider(names_from = genotype, values_from = n, values_fill=0) %>%
-  mutate(minor=2*homo_minor+het, major=2*homo_major+het) %>%
-  dplyr::select(-c(homo_minor, het, homo_major)) %>%
+  mutate(minor=2*homo_1+het, major=2*homo_2+het) %>%
+  dplyr::select(-c(homo_1, het, homo_2)) %>%
   pivot_longer(cols = c(minor, major), names_to = "genotype", values_to = "n") %>%
   group_by(lg, population) %>%
   mutate(sum_n = sum(n), p = n/sum_n) %>%
@@ -184,7 +194,7 @@ Genfreq2 <- inversion_allele_frequency %>%
         legend.position = "top",
         legend.key = element_rect(fill = NA),
         legend.background =element_blank()) +
-  guides(fill = guide_legend(title = "Populations:", title.theme = element_text(size = 12, face = "bold"),
+  guides(fill = guide_legend(title = "Alleles for putative inversion regions", title.theme = element_text(size = 12, face = "bold"),
                              label = TRUE,
                              label.theme = element_text(size = 14),
                              override.aes = list(size = 5, alpha = .9)), colour = "none")
@@ -246,7 +256,9 @@ dev.off()
 
 
 
-
+#
+##
+### The END ~~~~~
 
 
 
@@ -462,9 +474,9 @@ dev.off()
 # #### Genotype frequencies ####
 # 
 # inversion_pca_table <- mutate(pca_table, lg="scaffold4", PC1=PC1, min_cutoff=-0.03, max_cutoff=0.03) %>% #change min_cutoff=-0.05, max_cutoff=0.01
-#   mutate(genotype=ifelse(PC1<min_cutoff, "homo_minor", "het"),
-#          genotype=ifelse(PC1>max_cutoff, "homo_major", genotype)) %>%
-#   mutate(genotype=factor(genotype, levels = c("homo_minor", "het", "homo_major"))) %>%
+#   mutate(genotype=ifelse(PC1<min_cutoff, "homo_1", "het"),
+#          genotype=ifelse(PC1>max_cutoff, "homo_2", genotype)) %>%
+#   mutate(genotype=factor(genotype, levels = c("homo_1", "het", "homo_2"))) %>%
 #   mutate(minor_allele_count = 3-as.numeric(genotype)) %>%
 #   dplyr::select(individual, population, lg, PC1, min_cutoff, max_cutoff, genotype,minor_allele_count)
 # cut_off <- inversion_pca_table %>%
@@ -493,8 +505,8 @@ dev.off()
 # inversion_allele_frequency <- inversion_pca_table %>%
 #   count(population, lg, genotype) %>%
 #   pivot_wider(names_from = genotype, values_from = n, values_fill=0) %>%
-#   mutate(minor=2*homo_minor+het, major=2*homo_major+het) %>%
-#   dplyr::select(-c(homo_minor, het, homo_major)) %>%
+#   mutate(minor=2*homo_1+het, major=2*homo_2+het) %>%
+#   dplyr::select(-c(homo_1, het, homo_2)) %>%
 #   pivot_longer(cols = c(minor, major), names_to = "genotype", values_to = "n") %>%
 #   group_by(lg, population) %>%
 #   mutate(sum_n = sum(n), p = n/sum_n) %>%
@@ -673,9 +685,9 @@ dev.off()
 # 
 # ### Genotype frequencies ###
 # inversion_pca_table <- mutate(pca_table, lg="scaffold5 inversion region pos:199-24998832", PC1=PC1, min_cutoff=-0.03, max_cutoff=0.05) %>%
-#   mutate(genotype=ifelse(PC1<min_cutoff, "homo_minor", "het"),
-#          genotype=ifelse(PC1>max_cutoff, "homo_major", genotype)) %>%
-#   mutate(genotype=factor(genotype, levels = c("homo_minor", "het", "homo_major"))) %>%
+#   mutate(genotype=ifelse(PC1<min_cutoff, "homo_1", "het"),
+#          genotype=ifelse(PC1>max_cutoff, "homo_2", genotype)) %>%
+#   mutate(genotype=factor(genotype, levels = c("homo_1", "het", "homo_2"))) %>%
 #   mutate(minor_allele_count = 3-as.numeric(genotype)) %>%
 #   dplyr::select(individual, population, lg, PC1, min_cutoff, max_cutoff, genotype,minor_allele_count)
 # cut_off <- inversion_pca_table %>%
@@ -705,8 +717,8 @@ dev.off()
 # inversion_allele_frequency <- inversion_pca_table %>%
 #   count(population, lg, genotype) %>%
 #   pivot_wider(names_from = genotype, values_from = n, values_fill=0) %>%
-#   mutate(minor=2*homo_minor+het, major=2*homo_major+het) %>%
-#   dplyr::select(-c(homo_minor, het, homo_major)) %>%
+#   mutate(minor=2*homo_1+het, major=2*homo_2+het) %>%
+#   dplyr::select(-c(homo_1, het, homo_2)) %>%
 #   pivot_longer(cols = c(minor, major), names_to = "genotype", values_to = "n") %>%
 #   group_by(lg, population) %>%
 #   mutate(sum_n = sum(n), p = n/sum_n) %>%
@@ -886,9 +898,9 @@ dev.off()
 # 
 # ### Genotype frequencies ###
 # inversion_pca_table <- mutate(pca_table, lg="scaffold4 inversion region pos:1736-12999529", PC1=PC1, min_cutoff=-0.03, max_cutoff=0.05) %>%
-#   mutate(genotype=ifelse(PC1<min_cutoff, "homo_minor", "het"),
-#          genotype=ifelse(PC1>max_cutoff, "homo_major", genotype)) %>%
-#   mutate(genotype=factor(genotype, levels = c("homo_minor", "het", "homo_major"))) %>%
+#   mutate(genotype=ifelse(PC1<min_cutoff, "homo_1", "het"),
+#          genotype=ifelse(PC1>max_cutoff, "homo_2", genotype)) %>%
+#   mutate(genotype=factor(genotype, levels = c("homo_1", "het", "homo_2"))) %>%
 #   mutate(minor_allele_count = 3-as.numeric(genotype)) %>%
 #   dplyr::select(individual, population, lg, PC1, min_cutoff, max_cutoff, genotype,minor_allele_count)
 # cut_off <- inversion_pca_table %>%
@@ -918,8 +930,8 @@ dev.off()
 # inversion_allele_frequency <- inversion_pca_table %>%
 #   count(population, lg, genotype) %>%
 #   pivot_wider(names_from = genotype, values_from = n, values_fill=0) %>%
-#   mutate(minor=2*homo_minor+het, major=2*homo_major+het) %>%
-#   dplyr::select(-c(homo_minor, het, homo_major)) %>%
+#   mutate(minor=2*homo_1+het, major=2*homo_2+het) %>%
+#   dplyr::select(-c(homo_1, het, homo_2)) %>%
 #   pivot_longer(cols = c(minor, major), names_to = "genotype", values_to = "n") %>%
 #   group_by(lg, population) %>%
 #   mutate(sum_n = sum(n), p = n/sum_n) %>%

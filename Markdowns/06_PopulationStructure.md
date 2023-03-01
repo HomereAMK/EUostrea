@@ -123,8 +123,8 @@ for k in $(seq 1 10); do
   /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 10000 -o $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_NGSadmix.$k
 done
 
-for k in $(seq 6 7); do
-  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 2000 -o $OUTPUTFOLDER/17feb23_prunedLDminweight0.5_NGSadmix.$k
+for k in $(seq 8 10); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 2000 -o $OUTPUTFOLDER/27feb23_prunedLDminweight0.5_2Kiter_NGSadmix.$k
 done
 
 for k in $(seq 4 10); do

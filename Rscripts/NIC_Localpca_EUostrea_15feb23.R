@@ -248,6 +248,8 @@ dist2_outlier_index <- which(mds$dist_2 > -0.25)
 beagle_list_dist2_outlier <- beagle_list[dist2_outlier_index,]
 write_tsv(beagle_list_dist2_outlier, "~/Desktop/Scripts/Data/Local_PCA/DatasetI_trialbeagle_list_dist2_outlier.txt", col_names = F)
 
-
+#
+##
+### The END ~~~~~
 
 
