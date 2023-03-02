@@ -82,7 +82,7 @@ info_prop$Tag <- factor(info_prop$Tag, ordered = T,
                               "INNE","VAGS", "AGAB", "OSTR"))
 
 # Plot the pie charts corresponding to InvReg04 haplotype frequencies EUROPE
-  readOGR(dsn = "ne_10m_admin_0_countries.shp", layer = "ne_10m_admin_0_countries") %>%
+map_pie_Reg08 <-  readOGR(dsn = "ne_10m_admin_0_countries.shp", layer = "ne_10m_admin_0_countries") %>%
   fortify() %>%
   filter(lat>35, lat<73) %>%ggplot(aes(x =long, y = lat)) +
     geom_polygon(aes(group = group), fill="grey90", color="black", size=0.1)+
@@ -95,8 +95,8 @@ info_prop$Tag <- factor(info_prop$Tag, ordered = T,
     geom_label_repel(data=info_prop %>%
                        filter(!(Country %in% c("Norway", "Sweden", "Denmark"))) %>%
                        filter(lg == "Reg08"), aes(color=Tag,label=Tag), size=3, 
-                     seed = 10, min.segment.length = 10, force = 1, segment.curvature = 1, segment.angle = 3,
-                     nudge_x = 1.5, nudge_y = 0.8, max.overlaps = Inf) +
+                     seed = 10, min.segment.length = 0, force = 0, segment.curvature = 1, segment.angle = 3,
+                     nudge_x = 1, nudge_y = 0.8, max.overlaps = Inf) +
     scale_colour_manual(values =c( "#A02353", "#A02353", "#A02353",
                                    "#AD5B35",
                                    "#ad7358",
@@ -129,12 +129,13 @@ info_prop$Tag <- factor(info_prop$Tag, ordered = T,
     theme(axis.line = element_line(colour = "#000000", size = 0.3)) +
     theme(panel.border = element_blank()) +
     guides(colour = FALSE)
+ggsave(map_pie_Reg08, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold8/MapPie_InvReg08_populations.pdf", device = cairo_pdf, scale = 1.1, width = 25, height = 24, dpi = 300)
   
   
 ggsave(, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/HetatInvReg_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 dev.off()
   
-# Plot the pie charts corresponding to InvReg04 haplotype frequencies SCANDINAVIA
+# Plot the pie charts corresponding to InvReg05 haplotype frequencies SCANDINAVIA
   readOGR(dsn = "ne_10m_admin_0_countries.shp", layer = "ne_10m_admin_0_countries") %>%
     fortify() %>%
     filter(lat>35, lat<73) %>%ggplot(aes(x =long, y = lat)) +

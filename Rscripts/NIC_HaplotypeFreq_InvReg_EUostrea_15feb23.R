@@ -19,24 +19,29 @@ annot$V2 <- factor(annot$V2, ordered = T,
 
 # Inv Reg scaffold4 
 cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold4_InvReg_pcangsd.cov")) 
-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
+pca_Reg04 <- PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
+ggsave(pca_Reg04, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold4/pca1vs2_InvReg04_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+
 lg04_pca_table <- pca_table
-pca_table %>%
-  ggplot(aes(x=PC1, fill=population)) +
-  geom_histogram(color="black") +
-  theme_cowplot()
-# Inv Reg scaffold5
-cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold5_InvReg_pcangsd.cov")) 
-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
-lg05_pca_table <- pca_table
 pca_table %>%
   ggplot(aes(x=PC1, fill=population)) +
   geom_histogram(color="black") +
   theme_cowplot()
 
 # Inv Reg scaffold5
+cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold5_InvReg_pcangsd.cov")) 
+pca_Reg05 <- PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
+ggsave(pca_Reg05, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold5/pca1vs2_InvReg05_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+lg05_pca_table <- pca_table
+pca_table %>%
+  ggplot(aes(x=PC1, fill=population)) +
+  geom_histogram(color="black") +
+  theme_cowplot()
+
+# Inv Reg scaffold8
 cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold8_InvReg_pcangsd.cov")) 
-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
+pca_Reg08 <- PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
+ggsave(pca_Reg08, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold8/pca1vs2_InvReg08_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 lg08_pca_table <- pca_table
 pca_table %>%
   ggplot(aes(x=PC1, fill=population)) +

@@ -103,6 +103,47 @@ rxy_stacked_Plot <-
 # Saves plot ~
 ggsave(rxy_stacked_Plot, file = "~/Desktop/Scripts/EUostrea/Figures/Relatedness/Rxy_stacked_Plot_allpop_27feb23.pdf", device = cairo_pdf, scale = 1.1, width = 8, height = 10, dpi = 600)
 dev.off()
+
+# Sibship in the WADD population
+str(WADD)
+# Filter out rows where a and b are the same
+WADD_filtered <- WADD %>% filter(a != b)
+# Create scatterplot
+# Split ab variable into a and b variables
+WADD$a <- as.numeric(gsub("^(\\d+)_.*", "\\1", WADD$ab))
+WADD$b <- as.numeric(gsub("^\\d+_(\\d+)$", "\\1", WADD$ab))
+
+# Sort a and b variables in ascending order
+WADD$ab_sorted <- apply(WADD[, c("a", "b")], 1, function(x) paste(sort(x), collapse = "_"))
+
+# Remove rows with duplicate ab_sorted values
+WADD_unique <- unique(WADD, by = "ab_sorted")
+WADD$a <- ifelse(WADD$a == 0, 1, WADD$a + 1)
+WADD$b <- ifelse(WADD$b == 0, 1, WADD$b + 1)
+
+# Create a subset of WADD with only the highest rab values
+WADD_high_rab <- WADD_unique[order(WADD_unique$rab, decreasing = TRUE)[1:10],]
+
+# Create a plot with dots and labels
+ggplot(WADD_unique, aes(x = nSites, y = rab, color=rab)) +
+  geom_point(size = 3) +
+  scale_color_gradient(low = "blue", high = "red", name = "") +
+  geom_text(data = WADD_high_rab, aes(label = ab), size = 3, vjust = -0.5, color = "black") +
+  theme(panel.background = element_rect(fill = "#ffffff"),
+        panel.border = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.margin = margin(t = 0.005, b = 0.005, r = .4, l = .4, unit = "cm"),
+        axis.line = element_blank(),
+        axis.text = element_text(colour = "#000000", size = 10, face = "bold"),
+        axis.text.x = element_text( size = 10, face = "bold", angle = 45, vjust = 1, hjust = 1),
+        legend.position = "right",
+        legend.key = element_rect(fill = NA),
+        legend.background = element_blank(),
+        legend.title = element_text(colour = "#000000", size = 10, face = "bold"),
+        legend.text = element_text(colour = "#000000", size = 10, face="bold"))
+str(WADD$ab)
+
+
 #
 ##
 ### The END ~~~~~

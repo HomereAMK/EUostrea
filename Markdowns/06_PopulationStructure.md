@@ -3,9 +3,12 @@ Population Structure Analysis
 
 - [Population Structure Analysis](#population-structure-analysis)
   - [Modules](#modules)
-  - [Re-run angsd LD Pruned SNPs list minweight0.5](#re-run-angsd-ld-pruned-snps-list-minweight05)
+  - [Re-run angsd LD Pruned SNPs list minweight0.5 Global dataset](#re-run-angsd-ld-pruned-snps-list-minweight05-global-dataset)
+  - [Re-run angsd LD Pruned SNPs list minweight0.5 Scandinavia](#re-run-angsd-ld-pruned-snps-list-minweight05-scandinavia)
   - [NGSadmix](#ngsadmix)
     - [qsub job because it takes way too much time](#qsub-job-because-it-takes-way-too-much-time)
+    - [NGSadmix global dataset](#ngsadmix-global-dataset)
+    - [NGSadmix Scandinavia](#ngsadmix-scandinavia)
   - [evalAdmix](#evaladmix)
   - [Run PCangsd LD Pruned SNPs list minweight0.5 and minMaf 0.05](#run-pcangsd-ld-pruned-snps-list-minweight05-and-minmaf-005)
   - [Run PCangsd with the global Variant calling SNP list](#run-pcangsd-with-the-global-variant-calling-snp-list)
@@ -69,7 +72,7 @@ LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_
 #cut -f1 $SNP_LIST | sort | uniq > $BASEDIR/01_infofiles/List_scaffold_28jan23.txt
 LG_LIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/List_scaffold_28jan23.txt
 ```
-## Re-run angsd LD Pruned SNPs list minweight0.5
+## Re-run angsd LD Pruned SNPs list minweight0.5 Global dataset 
 ```
 angsd sites index $SNPLIST
 ```
@@ -94,10 +97,22 @@ $EXTRA_ARG \
 -sites $SNP_LIST \
 -rf $LG_LIST
 ```
-
+> The Global PCA for the MS is coming from this input .covmat...
 🤝
+## Re-run angsd LD Pruned SNPs list minweight0.5 Scandinavia
+```bash
+BAMLISTSCAND=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea_Scandinavia.txt
 
-
+#Get the beagle file
+angsd -b $BAMLISTSCAND -ref $REF -out $OUTPUTFOLDER/2mar23_prunedLDminweight0.5snps_SCAND \
+-doMajorMinor 3 -doCounts 1 -doIBS 1 -makematrix 1 -doCov 1 \
+-minQ 20 -minMapQ 20 \
+-GL 1 -doGlf 2 \
+-P $THREADS \
+$EXTRA_ARG \
+-sites $SNP_LIST \
+-rf $LG_LIST
+```
 
 ## NGSadmix
 ### qsub job because it takes way too much time
@@ -115,6 +130,7 @@ $EXTRA_ARG \
 #PBS -r n
 ```
 
+### NGSadmix global dataset
 ```bash
 
 BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz
@@ -133,6 +149,13 @@ done
 
 ```
 
+### NGSadmix Scandinavia
+```bash
+BEAGLESCAND=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/1mar23_prunedLDminweight0.5snps_SCAND.beagle.gz
+for k in $(seq 1 10); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 2000 -o $OUTPUTFOLDER/1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.$k
+done
+```
 ## evalAdmix
 ```bash
 PREFIXLDPRUNED=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_NGSadmix
