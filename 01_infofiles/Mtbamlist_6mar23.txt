@@ -324,7 +324,6 @@
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/OSTR_12_EKDL210004789-1a-AK717-5UDI1548_HHJYYDSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/OSTR_14_EKDL210009122-1a-AK19142-AK34060_HTVH3DSX2_L3.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/OSTR_15_EKDL210004790-1a-AK11476-AK16258_HHJYYDSX2_L3.dedup_clipoverlap_realigned.bam
-/home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/OSTR_16_EKDL210004789-1a-AK11377-AK16262_HHJYYDSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/OSTR_17_EKDL210005548-1a-AK11667-AK16287_HHJKNDSX2_L4.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/OSTR_20_EKDL210005548-1a-AK11476-AK16258_HHJKNDSX2_L4.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/OSTR_21_EKDL210009123-1a-AK23727-AK23728_HTVH3DSX2_L3.dedup_clipoverlap_realigned.bam
