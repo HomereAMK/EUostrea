@@ -422,5 +422,4 @@
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL_17_EKDL210007863-1a-AK18631-AK23769_HLNT5DSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL_18_EKDL210007863-1a-AK23770-AK23771_HLNT5DSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL_19_EKDL210007863-1a-AK19052-AK23772_HLNT5DSX2_L2.dedup_clipoverlap_realigned.bam
-/home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL_19_EKDL220000317-1a-AK19261-AK31202_HWHVMDSX2_L1.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL_20_EKDL210007863-1a-AK19155-AK23773_HLNT5DSX2_L2.dedup_clipoverlap_realigned.bam

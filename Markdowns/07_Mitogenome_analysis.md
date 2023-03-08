@@ -43,21 +43,22 @@ module load samtools/1.16
 
 ```
 #Consensus Fasta seq for a all pop or 
-POP_BAMLIST=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt
+MTBAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mtbamlist_6mar23.txt
+#POP_BAMLIST=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt
 N_IND=`cat /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt | wc -l`
-OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/MitOyster/03_results/scandinavia
-OUTNAME=30jan23_UltraMT
-GENOME="01_infofiles/MT663266.fasta"
+OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome
+OUTNAME=6mar23_UltraMT
+GENOME="/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/MT663266.fasta"
 
-angsd -bam $POP_BAMLIST -ref $GENOME -out $OUTPUTFOLDER/$OUTNAME \
+angsd -bam $MTBAMLIST -ref $GENOME -out $OUTPUTFOLDER/$OUTNAME \
 -minInd $((N_IND*2/3)) \
 -remove_bads 1 -uniqueOnly 1 -baq 1 -C 50 -minMapQ 30 -minQ 30 \
--doCounts 1 -GL 1 -doGlf 2 -doMajorMinor 1 -doMaf 1 -doPost 2 -doGeno 3 -doPlink 2 -geno_minDepth 3 -setMaxDepth $((323*323)) -dumpCounts 2 -postCutoff 0.95 -doHaploCall 1 -doBcf 1 
+-doCounts 1 -GL 1 -doGlf 2 -doMajorMinor 1 -doMaf 1 -doPost 2 -doGeno 3 -doPlink 2 -geno_minDepth 3 -setMaxDepth $((427*427)) -dumpCounts 2 -postCutoff 0.95 -doHaploCall 1 -doBcf 1 
 ```
 
 >phylogeny
 ```bash
-awk '{split($0,a,"/"); print a[10]}' $POP_BAMLIST | awk '{split($0,b,"_"); print b[1]"_"b[2]}' > /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.labels
+awk '{split($0,a,"/"); print a[10]}' $MTBAMLIST | awk '{split($0,b,"_"); print b[1]"_"b[2]}' > /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mtbamlist_6mar23.labels
 ```
 
 >31jan23 quick phylogeny 
