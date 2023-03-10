@@ -52,7 +52,6 @@
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/COLN_04_EKDL210004789-1a-AK11665-AK16278_HHJYYDSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/COLN_06_EKDL210004790-1a-AK11428-AK16253_HHJYYDSX2_L3.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/COLN_07_EKDL210004788-1a-AK7685-AK16294_HHJYYDSX2_L1.dedup_clipoverlap_realigned.bam
-/home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/COLN_07_EKDL210009122-1a-AK19208-AK31190_HTVH3DSX2_L3.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/COLN_10_EKDL210009122-1a-AK34058-AK34059_HTVH3DSX2_L3.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/COLN_12_EKDL210009122-1a-AK31169-AK31170_HTVH3DSX2_L3.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/COLN_13_EKDL210004790-1a-AK11584-AK16263_HHJYYDSX2_L3.dedup_clipoverlap_realigned.bam
@@ -242,7 +241,6 @@
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/LOGS_10_EKDL210007862-1a-AK19255-AK19666_HLNT5DSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/LOGS_11_EKDL210004789-1a-AK11381-AK16293_HHJYYDSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/LOGS_12_EKDL210004788-1a-AK11401-AK7949_HHJYYDSX2_L1.dedup_clipoverlap_realigned.bam
-/home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/LOGS_12_EKDL210007862-1a-AK16169-AK16170_HLNT5DSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/LOGS_13_EKDL210004788-1a-AK11603-AK16257_HHJYYDSX2_L1.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/LOGS_14_EKDL210007862-1a-AK16185-AK16186_HLNT5DSX2_L2.dedup_clipoverlap_realigned.bam
 /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/LOGS_15_EKDL210004788-1a-AK11436-AK16240_HHJYYDSX2_L1.dedup_clipoverlap_realigned.bam

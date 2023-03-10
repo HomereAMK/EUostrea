@@ -113,7 +113,8 @@ inversion_pca_table %>%
   summarise(prop_homo_1 = mean(genotype == "homo_1"),
             prop_homo_2 = mean(genotype == "homo_2"),
             prop_het = mean(genotype == "het"), .groups = 'drop') %>% 
-  write.table(., "~/Desktop/Scripts/Data/InvReg_EUostrea/PropHomo1_het_homo2_InvReg_27feb23.tsv", sep="\t", row.names=FALSE)
+  write.table(., "~/Desktop/Scripts/Data/InvReg_EUostrea/PropHomo1_het_homo2_InvReg_27feb23.tsv", 
+              sep="\t", row.names=FALSE)
 
 #
 Genfreq1 <- inversion_pca_table %>%

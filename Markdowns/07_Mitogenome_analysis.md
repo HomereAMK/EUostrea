@@ -81,27 +81,28 @@ First Tree done on https://itol.embl.de/tree/192389368159681675247682
 #ls /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL*bam >> /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt 
 #ls /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/USAM*.bam >> /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt 
 ## Variables
+MTBAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mtbamlist_6mar23.txt
 POP_BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt
 MTGENOME=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/MT663266.fasta
 MTOUTPUTF=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome
 
 ## Get allele count 
 angsd \
--bam $POP_BAMLIST \
+-bam $MTBAMLIST \
 -anc $MTGENOME \
 -ref $MTGENOME \
 -doCounts 1 -dumpCounts 4 \
 -minQ 20 -minMapQ 20 \
 -remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
--out $MTOUTPUTF/Mt_HapNetwork_10feb23.allele_counts
+-out $MTOUTPUTF/Mt_HapNetwork_8mar23.allele_counts
 
 ## Get depth count
 angsd \
--bam $POP_BAMLIST \
+-bam $MTBAMLIST \
 -anc $MTGENOME \
 -ref $MTGENOME \
 -doCounts 1 -dumpCounts 2 \
 -minQ 20 -minMapQ 20 \
 -remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
--out $MTOUTPUTF/Mt_HapNetwork_10feb23.depth_counts
+-out $MTOUTPUTF/Mt_HapNetwork_8mar23.depth_counts
 ```
