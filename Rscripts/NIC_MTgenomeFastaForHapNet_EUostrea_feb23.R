@@ -14,7 +14,7 @@ library(RColorBrewer)
 source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/NIC_mtgenome_functions.R")
 
 # Wrangling the BAM list
-bam_list_file <- "~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_15pops_bamlist.txt"
+bam_list_file <- "~/Desktop/Scripts/Data/MtGenome_EUostrea/Mtbamlist_6mar23.txt"
 bams <- read.table(bam_list_file)[, 1]
 bams <- gsub(".bam", "", bams)
 bams <- gsub(".+/", "", bams)
@@ -27,7 +27,7 @@ ind <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 9), substr(bams, 1, 7))
 
 
 # Analyze depth count across all invididuals
-depth_count <- read_tsv("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23.depth_counts.counts.gz") %>%
+depth_count <- read_tsv("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10mar23.depth_counts.counts.gz") %>%
   dplyr::select(-144) %>%
   t() %>%
   as_tibble() %>%
@@ -43,6 +43,7 @@ ggplot(ind_average_depth, mapping=aes(x=population, y=average_depth, group=popul
   geom_boxplot(outlier.alpha = 0) +
   geom_jitter() +
   theme_cowplot() +
+  
   coord_flip()
 
 ## samples with the lowest depth

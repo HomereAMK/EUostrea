@@ -32,10 +32,10 @@ annot$V2 <- factor(annot$V2, ordered = T,
                               "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
                               "INNE","VAGS", "AGAB", "OSTR"))
 #Plot genome-wide PCA with the covMat matrix
-PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = TRUE, show.label = FALSE)
-PCA(cov_mat, annot$V1, annot$V2, 2, 3, show.ellipse = FALSE, show.label = FALSE)
+pca1 <- PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = T, show.label = T)
+pca2 <- PCA(cov_mat, annot$V1, annot$V2, 2, 3, show.ellipse = FALSE, show.label = FALSE)
 
-#ggsave(, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+ggsave(pca2, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/PCA/28jan23_prunedLDminweight0.5covMat2vs3.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 #dev.off()
 
 #Plot genome-wide PCoA with the ibsMat matrix

@@ -106,6 +106,9 @@ dev.off()
 
 # Sibship in the WADD population
 str(WADD)
+head(WADD)
+WADD %>% write.table(., "~/Desktop/Scripts/Data/Relatedness_EUostrea/NGSrelate_output_WADD_2mar23.tsv", 
+                     sep="\t", row.names=FALSE)
 # Filter out rows where a and b are the same
 WADD_filtered <- WADD %>% filter(a != b)
 # Create scatterplot
@@ -117,18 +120,18 @@ WADD$b <- as.numeric(gsub("^\\d+_(\\d+)$", "\\1", WADD$ab))
 WADD$ab_sorted <- apply(WADD[, c("a", "b")], 1, function(x) paste(sort(x), collapse = "_"))
 
 # Remove rows with duplicate ab_sorted values
-WADD_unique <- unique(WADD, by = "ab_sorted")
+#WADD_unique <- unique(WADD, by = "ab_sorted")
 WADD$a <- ifelse(WADD$a == 0, 1, WADD$a + 1)
 WADD$b <- ifelse(WADD$b == 0, 1, WADD$b + 1)
 
 # Create a subset of WADD with only the highest rab values
-WADD_high_rab <- WADD_unique[order(WADD_unique$rab, decreasing = TRUE)[1:10],]
+WADD_high_rab <- WADD[order(WADD$rab, decreasing = TRUE)[1:10],]
 
 # Create a plot with dots and labels
-ggplot(WADD_unique, aes(x = nSites, y = rab, color=rab)) +
+ggplot(WADD, aes(x = nSites, y = rab, color=rab)) +
   geom_point(size = 3) +
   scale_color_gradient(low = "blue", high = "red", name = "") +
-  geom_text(data = WADD_high_rab, aes(label = ab), size = 3, vjust = -0.5, color = "black") +
+  geom_text(data = WADD_high_rab, aes(label = ab_sorted), size = 3, vjust = -0.5, color = "black") +
   theme(panel.background = element_rect(fill = "#ffffff"),
         panel.border = element_blank(),
         panel.grid.minor = element_blank(),
