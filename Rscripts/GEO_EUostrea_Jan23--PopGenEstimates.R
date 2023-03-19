@@ -167,7 +167,7 @@ PopGenEstimates_Plot <-
 
 
 # Saves plot ~
-ggsave(PopGenEstimates_Plot, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/pi_theta_Taj_PopGenEstimates_Jan23.pdf",
+ggsave(PopGenEstimates_Plot, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/pi_theta_Taj_PopGenEstimates_14mar23.pdf",
   device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
 
 ##### HET #####

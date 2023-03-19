@@ -1,3 +1,39 @@
+18 01_infofiles/Jan23--EUostrea_AGAB-Fst.list
+   14 01_infofiles/Jan23--EUostrea_BARR-Fst.list
+   19 01_infofiles/Jan23--EUostrea_BUNN-Fst.list
+    8 01_infofiles/Jan23--EUostrea_CLEW-Fst.list
+   15 01_infofiles/Jan23--EUostrea_COLN-Fst.list
+    8 01_infofiles/Jan23--EUostrea_CORS-Fst.list
+   18 01_infofiles/Jan23--EUostrea_CRES-Fst.list
+   19 01_infofiles/Jan23--EUostrea_DOLV-Fst.list
+   16 01_infofiles/Jan23--EUostrea_GREV-Fst.list
+   20 01_infofiles/Jan23--EUostrea_HAFR-Fst.list
+   15 01_infofiles/Jan23--EUostrea_HALS-Fst.list
+   21 01_infofiles/Jan23--EUostrea_HAUG-Fst.list
+   20 01_infofiles/Jan23--EUostrea_HYPP-Fst.list
+   20 01_infofiles/Jan23--EUostrea_INNE-Fst.list
+   19 01_infofiles/Jan23--EUostrea_KALV-Fst.list
+   20 01_infofiles/Jan23--EUostrea_LANG-Fst.list
+   19 01_infofiles/Jan23--EUostrea_LOGS-Fst.list
+   20 01_infofiles/Jan23--EUostrea_MOLU-Fst.list
+   17 01_infofiles/Jan23--EUostrea_MORL-Fst.list
+   19 01_infofiles/Jan23--EUostrea_NISS-Fst.list
+   13 01_infofiles/Jan23--EUostrea_ORIS-Fst.list
+   19 01_infofiles/Jan23--EUostrea_OSTR-Fst.list
+   16 01_infofiles/Jan23--EUostrea_PONT-Fst.list
+   19 01_infofiles/Jan23--EUostrea_RIAE-Fst.list
+   20 01_infofiles/Jan23--EUostrea_RYAN-Fst.list
+   19 01_infofiles/Jan23--EUostrea_THIS-Fst.list
+   16 01_infofiles/Jan23--EUostrea_TOLL-Fst.list
+   18 01_infofiles/Jan23--EUostrea_TRAL-Fst.list
+   19 01_infofiles/Jan23--EUostrea_USAM-Fst.list
+   21 01_infofiles/Jan23--EUostrea_VAGS-Fst.list
+   16 01_infofiles/Jan23--EUostrea_VENO-Fst.list
+   19 01_infofiles/Jan23--EUostrea_WADD-Fst.list
+   22 01_infofiles/Jan23--EUostrea_ZECE-Fst.list
+  582 total
+
+
 The European native oyster, a keystone species, is often overlooked and under threat due to lack of awareness among the general public. But they are doing so much! on our plates, in our coastal marine area, for our future. Wild European native oyster populations are hard to find nowadays, they were everywhere centuries ago. Genetic info is needed to protect and restore this vital component of European marine ecosystems!
 
 

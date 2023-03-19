@@ -5,6 +5,7 @@ Fst-based
   - [Get minor allele frequencies per population with minIND= 25% and Global SNP list](#get-minor-allele-frequencies-per-population-with-minind-25-and-global-snp-list)
   - [Estimate Fst in each pair of populations](#estimate-fst-in-each-pair-of-populations)
   - [Get “effective sample size” per sample per site](#get-effective-sample-size-per-sample-per-site)
+  - [Biological cluster Fst Manhattan plot](#biological-cluster-fst-manhattan-plot)
 
 
 
@@ -187,3 +188,113 @@ pop_effective_sample_size <- ind_depth %>%
   summarize(sample_size=sum(sample_size))
 write_tsv(pop_effective_sample_size, "../angsd/bam_list_realigned_mincov_contamination_refbias_filtered_mindp184_maxdp404_minind77_minq20_pop_effective_sample_size.tsv.gz")
 ```
+
+
+## Biological cluster Fst Manhattan plot
+>Make the list for biological clusters ADRI, MEDI, ATLA, CHAN, SCAN, NORW, OSTR.
+```bash
+POP=("MOLU" "ZECE" "CRES" "ORIS" "CORS" "PONT" "RIAE" "MORL" "USAM" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN" "GREV" "WADD" "NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR" "INNE" "VAGS" "AGAB" "OSTR")
+
+ADRI=("MOLU" "ZECE" "CRES")
+MEDI=("ORIS" "CORS")
+ATLA=("PONT" "RIAE")
+CHAN=("MORL" "TOLL" "COLN" "BARR" "TRAL" "CLEW" "RYAN")
+SCAN=("NISS" "LOGS" "VENO" "HALS" "THIS" "KALV" "HYPP" "LANG" "BUNN" "DOLV" "HAUG" "HAFR")
+NORW=("INNE" "VAGS" "AGAB")
+OSTR=("OSTR")
+for query in ${ADRI[*]}
+do 
+   cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list >> $BASEDIR/01_infofiles/Mar23--EUostrea--ADRI-Fst.list
+done
+for query in ${MEDI[*]}
+do 
+   cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list >> $BASEDIR/01_infofiles/Mar23--EUostrea--MEDI-Fst.list
+done
+for query in ${ATLA[*]}
+do 
+   cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list >> $BASEDIR/01_infofiles/Mar23--EUostrea--ATLA-Fst.list
+done
+for query in ${CHAN[*]}
+do 
+   cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list >> $BASEDIR/01_infofiles/Mar23--EUostrea--CHAN-Fst.list
+done
+for query in ${SCAN[*]}
+do 
+   cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list >> $BASEDIR/01_infofiles/Mar23--EUostrea--SCAN-Fst.list
+done
+for query in ${NORW[*]}
+do 
+   cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list >> $BASEDIR/01_infofiles/Mar23--EUostrea--NORW-Fst.list
+done
+for query in ${OSTR[*]}
+do 
+   cat $BASEDIR/01_infofiles/Jan23--EUostrea_${query}-Fst.list >> $BASEDIR/01_infofiles/Mar23--EUostrea--OSTR-Fst.list
+done
+```
+>This script is used to get minor allele frequency estimation from angsd for each Biological cluster.
+```bash
+CLUSTER=("ADRI" "MEDI" "ATLA" "CHAN" "SCAN" "NORW" "OSTR")
+for query in ${CLUSTER[*]}
+do
+    N_IND=`cat $BASEDIR/01_infofiles/Mar23--EUostrea--${query}-Fst.list | wc -l`
+    angsd -nThreads 10 \
+    -bam $BASEDIR/01_infofiles/Mar23--EUostrea--${query}-Fst.list \
+    -anc $REF \
+    -ref $REF \
+    -out /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${query} \
+    -dosaf 1 -GL 1 -doGlf 2 -doMaf 1 -doMajorMinor 3 -doCounts 1 -doDepth 1 -dumpCounts 1 \
+    -P $THREADS \
+    -minInd $((N_IND*1/4)) -minQ 20 -minMapQ 20 \
+    -sites $OUTPUTFOLDER/global_snp_list_setMinDepth600setMaxDepth1200_jan23.txt -rf $LG_LIST \
+    $EXTRA_ARG
+done
+```
+🤝
+> SFS pairwise-biological-cluster step.
+```bash
+CLUSTER=("ADRI" "MEDI" "ATLA" "CHAN" "SCAN" "NORW" "OSTR")
+cd /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea
+for i1 in `seq 0 $((${#CLUSTER[@]}-2))`
+do
+    for i2 in `seq $((i1+1)) $((${#CLUSTER[@]}-1))`
+    do
+        pop1="Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}"
+        pop2="Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i2]}"
+        N_SITES=`realSFS print $pop1.saf.idx $pop2.saf.idx | wc -l`
+        output_file="/home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}.${CLUSTER[i2]}.sfs"
+        output_file2="/home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}.${CLUSTER[i2]}.fst.idx"
+        if [[ -f $output_file ]]; then
+            echo "$output_file already exists, skipping calculation."
+        else
+            echo -ne "${CLUSTER[i1]}\t${CLUSTER[i2]}\t$N_SITES\t"
+            if [[ $N_SITES == 0 ]]; then
+                echo "NA"
+            else
+                realSFS $pop1.saf.idx $pop2.saf.idx -fold 1 -P 40 > $output_file
+                
+                realSFS fst index $pop1.saf.idx $pop2.saf.idx -sfs $output_file -fold 1 -P 40 -fstout /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}.${CLUSTER[i2]}
+                if [[ -f $output_file2 ]]; then
+                echo "$output_file2 already exists, skipping calculation."
+                else
+                    realSFS fst stats /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}.${CLUSTER[i2]}.fst.idx -P 40
+                    fi
+            fi
+        fi
+    done
+done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/Mar23_BioCluster--Fstvalues.tsv
+```
+
+>Fst Sliding window global list 15kb 15kb for pairwise biological cluster 
+```bash
+CLUSTER=("ADRI" "MEDI" "ATLA" "CHAN" "SCAN" "NORW" "OSTR")
+cd /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea
+
+for i1 in `seq 0 $((${#CLUSTER[@]}-2))`
+do
+    for i2 in `seq $((i1+1)) $((${#CLUSTER[@]}-1))`
+     do
+        pop1="${CLUSTER[i1]}"
+        pop2="${CLUSTER[i2]}"
+        realSFS fst stats2 /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}.${CLUSTER[i2]}.fst.idx -win 15000 -step 15000 | cut -f 2- | tail -n +2 | awk '{print $1"\t"$1":"$2"\t"$2-15000"\t"$2"\t"$3"\t"$4}' > /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}.${CLUSTER[i2]}_15KB_15KBwin--Fst.tsv 
+    done
+done

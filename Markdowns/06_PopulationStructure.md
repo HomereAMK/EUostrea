@@ -4,6 +4,9 @@ Population Structure Analysis
 - [Population Structure Analysis](#population-structure-analysis)
   - [Modules](#modules)
   - [Re-run angsd LD Pruned SNPs list minweight0.5 Global dataset](#re-run-angsd-ld-pruned-snps-list-minweight05-global-dataset)
+  - [Missing Data on the LD pruned SNPs](#missing-data-on-the-ld-pruned-snps)
+        - [Gets Real Coverage (_Genotype Likelihoods_):](#gets-real-coverage-genotype-likelihoods)
+        - [Gets Missing Data (_Genotype Likelihoods_) 11 560 052 SNPs:](#gets-missing-data-genotype-likelihoods-11-560-052-snps)
   - [Re-run angsd LD Pruned SNPs list minweight0.5 Scandinavia](#re-run-angsd-ld-pruned-snps-list-minweight05-scandinavia)
   - [NGSadmix](#ngsadmix)
     - [qsub job because it takes way too much time](#qsub-job-because-it-takes-way-too-much-time)
@@ -99,6 +102,30 @@ $EXTRA_ARG \
 ```
 > The Global PCA for the MS is coming from this input .covmat...
 🤝
+
+## Missing Data on the LD pruned SNPs
+##### Gets Real Coverage (_Genotype Likelihoods_):
+```bash
+angsd -b $BAMLIST -ref $REF -out $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct \
+-doMajorMinor 3 -doCounts 1 -dumpCounts 2 \
+-minQ 20 -minMapQ 20 \
+-GL 1 -doGlf 2 \
+-P $THREADS \
+$EXTRA_ARG \
+-sites $SNP_LIST \
+-rf $LG_LIST
+
+```
+```bash
+zcat $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct.counts.gz | tail -n +2 | gawk ' {for (i=1;i<=NF;i++){a[i]+=$i;++count[i]}} END{ for(i=1;i<=NF;i++){print a[i]/count[i]}}' | paste /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.labels - > $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct.GL-RealCoverage.txt
+```
+##### Gets Missing Data (_Genotype Likelihoods_) 11 560 052 SNPs:
+```bash
+N_SITES=`zcat "$OUTPUTFOLDER"/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz | tail -n +2 | wc -l`
+
+zcat $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz | tail -n +2 | perl /home/projects/dp_00007/apps/Scripts/call_geno.pl --skip 3 | cut -f 4- | awk '{ for(i=1;i<=NF; i++){ if($i==-1)x[i]++} } END{ for(i=1;i<=NF; i++) print i"\t"x[i] }' | paste /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea.labels - | awk -v N_SITESawk="$N_SITES" '{print $1"\t"$3"\t"$3*100/N_SITESawk}' > $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct.GL-MissingData.txt
+``` 
+
 ## Re-run angsd LD Pruned SNPs list minweight0.5 Scandinavia
 ```bash
 BAMLISTSCAND=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea_Scandinavia.txt

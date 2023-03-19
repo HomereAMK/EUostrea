@@ -94,7 +94,7 @@ angsd \
 -doCounts 1 -dumpCounts 4 \
 -minQ 20 -minMapQ 20 \
 -remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
--out $MTOUTPUTF/Mt_HapNetwork_8mar23.allele_counts
+-out $MTOUTPUTF/Mt_HapNetwork_10mar23.allele_counts
 
 ## Get depth count
 angsd \
@@ -104,5 +104,5 @@ angsd \
 -doCounts 1 -dumpCounts 2 \
 -minQ 20 -minMapQ 20 \
 -remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
--out $MTOUTPUTF/Mt_HapNetwork_8mar23.depth_counts
+-out $MTOUTPUTF/Mt_HapNetwork_10mar23.depth_counts
 ```

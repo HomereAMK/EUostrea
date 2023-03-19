@@ -192,4 +192,3 @@ parallel --tmpdir /home/projects/dp_00007/data/hmon/angsd_Het/ --plus "realSFS -
 fgrep '.' *.23jan23.het | tr ":" " " | awk '{print $1"\t"$3/($2+$3)*100}' | sed -r 's/.het//g' | awk '{split($0,a,"_"); print $1"\t"a[1]"\t"$2"\t"$3'} | awk '{split($2,a,"-"); print $1"\t"a[2]"\t"$3'} > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Het/GEO_EUostrea--AllSamples_setMinDepth600_setMaxDepth1200--HET.23jan23.txt
 ```
 
-

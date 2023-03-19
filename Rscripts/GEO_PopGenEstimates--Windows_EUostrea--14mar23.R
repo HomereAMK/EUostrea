@@ -63,14 +63,13 @@ y_strip_labels <- c("scaffold1" = "CHR 01", "scaffold2" = "CHR 02", "scaffold3" 
 # Gets column names ~
 PopGenEstimates_Windows_ColumnNames <- colnames(BARR)
 # Merges DFs ~
-fulldf0 <- full_join(USAM, NISS, by = PopGenEstimates_Windows_ColumnNames)
-fulldf <- full_join(fulldf0, OSTR, by = PopGenEstimates_Windows_ColumnNames)
+fulldf <- full_join(NISS, OSTR, by = PopGenEstimates_Windows_ColumnNames)
 
 fulldf_InvReg <- filter(fulldf, 
                         (CHR == "scaffold4" | CHR == "scaffold5" | CHR == "scaffold8"))
 
 # Creates Tp plot for USAM NISS OSTR ~
-  ggplot() +
+π_NISS_OSTR_InvReg  <- ggplot() +
   geom_line(data = fulldf_InvReg, aes(x = gPoint, y = Tp, colour = Pops), linetype = 1, size = 1, alpha=0.4) +
   facet_rep_grid(CHR ~. , scales = "free", labeller = labeller(CHR = y_strip_labels)) +
   geom_hline(yintercept = 0, linetype = "dotted", size = .2, color = "#FF6545") +
@@ -84,7 +83,7 @@ fulldf_InvReg <- filter(fulldf,
                      labels = c(".005", ".015", ".025" ),
                      limits = c(0, .025),
                      expand = c(0.0025, 0.0025)) +
-  scale_colour_manual(values = c("#000000", "#02630C", "#240377")) +
+  scale_colour_manual(values = c( "#02630C", "#240377")) +
   theme(panel.background = element_rect(fill = "#ffffff"),
         panel.border = element_blank(),
         panel.grid.minor = element_blank(),
@@ -104,3 +103,8 @@ fulldf_InvReg <- filter(fulldf,
                                label.theme = element_text(size = 19), override.aes = list(size = 1.4)),
          fill = "none")
 
+# Saves plot ~
+ggsave(π_NISS_OSTR_InvReg, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates--Windows/π_NISS_OSTR_CHR4_5_8--14mar23.pdf", 
+       device = cairo_pdf, scale = 1, width = 26, height = 30, dpi = 600)
+dev.off()
+  
