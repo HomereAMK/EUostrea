@@ -33,7 +33,23 @@ PopGen <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/EUostrea/Dec22--Ind
 colnames(PopGen) <- c("Population", "NSites", "Nucleotide_Diversity", "Watterson_Theta", "Tajima_D")
 #colnames(Hets) <- c("Sample_ID", "Population", "Het", "DataType"); head(Hets)
 
-
+# Stats ~
+summary(PopGen)
+means <- aggregate(PopGen[,2:5], by=list(Population=PopGen$Population), FUN=mean)
+summary(means)
+PopGenMin_Max <- means %>%
+  group_by(Population) %>%
+  summarise(
+    NSites_min = min(NSites),
+    NSites_max = max(NSites),
+    Nucleotide_Diversity_min = min(Nucleotide_Diversity),
+    Nucleotide_Diversity_max = max(Nucleotide_Diversity),
+    Watterson_Theta_min = min(Watterson_Theta),
+    Watterson_Theta_max = max(Watterson_Theta),
+    Tajima_D_min = min(Tajima_D),
+    Tajima_D_max = max(Tajima_D)
+  )
+print(PopGenMin_Max)
 # Corrects Population names in Hets:
 #levels(Hets$Population <- sub("FeralUT", "SaltLakeCity", Hets$Population))
 #levels(Hets$Population <- sub("FeralVA", "Virginia", Hets$Population))

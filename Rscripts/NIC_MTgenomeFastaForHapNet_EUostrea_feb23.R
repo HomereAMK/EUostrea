@@ -7,10 +7,10 @@ rm(list=ls())
 library(tidyverse)
 library(cowplot)
 library(ape)
-library(knitr)
 library(pegas)
 library(RColorBrewer)
-
+library(knitr)
+library(insect)
 source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/NIC_mtgenome_functions.R")
 
 # Wrangling the BAM list
@@ -34,7 +34,6 @@ depth_count <- read_tsv("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_
   bind_cols(ind=ind, population=pop, .) %>%
   pivot_longer(3:16356, names_to = "position", values_to="depth") %>%
   mutate(position=as.numeric(substring(position, 2)))
-
 # Average depth per individual
 set.seed(1)
 ind_average_depth <- group_by(depth_count, ind, population) %>%
@@ -61,6 +60,40 @@ group_by(depth_count, position) %>%
   geom_line() +
   theme_cowplot()
 
+# Reorders populations ~
+depth_count$population <- factor(depth_count$population, ordered = T,
+                              levels = c("MOLU", "ZECE", "CRES",
+                                         "ORIS","CORS", "PONT",  "RIAE",
+                                         "MORL",
+                                         "TOLL", "COLN", "BARR",
+                                         "TRAL", "CLEW",
+                                         "RYAN",
+                                         "GREV", "WADD",
+                                         "NISS","LOGS","VENO", "HALS", "THIS",
+                                         "KALV", "HYPP",
+                                         "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                                         "INNE","VAGS", "AGAB", "OSTR"))
+
+
+group_by(depth_count, population, position) %>%
+  summarise(average_depth=mean(depth)) %>%
+  ggplot(aes(x=position, y=average_depth, color=population)) +
+  geom_line() +
+  scale_color_manual(values =c( "#A02353", "#A02353", "#A02353",
+                                "#AD5B35",
+                                "#ad7358",
+                                "#CC480C",
+                                "#969696",
+                                "#D38C89", "#D38C89", "#D38C89",
+                                "#C89AD1", "#C89AD1",
+                                "#7210A0",
+                                "#91BD96",
+                                "#02630C","#02630C","#02630C", "#02630C",
+                                "#45D1F7", "#45D1F7",
+                                "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
+                                "#240377", "#240377", "#240377", "#240377"))+
+  ylim(0, 100) +
+  theme_cowplot()
 
 #Generate fasta files from allele counts
 # minimum depth 4, minimum major allele frequency 0.75
@@ -169,60 +202,101 @@ fasta
 write.nexus.data(fasta, file="~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_minq20_mindepth2_minmaf75.nex", format="dna")
 
 
-#### exclude samples depth>10 ####
-samples_to_exclude2 <- filter(depth_count, depth>10) %>%
-  count(ind) %>%
-  mutate(position_missing = 16356-n) %>%
-  arrange(desc(position_missing)) %>%
-  filter(position_missing > 0.3*16356) %>%
-  .$ind
-fasta <- subset(fasta, subset = !(attr(fasta,"dimnames")[[1]] %in% samples_to_exclude2))
+# Carl sucker plotting way ~
+fasta <- read.dna("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10mar23_mindepth2_minmaf70.fasta", format="fasta")
 fasta
-write.nexus.data(fasta, file="~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_minq20_mindepth10_minmaf75.nex", format="dna")
+hap <- haplotype(fasta)
+summary(hap)
+hap_net <- haploNet(hap, d=dist.dna(hap, model = "N"))
 
+ind_hap <- with(stack(setNames(attr(hap, "index"), rownames(hap))), table(hap=ind, individuals=rownames(fasta)[values])) %>%
+  as_tibble() %>%
+  mutate(population=substr(individuals,1,nchar(individuals)-3))
 
+## number of positions retained
+t(as.character(fasta)) %>% 
+  as_tibble() %>%
+  filter_all(all_vars(. != "n")) %>%
+  dim() %>%
+  .[1]
 
-###### Average depth per individual ####
+pop_hap <- ind_hap %>%
+  group_by(hap, population) %>%
+  summarise(n=sum(n, na.rm = T)) %>%
+  ungroup() %>%
+  spread(population, n) %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  mutate(hap=as.roman(hap)) %>%
+  arrange(hap) %>%
+  select(-hap) %>%
+  as.matrix()
+pie_color <- brewer.pal(n = 7, name = "Accent")
 set.seed(1)
-dfyes <- depth_count %>%
-  filter(! str_detect(population, c("USAM|MORL")))
-ind_average_depth <- group_by(dfyes, ind, population) %>%
-  summarise(average_depth=mean(depth))
-ggplot(ind_average_depth, mapping=aes(x=population, y=average_depth, group=population)) +
-  geom_boxplot() +
-  geom_jitter() +
-  theme_cowplot() +
-  coord_flip()
-last_plot()
-ggsave(filename = "Desktop/Scripts/Flat_oysters/04_local_R/03_results/Average_depthMt_pop.pdf") #change path
+plot(hap_net, size=sqrt(attr(hap_net, "freq"))*1.5, fast = F, scale.ratio = 1, pie=pop_hap, bg=pie_color, show.mutation=1, labels=F, threshold=c(0))
+legend("topleft", c(colnames(pop_hap)), fill=pie_color, cex=3)
 
 
-#### Average depth per position ####
-group_by(depth_count, position) %>%
-  summarise(average_depth=mean(depth)) %>%
-  ggplot(aes(x=position, y=average_depth)) +
-  geom_line() +
-  theme_cowplot()
-last_plot()
-ggsave(filename = "Desktop/Scripts/Flat_oysters/04_local_R/03_results/Average_depthMt_perPosition.pdf") #change path
-
-sample_table<- data.frame(bams, ind_label, pop)
 
 
-####traits table for popart####
-sample_table %>%
-  dplyr::filter(!(ind_label %in% samples_to_exclude)) %>%
-  dplyr::select(ind_label, pop) %>%
-  mutate(temp=1) %>%
-  spread(key = pop, value = temp) %>%
-  mutate_all(~replace(., is.na(.), 0)) %>%
-  write_csv("~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_population_trait_table_for_popart.csv")
 
-####traits table for popart mindepth>10####
-sample_table %>%
-  dplyr::filter(!(ind_label %in% samples_to_exclude2)) %>%
-  dplyr::select(ind_label, pop) %>%
-  mutate(temp=1) %>%
-  spread(key = pop, value = temp) %>%
-  mutate_all(~replace(., is.na(.), 0)) %>%
-  write_csv("~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_population_trait_table_for_popart_mindepth10.csv")
+
+
+
+
+# #### exclude samples depth>10 ####
+# samples_to_exclude2 <- filter(depth_count, depth>10) %>%
+#   count(ind) %>%
+#   mutate(position_missing = 16356-n) %>%
+#   arrange(desc(position_missing)) %>%
+#   filter(position_missing > 0.3*16356) %>%
+#   .$ind
+# fasta <- subset(fasta, subset = !(attr(fasta,"dimnames")[[1]] %in% samples_to_exclude2))
+# fasta
+# write.nexus.data(fasta, file="~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_minq20_mindepth10_minmaf75.nex", format="dna")
+# 
+# 
+# 
+# ###### Average depth per individual ####
+# set.seed(1)
+# dfyes <- depth_count %>%
+#   filter(! str_detect(population, c("USAM|MORL")))
+# ind_average_depth <- group_by(dfyes, ind, population) %>%
+#   summarise(average_depth=mean(depth))
+# ggplot(ind_average_depth, mapping=aes(x=population, y=average_depth, group=population)) +
+#   geom_boxplot() +
+#   geom_jitter() +
+#   theme_cowplot() +
+#   coord_flip()
+# last_plot()
+# ggsave(filename = "Desktop/Scripts/Flat_oysters/04_local_R/03_results/Average_depthMt_pop.pdf") #change path
+# 
+# 
+# #### Average depth per position ####
+# group_by(depth_count, position) %>%
+#   summarise(average_depth=mean(depth)) %>%
+#   ggplot(aes(x=position, y=average_depth)) +
+#   geom_line() +
+#   theme_cowplot()
+# last_plot()
+# ggsave(filename = "Desktop/Scripts/Flat_oysters/04_local_R/03_results/Average_depthMt_perPosition.pdf") #change path
+# 
+# sample_table<- data.frame(bams, ind_label, pop)
+# 
+# 
+# ####traits table for popart####
+# sample_table %>%
+#   dplyr::filter(!(ind_label %in% samples_to_exclude)) %>%
+#   dplyr::select(ind_label, pop) %>%
+#   mutate(temp=1) %>%
+#   spread(key = pop, value = temp) %>%
+#   mutate_all(~replace(., is.na(.), 0)) %>%
+#   write_csv("~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_population_trait_table_for_popart.csv")
+# 
+# ####traits table for popart mindepth>10####
+# sample_table %>%
+#   dplyr::filter(!(ind_label %in% samples_to_exclude2)) %>%
+#   dplyr::select(ind_label, pop) %>%
+#   mutate(temp=1) %>%
+#   spread(key = pop, value = temp) %>%
+#   mutate_all(~replace(., is.na(.), 0)) %>%
+#   write_csv("~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_population_trait_table_for_popart_mindepth10.csv")

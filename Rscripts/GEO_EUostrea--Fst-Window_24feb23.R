@@ -95,8 +95,8 @@ ggplot() +
          fill = "none")
 
 # Saves Manhattan plot ~
-ggsave(Fst_Window, file = "~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/FST/Local_Limfjorden/Niss_Løgst_ThiS_Hals_SLWin15K_Jun22list.pdf", device = cairo_pdf, scale = 1, width = 26, height = 20, dpi = 600)
-dev.off()
+#ggsave(Fst_Window, file = "~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/FST/Local_Limfjorden/Niss_Løgst_ThiS_Hals_SLWin15K_Jun22list.pdf", device = cairo_pdf, scale = 1, width = 26, height = 20, dpi = 600)
+#dev.off()
 
 # geom_area
 ggplot(data = fulldf, aes(x = gPoint, y = Fst, fill = Pops)) +
@@ -148,20 +148,6 @@ ggplot(data = scaffold1_df, aes(x = gPoint, y = Fst, fill = Pops)) +
   scale_fill_manual(values = c("#083359", "#BF820F",  "#1BBC9B")) 
   
 
-#### Creates Manhattan panel geom_point ~ 
-
-
-
-#
-##
-### The END ~~~~~
-
-
-
-
-
-
-####
 
 # Wadd full comparison ~
 fulldf_wadd$Pops <- factor(fulldf_wadd$Pops, ordered = TRUE,
@@ -256,6 +242,156 @@ fullcompNiss <- ggplot() +
 ggsave(filename  = "~/Desktop/Scripts/EUostrea/Figures/Fst/15kbSLwin/Niss_fullcomp_15kbwin_27feb23.png", 
        plot=fullcompNiss, width = 40, height = 50, units = "cm", pointsize = 20, dpi = 250)
 dev.off()
+
+
+
+# Biological clusters comparison ~
+# Cleans the environment ~ 
+rm(list=ls())
+# 
+# Loads required packages ~
+pacman::p_load(tidyverse, extrafont, lemon, ggridges, pheatmap, RColorBrewer, gtools)
+
+# List all the files in the working directory
+setwd("~/Desktop/Scripts/Data/Fst_EUostrea/Fst_BioClust_SL15kb/")
+
+# List all the files in the working directory
+filenames <- list.files()
+
+# Loop to load each file into a separate data frame and add a "Pops" column
+for (filename in filenames) {
+  # Extract the population name from the filename
+  pop_name <- unlist(strsplit(filename, "_"))[5]
+  
+  # Load the file into a data frame
+  df <- read.table(filename, header = FALSE)
+  
+  # Add colnames
+  colnames(df) <- c("CHR", "SNP", "gPoint", "END", "NumberOfSites", "Fst")
+  
+  # Extract the gPoint_c variable
+  df$gPoint_c <- seq(15000, by = 15000, length.out = nrow(df))
+  
+  # Add a "Pops" column to the data frame
+  df$Pops <- factor(paste(pop_name))
+  
+  # CHR state
+  df <- df[order(as.numeric(substr(df$CHR, 9, nchar(df$CHR)))), ] #super important
+  df_2 <- as.data.frame(unique(df$CHR)); colnames(df_2) <- c("CHR")
+  df_2$CHR_IDs <- seq.int(nrow(df_2))
+  df_3 <- merge(df, df_2, by = "CHR")
+  df_3 <- df_3 %>% arrange(CHR_IDs)
+  df_3$CHR_State <- ifelse(df_3$CHR_IDs %% 2 == 0, "Even", "Odd")
+  df_3 <- df_3[order(as.numeric(substr(df_3$CHR, 9, nchar(df_3$CHR)))), ] #super important
+  
+  # Assign the data frame to a variable with the appropriate name
+  assign(pop_name, df_3)
+  
+}
+
+# Column names 
+Fst_Window_ColumnNames <- colnames(ADRI.ATLA)
+
+
+# Merges DFs ~
+fulldf_col1 <- rbind(ADRI.MEDI, MEDI.ATLA, MEDI.CHAN, MEDI.SCAN, MEDI.NORW, MEDI.OSTR)
+fulldf_col2 <- rbind(ADRI.ATLA, ADRI.CHAN, ADRI.SCAN, ADRI.NORW, ADRI.OSTR)
+fulldf_col3 <- rbind(ATLA.CHAN, ATLA.SCAN, ATLA.NORW, ATLA.OSTR)
+fulldf_col4 <- rbind(CHAN.SCAN, CHAN.NORW, CHAN.OSTR)
+fulldf_col5 <- rbind(SCAN.NORW, SCAN.OSTR)
+fulldf_col6 <- rbind(NORW.OSTR)
+
+# Reorders Species ~
+y_strip_labels <- c("scaffold1" = "CHR 01", "scaffold2" = "CHR 02", "scaffold3" = "CHR 03", "scaffold4" = "CHR 04",
+                    "scaffold5" = "CHR 05", "scaffold6" = "CHR 06", "scaffold7" = "CHR 07", "scaffold8" = "CHR 08",
+                    "scaffold9" = "CHR 09", "scaffold10" = "CHR 10")
+
+
+# Wadd full comparison ~
+fulldf_col2$Pops <- factor(fulldf_col2$Pops, ordered = TRUE,
+                           levels = c("ADRI.ATLA", "ADRI.CHAN", "ADRI.SCAN", "ADRI.NORW", "ADRI.OSTR"))
+
+fulldf_col2$CHR <- factor(fulldf_col2$CHR, ordered = TRUE,
+                          levels = c("scaffold1",
+                                     "scaffold2",
+                                     "scaffold3",
+                                     "scaffold4",
+                                     "scaffold5",
+                                     "scaffold6",
+                                     "scaffold7",
+                                     "scaffold8",
+                                     "scaffold9",
+                                     "scaffold10"))
+
+# Remove data for scaffold10~
+fulldf_col2<-fulldf_col2 %>%
+  filter(!(CHR == "scaffold10"))
+
+
+fulldf_col2 <- ggplot() +
+  geom_point(data = fulldf_col2,
+             aes(x = gPoint_c, y = Fst,  colour = CHR_State, fill= CHR), shape = 21, size = 0.6, alpha = 0.6) +
+  facet_rep_grid(Pops~. , scales = "free_x") +
+  scale_x_continuous("Chromosomes",
+                     expand = c(.005, .5)) +
+  scale_y_continuous("Fst (15Kb Sliding Windows)",
+                     breaks = c(.30, .60, .90), 
+                     labels = c(".30", ".60", ".90"),
+                     limits = c(0, .99),
+                     expand = c(0.01, 0.01)) +
+  scale_colour_brewer() +
+  scale_fill_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#ffff33", "#a65628", "#f781bf", "#999999", "#8dd3c7")) +
+  theme(panel.background = element_rect(fill = "#ffffff"),
+        panel.border = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(colour = "#000000", size = .3),
+        axis.title.x = element_text(size = 8, face = "bold", color = "#000000", margin = margin(t = 30, r = 0, b = 0, l = 0)),
+        axis.title.y = element_text(size = 8, face = "bold", color = "#000000", margin = margin(t = 0, r = 30, b = 0, l = 0)),
+        axis.text.x = element_text(colour = "#000000", size = 4),
+        axis.text.y = element_text(colour = "#000000", size = 8, face = "bold"),
+        axis.ticks.x = element_line(color = "#000000", size = .3),
+        axis.ticks.y = element_line(color = "#000000", size = .3),
+        strip.background.y = element_rect(colour = "#000000", fill = "#FFFFFF", size = .5),
+        strip.text = element_text(colour = "#000000", size = 7, face = "bold"),
+        legend.position = "top",
+        legend.margin = margin(t = 0, b = 0, r = 0, l = 0),
+        legend.box.margin = margin(t = 30, b = 25, r = 0, l = 0),
+        legend.key = element_rect(fill = NA),
+        legend.background = element_blank()) +
+  guides(colour = "none", fill = "none")
+
+ggsave(filename  = "~/Desktop/Scripts/EUostrea/Figures/Fst/BioClust_15kbwin/BioClust--col2_15kbwin_20Mar2323.png", 
+       plot=fulldf_col2, width = 40, height = 60, units = "cm", pointsize = 20, dpi = 300)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##
 ### The END ~~~~~
