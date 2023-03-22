@@ -193,6 +193,11 @@ BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStruct
 for k in $(seq 1 20); do
 evalAdmix -beagle $BEAGLE -fname $PREFIXLDPRUNED.$k.fopt.gz -qname $PREFIXLDPRUNED.$k.qopt -minMaf 0 -o $PREFIXLDPRUNED.evaladmixOut.$k.corres -P 40
 ```
+
+```bash
+#test evaladmix
+evalAdmix -beagle $BEAGLE -fname 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.fopt.gz -qname 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.qopt -minMaf 0 -o 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.corres -P 30
+```
 ## Run PCangsd LD Pruned SNPs list minweight0.5 and minMaf 0.05
 ```bash
 pcangsd -b $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz \

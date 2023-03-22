@@ -202,12 +202,27 @@ fasta
 write.nexus.data(fasta, file="~/Desktop/Scripts/Flat_oysters/04_local_R/03_results/bam_list_realigned_mtgenome_sorted_filtered_minq20_mindepth2_minmaf75.nex", format="dna")
 
 
-# Carl sucker plotting way ~
-fasta <- read.dna("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10mar23_mindepth2_minmaf70.fasta", format="fasta")
+## Carl and Liam's plotting way ~
+fasta <- read.dna("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80.fasta", format="fasta")
 fasta
+
+
 hap <- haplotype(fasta)
+
 summary(hap)
 hap_net <- haploNet(hap, d=dist.dna(hap, model = "N"))
+
+# function to create a texte file
+countHap <- function(hap = h, dna = x){
+  with(
+    stack(setNames(attr(hap, "index"), rownames(hap))),
+    table(hap = ind, pop = attr(dna, "dimnames")[[1]][values])
+  )
+}
+write.table(countHap (hap, fasta),file="Desktop/Scripts/Data/MtGenome_EUostrea/haplotype_10feb23_mindepth4_minmaf80.txt", sep="\t", quote=FALSE)
+plot(hap_net, size=attr(hap_net, "freq"), scale.ratio=0.2, pie=countHap(hap_net, fasta), show.mutation=3)
+legend("bottomleft", colnames(countHap(dataHaplo, fasta)), col=rainbow(ncol(countHap(dataHaplo, fasta))), pch=19, ncol=2)
+
 
 ind_hap <- with(stack(setNames(attr(hap, "index"), rownames(hap))), table(hap=ind, individuals=rownames(fasta)[values])) %>%
   as_tibble() %>%
@@ -230,10 +245,14 @@ pop_hap <- ind_hap %>%
   arrange(hap) %>%
   select(-hap) %>%
   as.matrix()
-pie_color <- brewer.pal(n = 7, name = "Accent")
+pie_color <- brewer.pal(n = 11, name = "Spectral")
+hap_net
 set.seed(1)
-plot(hap_net, size=sqrt(attr(hap_net, "freq"))*1.5, fast = F, scale.ratio = 1, pie=pop_hap, bg=pie_color, show.mutation=1, labels=F, threshold=c(0))
-legend("topleft", c(colnames(pop_hap)), fill=pie_color, cex=3)
+plot(hap_net, size=sqrt(attr(hap_net, "freq"))*0.4, fast = T, scale.ratio = 2, 
+     pie=pop_hap, bg=pie_color, show.mutation=1, labels=F, threshold=c(0)) # the bigger scale.ratio is, the smaller the pies
+
+legend("topleft", c(colnames(pop_hap)), fill=pie_color, cex=1)
+
 
 
 

@@ -324,12 +324,11 @@ fulldf_col2$CHR <- factor(fulldf_col2$CHR, ordered = TRUE,
                                      "scaffold10"))
 
 # Remove data for scaffold10~
-fulldf_col2<-fulldf_col2 %>%
-  filter(!(CHR == "scaffold10"))
+#fulldf_col2<-fulldf_col2 %>% filter(!(CHR == "scaffold10"))
 
 
-fulldf_col2 <- ggplot() +
-  geom_point(data = fulldf_col2,
+ADRI.MEDIp <- ggplot() +
+  geom_point(data = ADRI.MEDI,
              aes(x = gPoint_c, y = Fst,  colour = CHR_State, fill= CHR), shape = 21, size = 0.6, alpha = 0.6) +
   facet_rep_grid(Pops~. , scales = "free_x") +
   scale_x_continuous("Chromosomes",
@@ -345,13 +344,13 @@ fulldf_col2 <- ggplot() +
         panel.border = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "#000000", size = .3),
-        axis.title.x = element_text(size = 8, face = "bold", color = "#000000", margin = margin(t = 30, r = 0, b = 0, l = 0)),
-        axis.title.y = element_text(size = 8, face = "bold", color = "#000000", margin = margin(t = 0, r = 30, b = 0, l = 0)),
-        axis.text.x = element_text(colour = "#000000", size = 4),
-        axis.text.y = element_text(colour = "#000000", size = 8, face = "bold"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
         axis.ticks.x = element_line(color = "#000000", size = .3),
         axis.ticks.y = element_line(color = "#000000", size = .3),
-        strip.background.y = element_rect(colour = "#000000", fill = "#FFFFFF", size = .5),
+        strip.background.y = element_blank(),
         strip.text = element_text(colour = "#000000", size = 7, face = "bold"),
         legend.position = "top",
         legend.margin = margin(t = 0, b = 0, r = 0, l = 0),
@@ -359,6 +358,7 @@ fulldf_col2 <- ggplot() +
         legend.key = element_rect(fill = NA),
         legend.background = element_blank()) +
   guides(colour = "none", fill = "none")
+last_plot()
 
 ggsave(filename  = "~/Desktop/Scripts/EUostrea/Figures/Fst/BioClust_15kbwin/BioClust--col2_15kbwin_20Mar2323.png", 
        plot=fulldf_col2, width = 40, height = 60, units = "cm", pointsize = 20, dpi = 300)
@@ -366,12 +366,63 @@ dev.off()
 
 
 
+# To loop through all the data frames created and create a ggplot for each one~
+# Get a list of all dataframes in the global environment
+df_list <- mget(ls())
+
+# Filter the list to keep only the dataframes with 9 characters in their names
+df_list_9chars <- Filter(function(x) nchar(names(df_list)[x]) == 9, seq_along(df_list))
+
+# Extract the dataframes from the filtered list
+df_9chars <- df_list[df_list_9chars]
+sapply(df_9chars, class)
+df_9chars <- df_9chars[-grep("df_9chars|filenames", names(df_9chars))]
 
 
+plot_list <- lapply(df_9chars, function(df) {
+  ggplot(df) +
+    geom_point(aes(x = gPoint_c, y = Fst,  colour = CHR_State, fill= CHR), shape = 21, size = 0.6, alpha = 0.6) +
+    facet_rep_grid(Pops~. , scales = "free_x") +
+    scale_x_continuous("Chromosomes",
+                       expand = c(.005, .5)) +
+    scale_y_continuous("Fst (15Kb Sliding Windows)",
+                       breaks = c(.30, .60, .90), 
+                       labels = c(".30", ".60", ".90"),
+                       limits = c(0, .99),
+                       expand = c(0.01, 0.01)) +
+    scale_colour_brewer() +
+    scale_fill_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#ffff33", "#a65628", "#f781bf", "#999999", "#8dd3c7")) +
+    theme(panel.background = element_rect(fill = "#ffffff"),
+          panel.border = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.line = element_line(colour = "#000000", size = .3),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.x = element_blank(),
+          axis.text.y = element_text(colour = "#000000", size = 7, face = "bold"),
+          axis.ticks.x = element_line(color = "#000000", size = .3),
+          axis.ticks.y = element_line(color = "#000000", size = .3),
+          strip.background.y = element_blank(),
+          strip.text = element_text(colour = "#000000", size = 7, face = "bold"),
+          legend.position = "top",
+          legend.margin = margin(t = 0, b = 0, r = 0, l = 0),
+          legend.box.margin = margin(t = 30, b = 25, r = 0, l = 0),
+          legend.key = element_rect(fill = NA),
+          legend.background = element_blank()) +
+    guides(colour = "none", fill = "none")
+})
 
+# list of ggplots~
+lapply(plot_list, print)
 
+# Save all the ggplots
+# Set the directory to save the plots
+dir <- "~/Desktop/Scripts/EUostrea/Figures/Fst/BioClust_15kbwin/"
 
-
+# Use lapply to save each plot
+lapply(names(plot_list), function(name) {
+  ggsave(file.path(dir, paste0(name, "2.png")), plot = plot_list[[name]], width = 8, height = 5, dpi=350)
+})
 
 
 

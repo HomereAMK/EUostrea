@@ -8,6 +8,7 @@ Genome scan
     - [Inversions-like regions identification](#inversions-like-regions-identification)
     - [Snps per inversion-like regions](#snps-per-inversion-like-regions)
     - [Get the beagle file](#get-the-beagle-file)
+    - [Get the PopGenestimates in the inversion region](#get-the-popgenestimates-in-the-inversion-region)
   - [Outliers on PC9 scaffold2 and 10](#outliers-on-pc9-scaffold2-and-10)
     - [Get the beagle file](#get-the-beagle-file-1)
 
@@ -199,8 +200,13 @@ do
 done
 ```
 🤝
-
-
+### Get the PopGenestimates in the inversion region
+>Reg04
+scaffold4:14226-9973860
+>Reg05
+scaffold5:375-19999685
+>Reg08
+scaffold8:32001789-58488037
 ```bash
 for query in scaffold8 scaffold4 scaffold5
 do

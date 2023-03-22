@@ -19,7 +19,7 @@ MtGenome reference: Hayer et al., 2021 MT663266 (Limfjorden) 16,356bp
 ## II. Analyses
 Regional structure and phylogenetics
 >Angsd to get a beagle file 
-```
+```bash
 #angsd
 module load tools computerome_utils/2.0
 module load htslib/1.16
@@ -41,7 +41,7 @@ module load samtools/1.16
 ```
 
 
-```
+```bash
 #Consensus Fasta seq for a all pop or 
 MTBAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mtbamlist_6mar23.txt
 #POP_BAMLIST=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt
@@ -105,4 +105,66 @@ angsd \
 -minQ 20 -minMapQ 20 \
 -remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
 -out $MTOUTPUTF/Mt_HapNetwork_10mar23.depth_counts
+```
+
+
+## IV. Plotting the haplotype network with R on c2
+> the haploNet function is not functionning on local.
+```bash
+#Load general tools
+module load tools computerome_utils/2.0
+module load htslib/1.16
+module load bedtools/2.30.0
+module load parallel/20210722
+
+#Load module for R
+module load gsl/2.6
+module load imagemagick/7.0.10-13
+module load gdal/2.2.3
+module load geos/3.8.0
+module load jags/4.2.0
+module load hdf5
+module load netcdf
+module load boost/1.74.0
+module load openssl/1.0.0
+module load lapack
+module load udunits/2.2.26
+module load proj/7.0.0
+module load gcc/10.2.0
+module load intel/perflibs/64/2020_update2
+module load R/4.0.0
+```
+
+>in R
+```R
+# Cleans the environment  
+rm(list=ls())
+library(tidyverse)
+library(cowplot)
+library(ape)
+library(pegas)
+library(RColorBrewer)
+library(knitr)
+#devtools::install_github("shaunpwilkinson/insect")
+library(insect)
+setwd("/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome/")
+source("/home/projects/dp_00007/people/hmon/Flat_oysters/04_local_R/00_scripts/NIC_mtgenome_functions.R")
+
+fasta <- read.dna("/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome/Mt_HapNetwork_10feb23_mindepth4_minmaf80.fasta", format="fasta")
+fasta
+hap <- haplotype(fasta)
+summary(hap)
+hap_net <- haploNet(hap, d=dist.dna(hap, model = "N"))
+
+
+ind_hap <- with(stack(setNames(attr(hap, "index"), rownames(hap))), table(hap=ind, individuals=rownames(fasta)[values])) %>%
+  as_tibble() %>%
+  mutate(population=substr(individuals,1,nchar(individuals)-2))
+
+## number of positions retained
+t(as.character(fasta)) %>% 
+  as_tibble() %>%
+  filter_all(all_vars(. != "n")) %>%
+  dim() %>%
+  .[1]
 ```
