@@ -307,6 +307,90 @@ ggsave(PCA_MissData1_3, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStr
 
 
 
+##### Mtgenome #####
+cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_minInd210.covMat")) 
+bamlist <- read.table("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mtbamlist_24mar23.txt", as.is = TRUE)
+bams <- bamlist[, 1]
+bams <- gsub(".bam", "", bams)
+bams <- gsub(".+/", "", bams)
+# Defining the population variable
+population <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 6), substr(bams, 1, 4))
+# Defining the individual identifier
+ind <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 9), substr(bams, 1, 7))
+# Combining population and ind in the same table
+Mt_annot <- data.frame(population = population, ind = ind)
+count(unique(Mt_annot$population))
+source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_dec22_MTDNA.R")
+# Reorders Population ~
+Mt_annot$population <- factor(Mt_annot$population, ordered = T,
+                                 levels = c("MOLU", "ZECE", "CRES",
+                                            "ORIS","CORS", "PONT",  "RIAE",
+                                            "MORL",
+                                            "TOLL", "COLN", "BARR",
+                                            "TRAL", "CLEW",
+                                            "RYAN",
+                                            "GREV", "WADD",
+                                            "NISS","LOGS","VENO", "HALS", "THIS",
+                                            "KALV", "HYPP",
+                                            "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                                            "INNE","VAGS", "AGAB", "OSTR"))
+
+#Plot genome-wide PCA with the covMat matrix
+pca1 <- PCA(cov_mat, Mt_annot$ind, Mt_annot$population, 1, 2, show.ellipse = T, show.label = F)
+ggsave(pca1, file = "~/Desktop/Scripts/EUostrea/Figures/Mtgenome/24mar23_MTDNA_401snps_PCA1vs2.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 600)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### Scandinavia #####
+## Plotting CovMat and IbsMat from ANGSD
+cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/PopStruct_EUostrea/SCAND/1mar23_prunedLDminweight0.5snps_SCAND.covMat")) 
+bamlist <- read.table("~/Desktop/Scripts/EUostrea/01_infofiles/bamlist_EUostrea_Scandinavia.txt", as.is = TRUE)
+bams <- bamlist[, 1]
+bams <- gsub(".bam", "", bams)
+bams <- gsub(".+/", "", bams)
+# Defining the population variable
+population <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 6), substr(bams, 1, 4))
+# Defining the individual identifier
+ind <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 9), substr(bams, 1, 7))
+# Combining population and ind in the same table
+Scand_annot <- data.frame(population = population, ind = ind)
+count(unique(Scand_annot$population))
+source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_mar23_SCAND.R")
+# Reorders Population ~
+Scand_annot$population <- factor(Scand_annot$population, ordered = T,
+                   levels = c("GREV", "WADD",
+                              "NISS","LOGS","VENO", "HALS", "THIS",
+                              "KALV", "HYPP",
+                              "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                              "INNE","VAGS", "AGAB", "OSTR"))
+
+#Plot genome-wide PCA with the covMat matrix
+pca1 <- PCA(cov_mat, Scand_annot$ind, Scand_annot$population, 1, 2, show.ellipse = T, show.label = T)
+ggsave(pca1, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/PCA_SCAND/pca1vs2_scand_24mar23.pdf", device = cairo_pdf, width = 16, height = 8, dpi = 600)
+pca2 <- PCA(cov_mat, Scand_annot$ind, Scand_annot$population, 1, 3, show.ellipse = T, show.label = T)
+ggsave(pca2, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/PCA_SCAND/pca1vs3_scand_24mar23.pdf", device = cairo_pdf, width = 16, height = 8, dpi = 600)
+pca3 <- PCA(cov_mat, Scand_annot$ind, Scand_annot$population, 1, 4, show.ellipse = FALSE, show.label = FALSE)
 
 
 

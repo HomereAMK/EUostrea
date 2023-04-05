@@ -48,7 +48,7 @@ MTBAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mtbamlist_6m
 N_IND=`cat /home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/List_phylogenyMT_7jun22.txt | wc -l`
 OUTPUTFOLDER=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome
 OUTNAME=6mar23_UltraMT
-GENOME="/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/MT663266.fasta"
+GENOME="/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/OX387714_15-DEC-2022_xbOstEdul1.1.fasta"
 
 angsd -bam $MTBAMLIST -ref $GENOME -out $OUTPUTFOLDER/$OUTNAME \
 -minInd $((N_IND*2/3)) \
@@ -81,10 +81,12 @@ First Tree done on https://itol.embl.de/tree/192389368159681675247682
 #ls /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/TRAL*bam >> /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt 
 #ls /home/projects/dp_00007/people/hmon/MitOyster/02_data/realigned/USAM*.bam >> /home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt 
 ## Variables
-MTBAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mtbamlist_6mar23.txt
-POP_BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt
-MTGENOME=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/MT663266.fasta
+MTBAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mtbamlist_24mar23.txt
+#POP_BAMLIST=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/Mt_HapNetwork_10feb23_15pops_bamlist.txt
+MTGENOME=/home/projects/dp_00007/people/hmon/MitOyster/01_infofiles/OX387714_15-DEC-2022_xbOstEdul1.1.fasta
 MTOUTPUTF=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/MTgenome
+
+> 24mar23 bamlist 423 individuals, too much for haploNet function
 
 ## Get allele count 
 angsd \
@@ -94,7 +96,7 @@ angsd \
 -doCounts 1 -dumpCounts 4 \
 -minQ 20 -minMapQ 20 \
 -remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
--out $MTOUTPUTF/Mt_HapNetwork_10mar23.allele_counts
+-out $MTOUTPUTF/MtOXgenome_HapNetwork_24mar23.allele_counts
 
 ## Get depth count
 angsd \
@@ -104,7 +106,24 @@ angsd \
 -doCounts 1 -dumpCounts 2 \
 -minQ 20 -minMapQ 20 \
 -remove_bads 1 -only_proper_pairs 1 -C 50 -uniqueOnly 1 \
--out $MTOUTPUTF/Mt_HapNetwork_10mar23.depth_counts
+-out $MTOUTPUTF/MtOXgenome_HapNetwork_24mar23.depth_counts
+
+## Get covMat
+angsd \
+-bam $MTBAMLIST \
+-ref $MTGENOME \
+-uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 -baq 1 \
+-minMapQ 20 -minQ 20 -setMinDepthInd 1 -minInd 210 \
+-doCounts 1 -dumpCounts 2 \
+-GL 1 -doGlf 2 \
+-doMajorMinor 1 -doMaf 1 -SNP_pval 1e-6 -minMaf 0.05 -rmTriallelic 0.05 -doPost 1 -doGeno 8 \
+-doIBS 1 -doCov 1 -makeMatrix 1 \
+-nThreads 40 \
+-out $MTOUTPUTF/MtOXgenome_HapNetwork_24mar23_minInd210
+
+
+
+
 ```
 
 

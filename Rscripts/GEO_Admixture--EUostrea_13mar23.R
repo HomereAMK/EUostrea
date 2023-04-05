@@ -8,7 +8,7 @@ rm(list=ls())
 
 # Sets working directory ~
 #setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-setwd("~/Desktop/Scripts/Data/NgsAdmix_EUostrea/")
+setwd("~/Desktop/Scripts/Data/NgsAdmix_EUostrea/SCAND/")
 
 # Loads required packages ~
 pacman::p_load(tidyverse, MetBrewer, scales, optparse, plyr, RColorBrewer, extrafont, gtable, grid, mdthemes, ggtext, glue)
@@ -131,12 +131,158 @@ ngsAdmix <-
 
 ngsAdmix
 
- # Saves the final plot ~
- ggsave(ngsAdmix, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/Admixture/prunedLDminweight0.5_13mar23--ngsAdmix_OdilonRedon.pdf", device = cairo_pdf, width = 16, height = 8, dpi = 600)
+# Saves the final plot ~
+ggsave(ngsAdmix, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/Admixture/prunedLDminweight0.5_13mar23--ngsAdmix_OdilonRedon.pdf", device = cairo_pdf, width = 16, height = 8, dpi = 600)
 
 
 
 
+
+
+
+
+
+
+
+#### SCAND admixture #####
+# Cleans the environment ~ 
+rm(list=ls())
+
+# Creates colour palette ~
+setwd("~/Desktop/Scripts/Data/NgsAdmix_EUostrea/SCAND/")
+
+# Loads the data ~
+samples <- read.table("~/Desktop/Scripts/Data/NgsAdmix_EUostrea/SCAND/qopt_popfile_scand.txt", stringsAsFactors = FALSE, sep = "\t")
+
+# Reads the annotation file ~
+ids <- read.table("~/Desktop/Scripts/EUostrea/01_infofiles/bamlist_EUostrea_Scandinavia.txt", stringsAsFactors = FALSE, sep = "\t", header = FALSE)
+bams <- ids[, 1]
+bams <- gsub(".bam", "", bams)
+bams <- gsub(".+/", "", bams)
+# Defining the population variable
+population <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 6), substr(bams, 1, 4))
+# Defining the individual identifier
+ind <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 9), substr(bams, 1, 7))
+# Combining population and ind in the same table
+ids <- data.frame(population = population, ind = ind)
+# Adds column ids names ~
+colnames(ids) <- c( "Population","Sample_ID")
+(unique(ids$Population))
+
+# Ask Sama ~
+fulldf <- data.frame()
+# Ask Sama 2 ~
+x <- list(c(4,3,7,2,6,8,5,1),
+  c(6,2,3,7,1,4,5),
+  c(2,5,1,6,3,4),
+  c(3,4,5,2,1),
+  c(4,3,2,1),
+  c(3,1,2),
+  c(1,2))
+
+# Defines samples' IDs ~
+sampleid = "Sample_ID"
+# Ask Sama 3 ~
+for (j in 1:length(samples[,1])){
+  data <- read.table(samples[j,1])[, x[[j]]]
+  for (i in 1:dim(data)[2]) { 
+    temp <- data.frame(Ancestry = data[, i])
+    temp$K <- as.factor(rep(i, times = length(temp$Ancestry)))
+    temp[sampleid] <- as.factor(ids[sampleid][,1])
+    temp$K_Value <- as.factor(rep(paste("K = ", dim(data)[2], sep = ""), times = length(temp$Ancestry)))
+    temp <- merge(ids, temp)
+    fulldf <- rbind(fulldf, temp)}}
+
+# Reorders Population ~
+fulldf$Population <- factor(fulldf$Population, ordered = T,
+                            levels = c("GREV", "WADD",
+                                       "NISS","LOGS","VENO", "HALS", "THIS",
+                                       "KALV", "HYPP",
+                                       "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                                       "INNE","VAGS", "AGAB", "OSTR"))
+
+
+
+#fulldf$xlabelscolours_Ordered <- fulldf$xlabelscolours[order(fulldf$Population)]
+
+
+# Defines the target to be plotted ~
+target = "Population"
+
+# Creates the plots ~
+ngsAdmix <-
+  ggplot(fulldf, aes(x = Sample_ID, y = Ancestry, fill = K)) +
+  geom_bar(stat = "identity", width = .85) +
+  facet_grid(K_Value ~ get(target), space = "free_x", scales = "free_x") +
+  scale_x_discrete(expand = c(0, 0)) + 
+  scale_y_continuous(expand = c(0, 0), breaks = NULL) +
+  scale_fill_manual(values = MetBrewer::met.brewer("Redon", n = 8, type = "discrete")) +
+  theme(panel.background = element_rect(fill = "#ffffff"),
+        panel.border = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.margin = margin(t = 0.005, b = 0.005, r = .4, l = .4, unit = "cm"),
+        axis.line = element_blank(),
+        axis.text = element_text(colour = "#000000", size = 10, face = "bold"),
+        axis.text.x.bottom = element_text(colour = "#000000", face = "bold", angle = 90, vjust = .5, hjust = .5, size = 1),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        strip.background = element_rect(colour = c(
+                                                   "#91BD96", "#91BD96",
+                                                   "#02630C", "#025b0b", "#02530a", "#024b09", "#024308",
+                                                   "#45D1F7", "#45D1F7",
+                                                   "#588cad", "#4d7f96", "#416c7e", "#35586c", "#294458",
+                                                   "#240377", "#1e026d", "#1a0163", "#160059"), fill = "#FAFAFA", size = .05),
+        strip.text.x = element_text(colour = "black", face = "bold", size = 10, angle = 90, margin = margin(.75, 0, .75, 0, "cm")),
+        legend.position = "right",
+        legend.key = element_rect(fill = NA),
+        legend.background = element_blank(),
+        legend.title = element_text(colour = "#000000", size = 10, face = "bold"),
+        legend.text = element_text(colour = "#000000", size = 10, face="bold"))
+
+ngsAdmix
+ggsave(ngsAdmix, file = "~/Desktop/Scripts/EUostrea/Figures/PopulationStructure/Admixture_SCAND/K2_scand_24mar23.pdf", device = cairo_pdf, width = 16, height = 8, dpi = 600)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ## evalAdmix test ##
+#Assessing model fit for SCAND K=2
+source("~/Desktop/Scripts/EUostrea/Rscripts/visFuns.R") # import some funcitons to help in visualization
+bamlist <- read.table("~/Desktop/Scripts/EUostrea/01_infofiles/bamlist_EUostrea_Scandinavia.txt", as.is = TRUE)
+bams <- bamlist[, 1]
+bams <- gsub(".bam", "", bams)
+bams <- gsub(".+/", "", bams)
+# Defining the population variable
+population <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 6), substr(bams, 1, 4))
+# Defining the individual identifier
+ind <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 9), substr(bams, 1, 7))
+
+# Combining population and ind in the same table
+Scand_data <- data.frame(population = population, ind = ind)
+
+q<-read.table("~/Desktop/Scripts/Data/NgsAdmix_EUostrea/SCAND/1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.qopt")
+r <- as.matrix(read.table("~/Desktop/Scripts/Data/NgsAdmix_EUostrea/SCAND/1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.corres"))
+str(pop)
+pop2 <- as.table(pop)
+ord<-orderInds(Scand_data = Scand_data[,1], q=q) # sort indivduals by population and within population by admixture proportion
+plotCorRes(r, Scand_data=Scand_data[,2], ord=ord, max_z = 0.2)
 
 
 

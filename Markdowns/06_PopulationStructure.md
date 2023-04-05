@@ -133,7 +133,7 @@ zcat /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructur
 BAMLISTSCAND=/home/projects/dp_00007/people/hmon/EUostrea/01_infofiles/bamlist_EUostrea_Scandinavia.txt
 
 #Get the beagle file
-angsd -b $BAMLISTSCAND -ref $REF -out $OUTPUTFOLDER/2mar23_prunedLDminweight0.5snps_SCAND \
+angsd -b $BAMLISTSCAND -ref $REF -out $OUTPUTFOLDER/24mar23_prunedLDminweight0.5snps_SCAND \
 -doMajorMinor 3 -doCounts 1 -doIBS 1 -makematrix 1 -doCov 1 \
 -minQ 20 -minMapQ 20 \
 -GL 1 -doGlf 2 \
@@ -172,31 +172,55 @@ for k in $(seq 8 10); do
   /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 2000 -o $OUTPUTFOLDER/27feb23_prunedLDminweight0.5_2Kiter_NGSadmix.$k
 done
 
-for k in $(seq 4 10); do
-  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 10000 -o $OUTPUTFOLDER/30jan23_prunedLDminweight0.5_NGSadmix.$k
+for k in $(seq 12 15); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 2000 -o $OUTPUTFOLDER/17feb23_2Kiter_prunedLDminweight0.5_NGSadmix.$k
 done
 
 ```
 
 ### NGSadmix Scandinavia
 ```bash
-BEAGLESCAND=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/1mar23_prunedLDminweight0.5snps_SCAND.beagle.gz
-for k in $(seq 1 10); do
-  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLE -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 2000 -o $OUTPUTFOLDER/1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.$k
+BEAGLESCAND=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/24mar23_prunedLDminweight0.5snps_SCAND.beagle.gz
+for k in $(seq 2 10); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLESCAND -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 1000 -o $OUTPUTFOLDER/24mar23_prunedLDminweight0.5snps_SCAND_NGSadmix1kiter.$k
 done
+
+BEAGLESCAND=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/24mar23_prunedLDminweight0.5snps_SCAND.beagle.gz
+for k in $(seq 2 10); do
+  /home/projects/dp_00007/apps/Scripts/wrapper_ngsAdmix.sh -P 40 -debug 1 -likes $BEAGLESCAND -K $k -minMaf 0 -tol 1e-6 -tolLike50 1e-3 -maxiter 1000 -o $OUTPUTFOLDER/24mar23_prunedLDminweight0.5snps_SCAND_NGSadmix1kiter.$k
+done
+
+cd /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure
+for k in $(seq 2 10); do
+evalAdmix -beagle $BEAGLESCAND -fname 24mar23_prunedLDminweight0.5snps_SCAND_NGSadmix1kiter.$k.fopt.gz -qname 4mar23_prunedLDminweight0.5snps_SCAND_NGSadmix1kiter.$k.qopt -minMaf 0 -o 24mar23_prunedLDminweight0.5snps_SCAND_NGSadmix1kiter.$k.corres -P 30
+done
+
+
+
+
 ```
 ## evalAdmix
 ```bash
-PREFIXLDPRUNED=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_NGSadmix
 BEAGLE=/home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure/30jan23_prunedLDminweight0.5_PopStruct.beagle.gz
 
-for k in $(seq 1 20); do
-evalAdmix -beagle $BEAGLE -fname $PREFIXLDPRUNED.$k.fopt.gz -qname $PREFIXLDPRUNED.$k.qopt -minMaf 0 -o $PREFIXLDPRUNED.evaladmixOut.$k.corres -P 40
+for k in $(seq 2 3); do
+evalAdmix -beagle $BEAGLE -fname 17feb23_2Kiter_prunedLDminweight0.5_NGSadmix.$k.fopt.gz -qname 17feb23_2Kiter_prunedLDminweight0.5_NGSadmix.$k.qopt -minMaf 0 -o 17feb23_2Kiter_prunedLDminweight0.5_NGSadmix.evaladmixOut.$k.corres -P 30
+done
 ```
 
 ```bash
 #test evaladmix
-evalAdmix -beagle $BEAGLE -fname 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.fopt.gz -qname 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.qopt -minMaf 0 -o 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.2.corres -P 30
+cd /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure
+for k in $(seq 2 10); do
+evalAdmix -beagle $BEAGLESCAND -fname 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.$k.fopt.gz -qname 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.$k.qopt -minMaf 0 -o 1mar23_prunedLDminweight0.5snps_SCAND_NGSadmix2kiter.$k.corres -P 30
+done
+
+cd /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/PopulationStructure
+for k in $(seq 2 11); do
+evalAdmix -beagle $BEAGLE -fname 17feb23_2Kiter_prunedLDminweight0.5_NGSadmix.$k.fopt.gz -qname 17feb23_2Kiter_prunedLDminweight0.5_NGSadmix.$k.qopt -minMaf 0 -o 17feb23_2Kiter_prunedLDminweight0.5_NGSadmix.$k.corres -P 30
+done
+
+
 ```
 ## Run PCangsd LD Pruned SNPs list minweight0.5 and minMaf 0.05
 ```bash

@@ -3,9 +3,9 @@
 # ~ Plots --HAPfreq_PCA Inversion | First written by Nicolas Lou with later modifications by Homère J. Alves Monteiro
 rm(list = ls(all = TRUE))
 # Loads functions
-source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam_dec22.R")
+source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/individual_pca_functions_hjam.R")
 # Loads required packages ~
-pacman::p_load(tidyverse, cowplot, knitr, scales, MetBrewer)
+pacman::p_load(tidyverse, cowplot, knitr, scales, MetBrewer,RcppCNPy)
 
 # Reorders Population ~
 annot <- read.table("~/Desktop/Scripts/EUostrea/01_infofiles/bamlist_EUostrea.annot", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
@@ -17,10 +17,24 @@ annot$V2 <- factor(annot$V2, ordered = T,
                               "INNE","VAGS", "AGAB", "OSTR"))
 
 
+
+# Set file path
+if (!require("reticulate")) {
+  install.packages("reticulate")
+}
+# Import numpy library
+np <- import("numpy")
+selection_file <- "~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold4_InvReg_pcangsd.selection.npy"
+# Load selection.npy file
+loadings <- np$load(selection_file)
+# Check if it contains the loadings
+if (ncol(loadings) > 1)
+  
+  
 # Inv Reg scaffold4 
 cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold4_InvReg_pcangsd.cov")) 
 pca_Reg04 <- PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
-ggsave(pca_Reg04, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold4/pca1vs2_InvReg04_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+#ggsave(pca_Reg04, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold4/pca1vs2_InvReg04_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 
 lg04_pca_table <- pca_table
 pca_table %>%
@@ -31,17 +45,19 @@ pca_table %>%
 # Inv Reg scaffold5
 cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold5_InvReg_pcangsd.cov")) 
 pca_Reg05 <- PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
-ggsave(pca_Reg05, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold5/pca1vs2_InvReg05_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+#ggsave(pca_Reg05, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold5/pca1vs2_InvReg05_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 lg05_pca_table <- pca_table
 pca_table %>%
   ggplot(aes(x=PC1, fill=population)) +
   geom_histogram(color="black") +
   theme_cowplot()
 
+
+
 # Inv Reg scaffold8
 cov_mat <- as.matrix(read.table("~/Desktop/Scripts/Data/InvReg_EUostrea/7feb23_scaffold8_InvReg_pcangsd.cov")) 
 pca_Reg08 <- PCA(cov_mat, annot$V1, annot$V2, 1, 2, show.ellipse = F)
-ggsave(pca_Reg08, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold8/pca1vs2_InvReg08_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+#ggsave(pca_Reg08, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/scaffold8/pca1vs2_InvReg08_individuals.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
 lg08_pca_table <- pca_table
 pca_table %>%
   ggplot(aes(x=PC1, fill=population)) +
@@ -53,8 +69,8 @@ pca_table %>%
 inversion_pca_table <- mutate(lg04_pca_table, lg="Reg04", PC1=PC1, min_cutoff=-0.03, max_cutoff=0.03) %>%
   bind_rows(mutate(lg05_pca_table, lg="Reg05", PC1=PC1,  min_cutoff=-0.03, max_cutoff=0.03)) %>%
   bind_rows(mutate(lg08_pca_table, lg="Reg08", PC1=PC1,  min_cutoff=0, max_cutoff=0.06)) %>%
-  mutate(genotype=ifelse(PC1<min_cutoff, "homo_1", "het"),
-         genotype=ifelse(PC1>max_cutoff, "homo_2", genotype)) %>%
+  mutate(genotype=ifelse(PC1<min_cutoff, "homo_1", "het"))%>%
+  mutate(genotype=ifelse(PC1>max_cutoff, "homo_2", genotype)) %>%
   mutate(genotype=factor(genotype, levels = c("homo_1", "het", "homo_2"))) %>%
   mutate(minor_allele_count = 3-as.numeric(genotype)) %>%
   dplyr::select(individual, population, lg, PC1, min_cutoff, max_cutoff, genotype,minor_allele_count)
@@ -95,12 +111,12 @@ Gen_freq_histo <- inversion_pca_table %>%
         axis.line = element_line(colour = "#000000", size = 0.3)) +
   guides(fill = guide_legend(title = "Populations", title.theme = element_text(size = 15, face = "bold"),
                              label.theme = element_text(size = 14)))
-ggsave(Gen_freq_histo, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/PopulationHaplotypesFrequencies_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
-dev.off()
+#ggsave(Gen_freq_histo, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/PopulationHaplotypesFrequencies_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+#dev.off()
 
 # Genotype frequencies
 inversion_pca_table %>%
-  count(population, lg, genotype) %>%
+  dplyr::count(population, lg, genotype) %>%
   ggplot(aes(x=population, y=n)) +
   geom_col(aes(fill=genotype), color="black") +
   scale_fill_manual(values = c("#5a0c30","#973fc9","#91ccff")) +
@@ -110,15 +126,20 @@ inversion_pca_table %>%
 # Save dataframe for the Map pie chart 
 inversion_pca_table %>%
   group_by(population, lg) %>%
-  summarise(prop_homo_1 = mean(genotype == "homo_1"),
+  dplyr::summarise(prop_homo_1 = mean(genotype == "homo_1"),
             prop_homo_2 = mean(genotype == "homo_2"),
             prop_het = mean(genotype == "het"), .groups = 'drop') %>% 
   write.table(., "~/Desktop/Scripts/Data/InvReg_EUostrea/PropHomo1_het_homo2_InvReg_27feb23.tsv", 
               sep="\t", row.names=FALSE)
 
+
+inversion_pca_table %>%  write.table(., "~/Desktop/Scripts/Data/InvReg_EUostrea/Inversion_pcatable31mar23.tsv", 
+                                     sep="\t", row.names=FALSE)
+
+  
 #
 Genfreq1 <- inversion_pca_table %>%
-  count(population, population, lg, genotype) %>%
+  dplyr::count(population, population, lg, genotype) %>%
   ggplot(aes(x=population, y=n)) +
   geom_col(aes(fill=genotype), color="black", position="fill") +
   scale_fill_manual(values = c("#5a0c30","#973fc9","#91ccff")) +
@@ -155,11 +176,11 @@ Genfreq1 <- inversion_pca_table %>%
                              label = TRUE,
                              label.theme = element_text(size = 14),
                              override.aes = list(size = 5, alpha = .9)), colour = "none")
-ggsave(Genfreq1, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/3GenotypesFrequencies_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
-dev.off()
+#ggsave(Genfreq1, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/3GenotypesFrequencies_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+#dev.off()
 
 inversion_allele_frequency <- inversion_pca_table %>%
-  count(population, lg, genotype) %>%
+  dplyr::count(population, lg, genotype) %>%
   pivot_wider(names_from = genotype, values_from = n, values_fill=0) %>%
   mutate(minor=2*homo_1+het, major=2*homo_2+het) %>%
   dplyr::select(-c(homo_1, het, homo_2)) %>%
@@ -204,19 +225,89 @@ Genfreq2 <- inversion_allele_frequency %>%
                              label = TRUE,
                              label.theme = element_text(size = 14),
                              override.aes = list(size = 5, alpha = .9)), colour = "none")
-ggsave(Genfreq2, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/MajorMinorGenotypesFrequencies_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
-dev.off()
+Genfreq2
+#ggsave(Genfreq2, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/MajorMinorGenotypesFrequencies_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+#dev.off()
+
+
+
+
+
+# Deviation from HWE
+# Count the number of each genotype per population, for each lg separately
+library(dplyr)
+Count_gen<-inversion_pca_table %>%
+  group_by(population, lg, genotype) %>%
+  dplyr::summarise(count = n()) %>%
+  pivot_wider(names_from = "genotype", values_from = "count", names_prefix = "count_")
+
+
+
+Count_gen<-Count_gen %>%
+  mutate(n = ifelse(is.na(count_homo_1), 0, count_homo_1) +
+           ifelse(is.na(count_het), 0, count_het) +
+           ifelse(is.na(count_homo_2), 0, count_homo_2)) %>%
+  mutate(homo1_obs = (2*replace_na(count_homo_1, 0) + replace_na(count_het, 0))/(2*n + replace_na(count_homo_2, 0))) %>%
+  mutate(homo2_obs = (2*replace_na(count_homo_2, 0) + replace_na(count_het, 0))/(2*n + replace_na(count_homo_1, 0)))%>%
+  mutate(het_obs = (2*replace_na(count_homo_1, 0) * replace_na(count_homo_2, 0))/(2*n + replace_na(count_homo_1, 0)))%>%
+  
+  mutate(homo1_e = homo1_obs^2,
+         het_e = 2 * (homo1_obs * homo2_obs),
+         homo2_e = homo2_obs^2)
+  
+
+Count_gen <- Count_gen %>%
+  mutate(p1 = (2 * replace_na(count_homo_1, 0) + replace_na(count_het, 0)) / (2 * n),
+         p2 = (2 * replace_na(count_homo_2, 0) + replace_na(count_het, 0)) / (2 * n)) %>%
+  mutate(homo1_e = n * p1^2,
+         het_e = n * 2 * p1 * p2,
+         homo2_e = n * p2^2)
+
+
+# Add the chi-squared values for each row
+Count_gen <- Count_gen %>%
+  rowwise() %>%
+  mutate(chisq = sum((replace_na(count_homo_1,0) - replace_na(homo1_e, 0) )^2 / replace_na(homo1_e,0),
+                     (replace_na(count_het,0) - replace_na(het_e,0))^2 / replace_na(het_e,0),
+                     (replace_na(count_homo_2,0) - replace_na(homo2_e,0))^2 / replace_na(homo2_e,0),
+                     na.rm = TRUE)) %>%
+  ungroup()
+
+# Calculate the p-value for each row
+Count_gen <- Count_gen %>%
+  rowwise() %>%
+  mutate(p_value = pchisq(chisq, df = 1, lower.tail = FALSE)) %>%
+  ungroup()
+
+# Check which populations deviate from HWE
+significance_level <- 0.05
+deviations <- Count_gen %>%
+  dplyr::filter(p_value < significance_level) %>%
+  dplyr::select(population, lg, p_value)
+
+# Print deviations
+print(deviations)
+
+
+
+
 
 
 # Heterozygosity at inverted regions
+
+
+head(inversion_pca_table)
+inversion_pca_table <- read_table("~/Desktop/Scripts/Data/InvReg_EUostrea/Inversion_pcatable31mar23.tsv", annot <- read.table("~/Desktop/Scripts/EUostrea/01_infofiles/bamlist_EUostrea.annot", sep = "\t", header = FALSE, stringsAsFactors = FALSE)
+)
+inversion_pca_table <- read_tsv("~/Desktop/Scripts/Data/InvReg_EUostrea/Inversion_pcatable31mar23.tsv")
 inversion_h <- inversion_pca_table %>%
-  count(population, lg, genotype, minor_allele_count) %>%
+  dplyr::count(population, lg, genotype, minor_allele_count) %>%
   group_by(population, lg) %>%
   mutate(genotype_frequency=n/sum(n), 
          het=ifelse(minor_allele_count==1, 1, 0),
          p=minor_allele_count*genotype_frequency/2) %>%
   group_by(population, lg) %>%
-  summarise(observed=sum(genotype_frequency*het), expected=2*sum(p)*(1-sum(p))) %>%
+  dplyr::summarise(observed=sum(genotype_frequency*het), expected=2*sum(p)*(1-sum(p))) %>%
   ungroup() %>%
   pivot_longer(cols = c(observed, expected), names_to = "type", values_to = "heterozygosity")
 inversion_heterozygosity_plot <- inversion_h %>%
@@ -225,7 +316,7 @@ inversion_heterozygosity_plot <- inversion_h %>%
   scale_color_manual(values = MetBrewer::met.brewer("Archambault", n = 2, type = "discrete")) +
   facet_wrap(~ lg) +  
   coord_flip() +
-  labs(title = "Heterozygosity values at putative inversion-regions by population",
+  labs(title = "Heterozygosity values at SVs per sampling sites",
        color = "Type",
        x = "Population",
        y = "Heterozygosity") +
@@ -254,7 +345,7 @@ inversion_heterozygosity_plot <- inversion_h %>%
         legend.text = element_text(colour = "#000000", size = 12, face = "bold"),
         legend.position = "top",
         legend.background = element_blank())
-ggsave(inversion_heterozygosity_plot, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/HetatInvReg_InvReg040508_histo.pdf", device = cairo_pdf, scale = 1.1, width = 12, height = 8, dpi = 300)
+ggsave(inversion_heterozygosity_plot, file = "~/Desktop/Scripts/EUostrea/Figures/InvReg/28mar23HetatInvReg_InvReg040508_histo.png", scale = 1.1, width = 12, height = 8, dpi = 300)
 dev.off()
 
 

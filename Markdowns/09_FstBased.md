@@ -238,7 +238,7 @@ do
                 realSFS fst stats /home/projects/dp_00007/data/hmon/angsd_Fst/EUostrea/Mar23--mindInd0.25_Unfolded_EUostrea_globalList_${CLUSTER[i1]}.${CLUSTER[i2]}.fst.idx -P 40
         fi
     done
-done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/Mar23_BioCluster--Fstvalues_2.tsv
+done > /home/projects/dp_00007/people/hmon/EUostrea/03_datasets/Fst/Mar23_BioCluster--Fstvalues_3.tsv
 ```
 
 >Fst Sliding window global list 15kb 15kb for pairwise biological cluster 

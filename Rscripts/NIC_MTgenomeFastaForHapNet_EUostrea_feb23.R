@@ -14,40 +14,45 @@ library(insect)
 source("~/Desktop/Scripts/Flat_oysters/04_local_R/00_scripts/NIC_mtgenome_functions.R")
 
 # Wrangling the BAM list
-bam_list_file <- "~/Desktop/Scripts/Data/MtGenome_EUostrea/Mtbamlist_6mar23.txt"
+bam_list_file <- "~/Desktop/Scripts/Data/MtGenome_EUostrea/Mtbamlist_24mar23_MODIFY.txt"
 bams <- read.table(bam_list_file)[, 1]
 bams <- gsub(".bam", "", bams)
 bams <- gsub(".+/", "", bams)
-
+bams
 # Defining the population variable
 pop <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 6), substr(bams, 1, 4))
 # Defining the individual identifier
 ind <- ifelse(grepl("^Lurida", bams), substr(bams, 1, 9), substr(bams, 1, 7))
-
+unique(ind)
 
 
 # Analyze depth count across all invididuals
-depth_count <- read_tsv("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10mar23.depth_counts.counts.gz") %>%
-  dplyr::select(-144) %>%
+depth_count <- read_tsv("~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23.depth_counts.counts.gz") %>%
+  dplyr::select(-427) %>%
   t() %>%
   as_tibble() %>%
   bind_cols(ind=ind, population=pop, .) %>%
-  pivot_longer(3:16356, names_to = "position", values_to="depth") %>%
+  pivot_longer(3:16350, names_to = "position", values_to="depth") %>%
   mutate(position=as.numeric(substring(position, 2)))
+
+ind2 <- unique(ifelse(grepl("^Lurida", depth_count$ind), substr( depth_count$ind, 1, 9), substr( depth_count$ind, 1, 7)))
+unique_elements <- setdiff(ind, ind2)
+print(unique_elements)
+
+unique(depth_count$ind)
 # Average depth per individual
 set.seed(1)
 ind_average_depth <- group_by(depth_count, ind, population) %>%
-  summarise(average_depth=mean(depth))
+  dplyr::summarise(average_depth=mean(depth))
 ggplot(ind_average_depth, mapping=aes(x=population, y=average_depth, group=population)) +
   geom_boxplot(outlier.alpha = 0) +
   geom_jitter() +
   theme_cowplot() +
-  
   coord_flip()
 
 ## samples with the lowest depth
 group_by(depth_count, ind, population) %>%
-  summarise(average_depth=mean(depth, na.rm = TRUE)) %>%
+  dplyr::summarise(average_depth=mean(depth, na.rm = TRUE)) %>%
   ungroup() %>%
   arrange(average_depth) %>%
   head(n=20) %>%
@@ -55,7 +60,7 @@ group_by(depth_count, ind, population) %>%
 
 #Average depth per position
 group_by(depth_count, position) %>%
-  summarise(average_depth=mean(depth, na.rm = TRUE)) %>%
+  dplyr::summarise(average_depth=mean(depth, na.rm = TRUE)) %>%
   ggplot(aes(x=position, y=average_depth)) +
   geom_line() +
   theme_cowplot()
@@ -76,40 +81,57 @@ depth_count$population <- factor(depth_count$population, ordered = T,
 
 
 group_by(depth_count, population, position) %>%
-  summarise(average_depth=mean(depth)) %>%
+  dplyr::summarise(average_depth=mean(depth)) %>%
   ggplot(aes(x=position, y=average_depth, color=population)) +
   geom_line() +
-  scale_color_manual(values =c( "#A02353", "#A02353", "#A02353",
-                                "#AD5B35",
-                                "#ad7358",
-                                "#CC480C",
+  scale_color_manual(values =c( "#A02353", "#A02353", "#A02353", "#AD5B35", "#ad7358",
+                                "#CC480C", "#CC480C",
                                 "#969696",
                                 "#D38C89", "#D38C89", "#D38C89",
                                 "#C89AD1", "#C89AD1",
                                 "#7210A0",
-                                "#91BD96",
-                                "#02630C","#02630C","#02630C", "#02630C",
+                                "#91BD96", "#91BD96",
+                                "#02630C", "#02630C", "#02630C", "#02630C", "#02630C",
                                 "#45D1F7", "#45D1F7",
                                 "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
                                 "#240377", "#240377", "#240377", "#240377"))+
   ylim(0, 100) +
   theme_cowplot()
 
+#For OSTR population 
+# Filter data for "OSTR", "AGAB", and "INNE" populations
+selected_populations <- depth_count %>% filter(population %in% c("OSTR", "AGAB", "INNE", "MOLU"))
+selected_populations %>%
+  group_by(population, position) %>%
+  dplyr::summarise(average_depth=mean(depth)) %>%
+  ggplot(aes(x=position, y=average_depth, color=population)) +
+  geom_line() 
+
+# check whic indidual i loose in the ind_average_depth
+
+
 #Generate fasta files from allele counts
 # minimum depth 4, minimum major allele frequency 0.75
-concensus <- convert_count_to_concensus(x="~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23.allele_counts.counts.gz", min_depth=4, min_maf=0.8)
+#concensus <- convert_count_to_concensus(x="~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23.allele_counts.counts.gz", min_depth=4, min_maf=0.75)
+
+concensus <- convert_count_to_concensus(x="~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23.allele_counts.counts.gz", 
+                                        min_depth=3, min_maf=0.75)
+
 ind_label <- ind
-concensus_to_fasta(concensus, ind_label, "~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80.fasta")
+concensus_to_fasta(concensus, ind_label, 
+                   "~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_mindepth3_minmaf.75.fasta")
 concensus_wide <- as_tibble(t(concensus))
 colnames(concensus_wide) <- ind_label
 concensus_wide <- mutate(concensus_wide, position=1:nrow(concensus_wide))
-concensus_long <- pivot_longer(concensus_wide, cols = 1:length(ind_label), names_to = "sample_id", values_to = "allele")
-write_tsv(concensus_long, "~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80.tsv")
+concensus_long <- pivot_longer(concensus_wide, cols = 1:length(ind_label), 
+                               names_to = "sample_id", values_to = "allele")
+write_tsv(concensus_long, "~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_mindepth3_minmaf75.tsv")
 
 
 #Convert fasta file to nexus for PopArt (relaxed filter)
-fasta <- read.dna("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80.fasta", format="fasta")
-concensus_long <- read_tsv("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80.tsv")
+fasta <- read.dna("~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_mindepth3_minmaf.75.fasta",
+                  format="fasta")
+concensus_long <- read_tsv("~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_mindepth3_minmaf75.tsv")
 ## Filter out invariant sites
 snp <- concensus_long %>%
   filter(allele!="N") %>%
@@ -119,8 +141,8 @@ snp <- concensus_long %>%
   unique()
 ## Filter out singleton mutations
 non_singleton_snp <- concensus_long %>%
-  filter(position %in% snp, allele!="N") %>%
-  count(position, allele) %>%
+  dplyr::filter(position %in% snp, allele!="N") %>%
+  dplyr::count(position, allele) %>%
   group_by(position) %>%
   slice_max(order_by=n, n=2, with_ties=FALSE) %>%
   slice_min(order_by=n, n=1, with_ties=FALSE) %>%
@@ -128,7 +150,7 @@ non_singleton_snp <- concensus_long %>%
   .$position
 ## Get a list of sites with average depth lower than 30
 low_depth_site <- group_by(depth_count, position) %>%
-  summarise(average_depth=mean(depth, na.rm = TRUE)) %>%
+  dplyr::summarise(average_depth=mean(depth, na.rm = TRUE)) %>%
   filter(average_depth < 30) %>%
   .$position
 ## Exclude sites with low depth from the non-singleton SNP list
@@ -137,11 +159,14 @@ site_to_include <- setdiff(non_singleton_snp, low_depth_site)
 samples_to_exclude <- concensus_long %>%
   filter(position %in% site_to_include, allele=="N") %>%
   group_by(sample_id) %>%
-  summarise(position_missing=n()) %>%
+  dplyr::summarise(position_missing=n()) %>%
   arrange(desc(position_missing)) %>%
-  filter(position_missing > 1) %>%
+  filter(position_missing > 200) %>%
   .$sample_id
-## Subset the sample table
+
+samples_to_exclude[grep("^OSTR", samples_to_exclude)]
+
+# Print## Subset the sample table
 sample_table<- data.frame(bams, ind_label, pop)
 network_sample_table <- sample_table %>%
   filter(!ind_label %in% samples_to_exclude)
@@ -149,17 +174,16 @@ network_sample_table <- sample_table %>%
 network_fasta <- fasta[(! sample_table$ind_label %in% samples_to_exclude), site_to_include]
 
 # Convert to nexus format
-write.nexus.data(network_fasta, file="~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80.nex", format="dna")
+write.nexus.data(network_fasta, file="~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_mindepth3_minmaf75_avgdepth30filtered_missingNs200_.nex", format="dna")
 
 #Generate trait tables for popart
-
 sample_table %>%
   dplyr::filter(!(ind_label %in% samples_to_exclude)) %>%
   dplyr::select(ind_label, pop) %>%
   mutate(temp=1) %>%
   spread(key = pop, value = temp) %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
-  write_csv("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80_traitPpopart.csv")
+  write_csv("~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_mindepth3_minmaf75_avgdepth30filtered_missingNs200_traitPpopart.csv")
 
 
 
@@ -203,12 +227,9 @@ write.nexus.data(fasta, file="~/Desktop/Scripts/Flat_oysters/04_local_R/03_resul
 
 
 ## Carl and Liam's plotting way ~
-fasta <- read.dna("~/Desktop/Scripts/Data/MtGenome_EUostrea/Mt_HapNetwork_10feb23_mindepth4_minmaf80.fasta", format="fasta")
+fasta <- read.dna("~/Desktop/Scripts/Data/MtGenome_EUostrea/MtOXgenome_HapNetwork_24mar23_mindepth4_minmaf.75.fasta", format="fasta")
 fasta
-
-
 hap <- haplotype(fasta)
-
 summary(hap)
 hap_net <- haploNet(hap, d=dist.dna(hap, model = "N"))
 

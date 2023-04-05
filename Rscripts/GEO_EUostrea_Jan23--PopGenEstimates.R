@@ -186,6 +186,20 @@ PopGenEstimates_Plot <-
 ggsave(PopGenEstimates_Plot, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/pi_theta_Taj_PopGenEstimates_14mar23.pdf",
   device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ##### HET #####
 Het <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/EUostrea/GEO_EUostrea--AllSamples_setMinDepth600_setMaxDepth1200--HET.23jan23.txt", sep = "\t", header = FALSE)
 Het <- Het[,-2]
@@ -311,6 +325,259 @@ Het_plot_violin <-
 
 ggsave(Het_plot_violin, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/Genome-wide_Heterozygosity_violin_Feb23.pdf", 
        device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
+
+
+
+
+
+
+
+
+
+
+
+
+##### HET Inversion regions #####
+Het <- read.table("~/Desktop/Scripts/Data/PopGenEstimates/EUostrea/InvReg/Reg04_24mar23--AllSamples_setMinDepth600_setMaxDepth1200--HET.txt", sep = "\t", header = FALSE)
+Het <- Het[,-2]
+colnames(Het) <- c("Sample_ID", "Heterozygosity")
+# Drop the columns of the dataframe
+
+#remove path bamfile
+Het$Sample_ID=sub(".bam","",Het$Sample_ID)
+Het$Sample_ID=sub(".+/","",Het$Sample_ID)
+length(Het$Sample_ID)
+Het$Sample_ID
+Het$Sample_ID=sub(".depth.gz","",Het$Sample_ID)
+length(Het$Sample_ID)
+pop=substr(Het$Sample_ID,0,9) #name only 4characters -> pop
+unique(pop)
+pop <- substr(pop, nchar(pop)-3, nchar(pop))
+
+#combine
+Het_pop = as.data.frame(cbind(pop, Het)) 
+unique(pop)
+#order pop
+Het_pop$pop <- factor(Het_pop$pop, ordered = T,
+                      levels = c("MOLU", "ZECE", "CRES",
+                                 "ORIS","CORS", "PONT",  "RIAE",
+                                 "MORL",
+                                 "USAM",
+                                 "TOLL", "COLN", "BARR",
+                                 "TRAL", "CLEW",
+                                 "RYAN",
+                                 "GREV", "WADD",
+                                 "NISS","LOGS","VENO", "HALS", "THIS",
+                                 "KALV", "HYPP",
+                                 "LANG", "BUNN", "DOLV", "HAUG", "HAFR",
+                                 "INNE","VAGS", "AGAB", "OSTR"))
+
+head(Het_pop)
+library(ggridges)
+library(ggjoy)
+library(ggplot2)
+library(ggthemes)
+
+
+#Plot
+box <- ggplot(data = Het_pop, aes(x = pop, y = Heterozygosity, fill = pop)) +
+  #geom_violin(alpha = 0.6, size = 0.3, color = "#000000") +
+  geom_boxplot(alpha=0.6) +
+  scale_fill_manual(values = c("#A02353", "#A02353", "#A02353",
+                               "#AD5B35",
+                               "#ad7358",
+                               "#CC480C",  "#CC480C",
+                               "#969696",
+                               "#000000",
+                               "#D38C89", "#D38C89", "#D38C89",
+                               "#C89AD1", "#C89AD1",
+                               "#7210A0",
+                               "#91BD96", "#91BD96",
+                               "#02630C","#02630C","#02630C", "#02630C", "#02630C",
+                               "#45D1F7", "#45D1F7",
+                               "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
+                               "#240377", "#240377", "#240377", "#240377"))+
+  theme(panel.background = element_rect(fill = "#ffffff"),
+        panel.grid.major.x = element_line(colour = "#ededed", linetype = "dashed", size = .00005),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(),
+        axis.line = element_line(colour = "#000000", size = .3),
+        axis.text.x = element_text(colour = "#000000", size = 16, face = "bold", angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(colour = "#000000", size = 16),
+        axis.ticks.x = element_line(colour = "#000000", size = .3),
+        axis.ticks.y = element_line(colour = "#000000", size = .3),
+        strip.background.y = element_rect(colour = "#000000", fill = "#d6d6d6", size = 0.3),
+        strip.text = element_text(colour = "#000000", size = 12, face = "bold"),
+        legend.position = "none",
+        legend.margin = margin(t = 0, b = 0, r = 0, l = 0),
+        legend.box.margin = margin(t = 10, b = 20, r = 0, l = 0),
+        legend.key = element_rect(fill = NA),
+        legend.background =element_blank()) +
+  guides(colour = "none")+
+  coord_flip()
+
+last_plot()
+ggsave(box, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/InvReg/Reg04_wide_boxplotHeterozygosity_mar23_flip.pdf", 
+       device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
+
+
+
+
+
+
+#
+H<-ggplot(data = Het_pop, aes(x = Heterozygosity , y = pop, fill = pop)) +
+  geom_density_ridges2( aes( point_fill = pop), 
+                                alpha = .2, point_alpha = 1, jittered_points = TRUE, scale = 3, alpha = 0.6, color = "black") +
+  scale_fill_manual(values = c("#A02353", "#A02353", "#A02353",
+                               "#AD5B35",
+                               "#ad7358",
+                               "#CC480C",  "#CC480C",
+                               "#969696",
+                               "#000000",
+                               "#D38C89", "#D38C89", "#D38C89",
+                               "#C89AD1", "#C89AD1",
+                               "#7210A0",
+                               "#91BD96", "#91BD96",
+                               "#02630C","#02630C","#02630C", "#02630C", "#02630C",
+                               "#45D1F7", "#45D1F7",
+                               "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
+                               "#240377", "#240377", "#240377", "#240377"))+
+  labs(x = "Population", y = "Heterozygosity",
+       fill = "Population", color = "Population") +
+  theme_joy() +
+  theme(panel.background = element_rect(fill = "#ffffff"),
+        panel.grid.major.x = element_line(colour = "#ededed", linetype = "dashed", size = .00005),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(),
+        axis.line = element_line(colour = "#000000", size = .3),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(colour = "#000000", size = 16, face = "bold", angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(colour = "#000000", size = 16),
+        axis.ticks.x = element_line(colour = "#000000", size = .3),
+        axis.ticks.y = element_line(colour = "#000000", size = .3),
+        strip.background.y = element_rect(colour = "#000000", fill = "#d6d6d6", size = 0.3),
+        strip.text = element_text(colour = "#000000", size = 12, face = "bold"),
+        legend.position = "top",
+        legend.margin = margin(t = 0, b = 0, r = 0, l = 0),
+        legend.box.margin = margin(t = 10, b = 20, r = 0, l = 0),
+        legend.key = element_rect(fill = NA),
+        legend.background =element_blank()) +
+  guides(fill = guide_legend(title = "Populations for Reg08:", title.theme = element_text(size = 12, face = "bold"),
+                             label = TRUE,
+                             label.theme = element_text(size = 14),
+                             override.aes = list(size = 5, alpha = .9)), colour = "none")+
+
+  coord_flip()
+last_plot()
+ggsave(H, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/InvReg/Reg05_wide_Heterozygosity_ggridges_24mar23.pdf",
+       device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
+
+
+
+#Plot
+box <- ggplot(data = Het_pop, aes(x = pop, y = Heterozygosity, fill = pop)) +
+  #geom_violin(alpha = 0.6, size = 0.3, color = "#000000") +
+  geom_boxplot(alpha=0.6) +
+  scale_fill_manual(values = c("#A02353", "#A02353", "#A02353",
+                               "#AD5B35",
+                               "#ad7358",
+                               "#CC480C",  "#CC480C",
+                               "#969696",
+                               "#000000",
+                               "#D38C89", "#D38C89", "#D38C89",
+                               "#C89AD1", "#C89AD1",
+                               "#7210A0",
+                               "#91BD96", "#91BD96",
+                               "#02630C","#02630C","#02630C", "#02630C", "#02630C",
+                               "#45D1F7", "#45D1F7",
+                               "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
+                               "#240377", "#240377", "#240377", "#240377"))+
+  theme(panel.background = element_rect(fill = "#ffffff"),
+        panel.grid.major.x = element_line(colour = "#ededed", linetype = "dashed", size = .00005),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(),
+        axis.line = element_line(colour = "#000000", size = .3),
+        axis.text.x = element_text(colour = "#000000", size = 16, face = "bold", angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(colour = "#000000", size = 16),
+        axis.ticks.x = element_line(colour = "#000000", size = .3),
+        axis.ticks.y = element_line(colour = "#000000", size = .3),
+        strip.background.y = element_rect(colour = "#000000", fill = "#d6d6d6", size = 0.3),
+        strip.text = element_text(colour = "#000000", size = 12, face = "bold"),
+        legend.position = "none",
+        legend.margin = margin(t = 0, b = 0, r = 0, l = 0),
+        legend.box.margin = margin(t = 10, b = 20, r = 0, l = 0),
+        legend.key = element_rect(fill = NA),
+        legend.background =element_blank()) +
+  guides(colour = "none")+
+  coord_flip()
+
+last_plot()
+ggsave(box, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/InvReg/Reg05_wide_boxplotHeterozygosity_mar23_flip.pdf", 
+       device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
+
+
+
+#geom_violin()
+#Plot
+Het_plot_violin <- 
+  ggplot() +
+  geom_violin(data = Het_pop,
+              aes(x = pop, y = Heterozygosity, fill = pop), colour = "#000000", size = 0.3, alpha = .8) +
+  scale_fill_manual(values =c( "#A02353", "#A02353", "#A02353",
+                               "#AD5B35",
+                               "#ad7358",
+                               "#CC480C",  "#CC480C",
+                               "#969696",
+                               "#000000",
+                               "#D38C89", "#D38C89", "#D38C89",
+                               "#C89AD1", "#C89AD1",
+                               "#7210A0",
+                               "#91BD96", "#91BD96",
+                               "#02630C","#02630C","#02630C", "#02630C", "#02630C",
+                               "#45D1F7", "#45D1F7",
+                               "#588cad", "#588cad", "#588cad", "#588cad", "#588cad",
+                               "#240377", "#240377", "#240377", "#240377" ))+
+  theme(panel.background = element_rect(fill = "#ffffff"),
+        panel.grid.major.x = element_line(colour = "#ededed", linetype = "dashed", size = .00005),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.border = element_blank(),
+        axis.line = element_line(colour = "#000000", size = .3),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(colour = "#000000", size = 16, face = "bold", angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_text(colour = "#000000", size = 16),
+        axis.ticks.x = element_line(colour = "#000000", size = .3),
+        axis.ticks.y = element_line(colour = "#000000", size = .3),
+        strip.background.y = element_rect(colour = "#000000", fill = "#d6d6d6", size = 0.3),
+        strip.text = element_text(colour = "#000000", size = 12, face = "bold"),
+        legend.position = "top",
+        legend.margin = margin(t = 0, b = 0, r = 0, l = 0),
+        legend.box.margin = margin(t = 10, b = 20, r = 0, l = 0),
+        legend.key = element_rect(fill = NA),
+        legend.background =element_blank()) +
+  guides(fill = guide_legend(title = "Populations:", title.theme = element_text(size = 12, face = "bold"),
+                             label = TRUE,
+                             label.theme = element_text(size = 14),
+                             override.aes = list(size = 0.3, alpha = .9)), colour = "none")
+
+ggsave(Het_plot_violin, file = "~/Desktop/Scripts/EUostrea/Figures/PopGenEstimates/InvReg/Reg08_wide_boxplotHeterozygosity_mar23.pdf", 
+       device = cairo_pdf, width = 12, height = 8, scale = 1.35, dpi = 600)
+
+
+
+
+
+
+
+
+
+
+
+
 
 #
 ##
